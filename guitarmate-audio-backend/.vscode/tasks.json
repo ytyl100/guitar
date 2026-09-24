@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "backend-build",
+			"type": "shell",
+			"command": "cmd /c \"cd /d d:\\djc\\guitar\\guitarmate-audio-backend && npx tsc --noEmit && node node_modules\\@nestjs\\cli\\bin\\nest.js build && echo BUILD_OK\"",
+			"group": "build"
+		}
+	]
+}

@@ -1,0 +1,1053 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "练习曲：Am–C–G–Am 分解与旋律",
+    "artist": "GuitarMate 教研组",
+    "bpm": 90,
+    "timeSignature": "4/4",
+    "key": "A minor",
+    "instrument": "guitar_rhythm",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "track_1",
+      "name": "练习曲：Am–C–G–Am 分解与旋律",
+      "instrument": "guitar_rhythm",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "Verse 第 1 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 0,
+          "endTime": 2.6667,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m0_s4_c0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m0_s5_c0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m0_s3_c4",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m0_s2_c8",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m0_s3_c12",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "C",
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m0_s4_c12",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m0_s5_c12",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 0
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 2.3333,
+              "beat": 3.5,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------1-------|--------0-------|--------1-------|\nG|----2-------2---|----0-------0---|----0-------0---|----2-------2---|\nD|2-----------2---|2-----------2---|--------0-------|2-----------2---|\nA|0-----------0---|3-----------3---|----------------|0-----------0---|\nE|----------------|----------------|3-----------3---|----------------|",
+          "sourceRef": "行 11 小节 1",
+          "position": 1
+        },
+        {
+          "index": 1,
+          "label": "Verse 第 2 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 2.6667,
+          "endTime": 5.3333,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m1_s4_c0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m1_s5_c0",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 3
+            },
+            {
+              "id": "ascii_m1_s3_c4",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m1_s2_c8",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m1_s3_c12",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "G",
+              "sourceColumn": 12,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m1_s4_c12",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m1_s5_c12",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 3
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 2.1667,
+              "beat": 3.2501,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------1-------|--------0-------|--------1-------|\nG|----2-------2---|----0-------0---|----0-------0---|----2-------2---|\nD|2-----------2---|2-----------2---|--------0-------|2-----------2---|\nA|0-----------0---|3-----------3---|----------------|0-----------0---|\nE|----------------|----------------|3-----------3---|----------------|",
+          "sourceRef": "行 11 小节 2",
+          "position": 1
+        },
+        {
+          "index": 2,
+          "label": "Verse 第 3 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 5.3333,
+          "endTime": 8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m2_s6_c0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 3
+            },
+            {
+              "id": "ascii_m2_s3_c4",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m2_s2_c8",
+              "string": 2,
+              "fret": 0,
+              "midi": 59,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m2_s4_c8",
+              "string": 4,
+              "fret": 0,
+              "midi": 50,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m2_s3_c12",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "Am",
+              "sourceColumn": 12,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m2_s6_c12",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 3
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------1-------|--------0-------|--------1-------|\nG|----2-------2---|----0-------0---|----0-------0---|----2-------2---|\nD|2-----------2---|2-----------2---|--------0-------|2-----------2---|\nA|0-----------0---|3-----------3---|----------------|0-----------0---|\nE|----------------|----------------|3-----------3---|----------------|",
+          "sourceRef": "行 11 小节 3",
+          "position": 1
+        },
+        {
+          "index": 3,
+          "label": "Verse 第 4 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 8,
+          "endTime": 10.6667,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m3_s4_c0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m3_s5_c0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m3_s3_c4",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m3_s2_c8",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m3_s3_c12",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m3_s4_c12",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m3_s5_c12",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 0
+            }
+          ],
+          "chords": [
+            {
+              "name": "A5",
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "frets": [
+                "x",
+                0,
+                2,
+                2,
+                "x",
+                "x"
+              ]
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------1-------|--------0-------|--------1-------|\nG|----2-------2---|----0-------0---|----0-------0---|----2-------2---|\nD|2-----------2---|2-----------2---|--------0-------|2-----------2---|\nA|0-----------0---|3-----------3---|----------------|0-----------0---|\nE|----------------|----------------|3-----------3---|----------------|",
+          "sourceRef": "行 11 小节 4",
+          "position": 1
+        },
+        {
+          "index": 4,
+          "label": "Chorus 第 5 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 10.6667,
+          "endTime": 13.3333,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m4_s4_c0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 3
+            },
+            {
+              "id": "ascii_m4_s6_c0",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m4_s3_c4",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m4_s2_c8",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m4_s3_c12",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "G",
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m4_s4_c12",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 3
+            },
+            {
+              "id": "ascii_m4_s6_c12",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 2.3333,
+              "beat": 3.5,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------0-------|--------1-------|--------0-------|\nG|----2-------2---|----0-------0---|----2-------2---|----1-------1---|\nD|3-----------3---|----------------|2-----------2---|----------------|\nA|----------------|2-----------2---|0-----------0---|2-----------2---|\nE|1-----------1---|3-----------3---|----------------|0-----------0---|",
+          "sourceRef": "行 11 小节 1",
+          "position": 1
+        },
+        {
+          "index": 5,
+          "label": "Chorus 第 6 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 13.3333,
+          "endTime": 16,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m5_s5_c0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m5_s6_c0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 3
+            },
+            {
+              "id": "ascii_m5_s3_c4",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m5_s2_c8",
+              "string": 2,
+              "fret": 0,
+              "midi": 59,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m5_s3_c12",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "Am",
+              "sourceColumn": 12,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m5_s5_c12",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m5_s6_c12",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 3
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 2.1667,
+              "beat": 3.2501,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------0-------|--------1-------|--------0-------|\nG|----2-------2---|----0-------0---|----2-------2---|----1-------1---|\nD|3-----------3---|----------------|2-----------2---|----------------|\nA|----------------|2-----------2---|0-----------0---|2-----------2---|\nE|1-----------1---|3-----------3---|----------------|0-----------0---|",
+          "sourceRef": "行 11 小节 2",
+          "position": 1
+        },
+        {
+          "index": 6,
+          "label": "Chorus 第 7 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 16,
+          "endTime": 18.6667,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m6_s4_c0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m6_s5_c0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m6_s3_c4",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m6_s2_c8",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m6_s3_c12",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "E7",
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m6_s4_c12",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m6_s5_c12",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 0
+            }
+          ],
+          "chords": [
+            {
+              "name": "E7",
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 2.6667
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------0-------|--------1-------|--------0-------|\nG|----2-------2---|----0-------0---|----2-------2---|----1-------1---|\nD|3-----------3---|----------------|2-----------2---|----------------|\nA|----------------|2-----------2---|0-----------0---|2-----------2---|\nE|1-----------1---|3-----------3---|----------------|0-----------0---|",
+          "sourceRef": "行 11 小节 3",
+          "position": 1
+        },
+        {
+          "index": 7,
+          "label": "Chorus 第 8 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 18.6667,
+          "endTime": 21.3333,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "ascii_m7_s5_c0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m7_s6_c0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 0,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m7_s3_c4",
+              "string": 3,
+              "fret": 1,
+              "midi": 56,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 4,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m7_s2_c8",
+              "string": 2,
+              "fret": 0,
+              "midi": 59,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 8,
+              "finger": 0
+            },
+            {
+              "id": "ascii_m7_s3_c12",
+              "string": 3,
+              "fret": 1,
+              "midi": 56,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 1
+            },
+            {
+              "id": "ascii_m7_s5_c12",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 2
+            },
+            {
+              "id": "ascii_m7_s6_c12",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "sourceColumn": 12,
+              "finger": 0
+            }
+          ],
+          "chords": [
+            {
+              "name": "E",
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "frets": [
+                0,
+                2,
+                "x",
+                1,
+                "x",
+                "x"
+              ]
+            }
+          ],
+          "rawText": "e|----------------|----------------|----------------|----------------|\nB|--------1-------|--------0-------|--------1-------|--------0-------|\nG|----2-------2---|----0-------0---|----2-------2---|----1-------1---|\nD|3-----------3---|----------------|2-----------2---|----------------|\nA|----------------|2-----------2---|0-----------0---|2-----------2---|\nE|1-----------1---|3-----------3---|----------------|0-----------0---|",
+          "sourceRef": "行 11 小节 4",
+          "position": 1
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "ascii-tab",
+    "fileName": "ascii-study.txt",
+    "site": "GuitarMate 内置示例",
+    "rights": "original-arrangement",
+    "rightsNote": "GuitarMate 教研组自有编配，可自由使用。",
+    "parsedAt": "2026-09-23T14:18:52.244Z",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [
+    {
+      "level": "warn",
+      "code": "ascii-rhythm-approximate",
+      "message": "ASCII 六线谱没有时值信息，节奏是按列位置线性映射到拍网格得到的**近似值**。请在后台上核对齐（或改用 MusicXML / Guitar Pro 源）后再发布到小程序。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-derived",
+      "message": "已按「最低把位优先 + 同帧整体出手型」推定 37 个音符的左手手指（0=空弦 / 1=食指 / 2=中指 / 3=无名指 / 4=小指），并为 8 个小节标注把位。自动指法只是建议值，可在复核工作台逐音符修改。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-barre",
+      "message": "识别出 3 处横按（同一帧内同一品出现在多根弦上）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1 需要换把（已按最近的可覆盖手位标注）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1 需要换把（已按最近的可覆盖手位标注）。"
+    }
+  ],
+  "stats": {
+    "measureCount": 8,
+    "noteCount": 55,
+    "chordCount": 6,
+    "barreCount": 3,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 21.33
+  }
+}

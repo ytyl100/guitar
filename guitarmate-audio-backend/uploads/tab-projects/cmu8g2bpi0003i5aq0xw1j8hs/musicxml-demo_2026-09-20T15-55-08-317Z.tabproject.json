@@ -1,0 +1,204 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "示例：两小节六线谱（自有编配）",
+    "artist": "GuitarMate 教研组",
+    "bpm": 90,
+    "timeSignature": "4/4",
+    "instrument": "guitar",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "P1",
+      "name": "Acoustic Guitar",
+      "instrument": "guitar",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "第 1 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 0,
+          "endTime": 2.6667,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "xml_m0_5_0_0.000",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "Am"
+            },
+            {
+              "id": "xml_m0_2_1_1.000",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1
+            },
+            {
+              "id": "xml_m0_1_0_2.000",
+              "string": 1,
+              "fret": 0,
+              "midi": 64,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1
+            },
+            {
+              "id": "xml_m0_3_2_3.000",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.6667
+            }
+          ],
+          "sourceRef": "measure 1"
+        },
+        {
+          "index": 1,
+          "label": "第 2 小节",
+          "timeSignature": "4/4",
+          "bpm": 90,
+          "startTime": 2.6667,
+          "endTime": 5.3333,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "xml_m1_5_3_0.000",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1,
+              "chordName": "C"
+            },
+            {
+              "id": "xml_m1_1_0_1.000",
+              "string": 1,
+              "fret": 0,
+              "midi": 64,
+              "offsetSec": 0.6667,
+              "beat": 1,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1
+            },
+            {
+              "id": "xml_m1_1_3_2.000",
+              "string": 1,
+              "fret": 3,
+              "midi": 67,
+              "offsetSec": 1.3333,
+              "beat": 2,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "bend",
+              "velocity": 90,
+              "confidence": 1
+            },
+            {
+              "id": "xml_m1_2_1_3.000",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 2,
+              "beat": 3,
+              "durationSec": 0.6667,
+              "rhythm": "1/4",
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.6667
+            }
+          ],
+          "sourceRef": "measure 2"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "musicxml",
+    "fileName": "musicxml-demo.txt",
+    "site": "GuitarMate 内置示例",
+    "rights": "original-arrangement",
+    "rightsNote": "GuitarMate 教研组自有编配。",
+    "parsedAt": "2026-09-20T15:53:31.713Z",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [],
+  "stats": {
+    "measureCount": 2,
+    "noteCount": 8,
+    "chordCount": 2,
+    "barreCount": 0,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 5.33
+  }
+}

@@ -1,0 +1,332 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./data/app.db"
+}
+
+// ─────────────────────────────────────────
+// 曲目
+// ─────────────────────────────────────────
+model Score {
+  id            String   @id @default(cuid())
+  title         String
+  artist        String?
+  bpm           Int?
+  timeSignature String   @default("4/4")
+  originalAudio String   // 原曲 OSS/静态 URL
+  coverUrl      String?
+  status        String   @default("draft")  // draft | published
+  /// 调性，例如 "Bm" / "A minor"（PracticePackage.score.key）
+  songKey       String?
+  /// 变调夹品位，0 = 无（PracticePackage.score.capo）
+  capo          Int?
+  /// 调弦音名数组（由低到高）的 JSON 字符串，例如 ["E2","A2","D3","G3","B3","E4"]
+  /// 注意：SQLite 不支持 Json 类型，故用 String 存序列化结果
+  tuning        String?
+  /// 版权/授权状态：public_domain | cc_by | authorized | user_uploaded
+  /// 决定 PracticePackage.provenance.license，是能否对外发布的前置条件
+  license       String?
+  /// 难度 1-5（人工标注；为空时契约层按最高品位启发式推导）
+  difficulty    Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tracks   Track[]
+  measures Measure[]
+
+  /// 反向关系（虚拟字段，不产生数据库列）：由转录流水线 (Project) 自动生成 / 关联的曲目
+  projects       Project[]
+  practicePackage PracticePackage[]
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────
+// 乐器轨
+// ─────────────────────────────────────────
+model Track {
+  id         String   @id @default(cuid())
+  scoreId    String
+  score      Score    @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+  instrument String   // guitar_lead | guitar_rhythm | guitar | bass | piano | other
+  audioUrl   String
+  jsonUrl    String?  // SoloTrace JSON 地址
+  createdAt  DateTime @default(now())
+
+  measureTracks MeasureTrack[]
+
+  @@index([scoreId])
+}
+
+// ─────────────────────────────────────────
+// 练习小节
+// ─────────────────────────────────────────
+model Measure {
+  id            String   @id @default(cuid())
+  scoreId       String
+  score         Score    @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+  index         Int
+  label         String   // 例如: "前奏 第1-4小节"
+  startTime     Float
+  endTime       Float
+  duration      Float
+  bpm           Int
+  timeSignature String   @default("4/4")
+  /// 本小节把位：P = 第 P 把位（食指按第 P 品），谱面渲染为罗马数字 Ⅰ/Ⅱ/Ⅲ…
+  /// 由 tab-import/fingering.ts 推定或人工在 CMS 复核时指定；为空则 C 端不画标记
+  position      Int?
+  createdAt     DateTime @default(now())
+
+  trackData     MeasureTrack[]
+  barres        Barre[]
+  chords        ChordMarker[]
+
+  @@index([scoreId])
+}
+
+// ─────────────────────────────────────────
+// 小节 × 乐器轨
+// 注意：SQLite 不支持 Json 类型，用 String 存序列化后的 JSON
+// ─────────────────────────────────────────
+model MeasureTrack {
+  id          String   @id @default(cuid())
+  measureId   String
+  measure     Measure  @relation(fields: [measureId], references: [id], onDelete: Cascade)
+  trackId     String
+  track       Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  /// 本小节「练习声道」的切片音频 —— C 端 Simplified 模式播放
+  audioUrl    String
+  /// 练习声道标识 (guitar | guitar_lead | guitar_rhythm | bass | piano | other)
+  /// 管理员在发布时可选择，默认 guitar
+  channel     String   @default("guitar")
+  /// 原声（含鼓 / 贝斯 / 电琴等全轨混音）同区间切片音频
+  /// —— C 端 Original 模式播放；为空时前端回退到 audioUrl
+  originalAudioUrl String?
+  tabImageUrl String
+  imageWidth  Int      @default(1200)
+  imageHeight Int      @default(300)
+  notes       String   // JSON.stringify(Note[])
+
+  @@index([measureId])
+  @@index([trackId])
+}
+
+// ─────────────────────────────────────────
+// 横按标记
+// ─────────────────────────────────────────
+model Barre {
+  id         String  @id @default(cuid())
+  measureId  String
+  measure    Measure @relation(fields: [measureId], references: [id], onDelete: Cascade)
+  instrument String  @default("guitar")
+  fret       Int
+  fromString Int
+  toString   Int
+  startTime  Float
+  duration   Float
+  x          Float
+  y          Float
+
+  @@index([measureId])
+}
+
+// ─────────────────────────────────────────
+// 和弦标记
+// ─────────────────────────────────────────
+model ChordMarker {
+  id         String  @id @default(cuid())
+  measureId  String
+  measure    Measure @relation(fields: [measureId], references: [id], onDelete: Cascade)
+  instrument String  @default("guitar")
+  chordName  String
+  startTime  Float
+  duration   Float
+  x          Float
+  y          Float
+  /// 指法图：6 元素数组（索引 0 = 六弦，-1 = 闷弦）的 JSON 字符串
+  /// SQLite 不支持 Json，与 MeasureTrack.notes 同一约定；为空时小店序不画和弦图
+  voicing    String?
+
+  @@index([measureId])
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 音频转录流水线 (Audio Transcription Pipeline)
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// 这一组模型与上面的 Score / Track / Measure **完全解耦**，只负责
+// 「原始音频 → 分轨 → 转录 → 六线谱 → PracticePackage JSON」的编排与留痕。
+//
+//   Project ─1:N─ TranscribeJob    (每个阶段的 BullMQ 任务执行记录)
+//           ─1:N─ TranscribeTrack  (Demucs 分离出来的乐器分轨 + 转录产出)
+//           ─1:1─ PracticePackage  (最终下发给 C 端的 JSON 快照)
+//           ─0:1─ Score            (可选：回流到既有发布链路做人工复核/切片)
+//
+// 兼容性说明：
+// - 所有新增表都带 `scoreId String?`，**不修改也不依赖** 既有 Score/Track/Measure；
+// - SQLite 不支持 Json / enum → 一律用 String 存序列化结果（与既有约定一致）。
+//
+// ⚠️ 命名说明：方案里的 `Track` 模型名已被上面的「曲目分轨」占用（Prisma model 名全局唯一），
+//    因此转录流水线的分轨模型命名为 `TranscribeTrack`，语义与方案中的 `Track` 一一对应。
+// ─────────────────────────────────────────
+
+/// 转录项目：一次「上传音频 / URL 下载 → 六线谱」的完整工作单元
+model Project {
+  id     String  @id @default(cuid())
+  title  String
+  artist String?
+
+  /// 生命周期状态：pending | downloading | separating | transcribing | converting | review | published | failed
+  status String @default("pending")
+
+  /// 音频来源：upload（本地上传）| url（yt-dlp 下载）
+  sourceType String @default("upload")
+  /// 上传时为原始文件名；url 时为原始 URL
+  sourceRef  String?
+  /// 归一化后的本地音频绝对路径（下载完成 / 上传落盘后回填）
+  audioPath  String?
+  /// 原始文件名或 yt-dlp 视频标题
+  originalName String?
+  /// 音频元信息（ffprobe / yt-dlp 回填）
+  durationSec Float?
+  sampleRate  Int?
+  channels    Int?
+  /// 归一化采样率（Demucs/Basic Pitch 都要求 44.1kHz）
+  format      String?
+
+  /// 进度 0-100 + 当前阶段说明（CMS 轮询展示）
+  progress  Int     @default(0)
+  stageNote String?
+  error     String?
+
+  /// 转录使用的推算 BPM（人工可在 ReviewPage 覆盖）
+  bpm           Int?    @default(120)
+  timeSignature String  @default("4/4")
+  capo          Int     @default(0)
+  /// 调弦 MIDI 数组的 JSON 字符串（索引 0 = 一弦）
+  tuning        String?
+  license       String  @default("user_uploaded")
+
+  /// 转录产出的统一中间格式（TabProject JSON 字符串）
+  tabProject String?
+
+  /// 可选：回流到既有发布链路的 Score
+  scoreId String? @unique
+  score   Score?  @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs             TranscribeJob[]
+  tracks           TranscribeTrack[]
+  practicePackages PracticePackage[]
+
+  @@index([status])
+  @@index([sourceType])
+}
+
+/// 阶段任务执行记录（对应 BullMQ 的一次 job，含重试与耗时）
+model TranscribeJob {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  /// separate | transcribe | convert | slice | publish | download
+  stage    String
+  /// queued | active | completed | failed | skipped
+  status   String  @default("queued")
+  /// BullMQ 队列名 / job id（Redis 不可用时的进程内队列会写成 in-process）
+  queueName String @default("transcription")
+  jobId     String?
+  attempts  Int    @default(0)
+  progress  Int    @default(0)
+
+  /// 入参 / 出参摘要（JSON 字符串，便于排查失败原因）
+  input    String?
+  output   String?
+  error    String?
+  /// 执行耗时（毫秒）
+  durationMs Int?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@index([projectId])
+  @@index([status])
+  @@index([stage])
+}
+
+/// 转录分轨（方案中的 `Track`）：Demucs 分离出的单条乐器轨及其转录产出
+model TranscribeTrack {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  /// vocals | drums | bass | guitar | guitar_lead | guitar_rhythm | piano | other
+  instrument String
+  /// Demucs 输出的分轨音频绝对路径（htdemucs_6s → 6 条 stem）
+  stemPath   String?
+  /// Basic Pitch 输出的 MIDI 绝对路径
+  midiPath   String?
+  /// Tayuya 转换出的 TabProject JSON 绝对路径
+  tabPath    String?
+
+  status        String @default("pending") // pending | separated | transcribed | converted | failed
+  noteCount     Int    @default(0)
+  confidenceAvg Float  @default(1)
+  /// 低置信度（< 0.6）音符数量，ReviewPage 用它做「标红」统计
+  lowConfidenceCount Int @default(0)
+  /// 调弦 / 变调夹 / 技巧分布等附加信息的 JSON 字符串
+  meta String?
+  error String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, instrument])
+  @@index([projectId])
+}
+
+/// PracticePackage 落库快照（payload 为契约 JSON 字符串；SQLite 不支持 Json）
+model PracticePackage {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  /// 可选关联曲目（回流到既有发布链路时填写）
+  scoreId String?
+  score   Score?  @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+
+  /// 契约版本白名单，当前恒为 "1.0"
+  schemaVersion String @default("1.0")
+  /// 同一项目的发布版本号（每次发布 +1）
+  revision Int @default(1)
+
+  /// 完整 PracticePackage JSON
+  payload String
+
+  measureCount Int @default(0)
+  noteCount    Int @default(0)
+  trackCount   Int @default(0)
+  /// 低置信度音符总数（发布前提醒管理员复核）
+  lowConfidenceCount Int @default(0)
+  /// 音频切片 / 原声切片成功数量与降级数量
+  slicedAudioCount  Int @default(0)
+  degradedAudioCount Int @default(0)
+
+  /// 发布者标识（CMS 用户 / api）
+  publishedBy String @default("cms")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([scoreId])
+}

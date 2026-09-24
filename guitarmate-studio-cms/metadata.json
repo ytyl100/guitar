@@ -1,0 +1,7 @@
+{
+  "name": "GuitarMate Studio CMS",
+  "description": "专业的吉他教研与音频六线谱对齐后台管理系统，包含音频-吉他六线谱毫秒级双向挂载、20分钟切片拓扑编排、视频知识点打点、和弦BPM阶梯配置与教研学情分析看板。",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

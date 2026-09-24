@@ -1,0 +1,11 @@
+node_modules
+dist
+data
+uploads
+.git
+.gitignore
+*.log
+*.md
+package-lock.json.bak
+.env
+.env.local

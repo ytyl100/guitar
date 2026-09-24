@@ -1,0 +1,128 @@
+[
+  {
+    "startSec": 0,
+    "endSec": 5,
+    "name": "Am",
+    "score": 0.9867
+  },
+  {
+    "startSec": 4.75,
+    "endSec": 6.5,
+    "name": "F",
+    "score": 1.0991
+  },
+  {
+    "startSec": 6.25,
+    "endSec": 6.75,
+    "name": "C",
+    "score": 1.0369
+  },
+  {
+    "startSec": 6.5,
+    "endSec": 10.25,
+    "name": "F",
+    "score": 0.7815
+  },
+  {
+    "startSec": 10,
+    "endSec": 10.75,
+    "name": "C",
+    "score": 0.8909
+  },
+  {
+    "startSec": 10.5,
+    "endSec": 11.25,
+    "name": "Cmaj7",
+    "score": 0.8279
+  },
+  {
+    "startSec": 11,
+    "endSec": 12.25,
+    "name": "C",
+    "score": 0.9177
+  },
+  {
+    "startSec": 12,
+    "endSec": 12.75,
+    "name": "Am",
+    "score": 0.9736
+  },
+  {
+    "startSec": 12.5,
+    "endSec": 13,
+    "name": "Am7",
+    "score": 0.7414
+  },
+  {
+    "startSec": 12.75,
+    "endSec": 15,
+    "name": "C",
+    "score": 0.9972
+  },
+  {
+    "startSec": 14.75,
+    "endSec": 15.25,
+    "name": "Cmaj7",
+    "score": 0.9339
+  },
+  {
+    "startSec": 15,
+    "endSec": 15.5,
+    "name": "Bm",
+    "score": 1.0621
+  },
+  {
+    "startSec": 15.25,
+    "endSec": 18,
+    "name": "G",
+    "score": 0.806
+  },
+  {
+    "startSec": 17.75,
+    "endSec": 18.25,
+    "name": "Cmaj7",
+    "score": 0.7937
+  },
+  {
+    "startSec": 18,
+    "endSec": 18.5,
+    "name": "G",
+    "score": 1.0247
+  },
+  {
+    "startSec": 18.25,
+    "endSec": 19,
+    "name": "Gadd9",
+    "score": 0.8563
+  },
+  {
+    "startSec": 18.75,
+    "endSec": 19.25,
+    "name": "G",
+    "score": 0.9509
+  },
+  {
+    "startSec": 19,
+    "endSec": 19.5,
+    "name": "Am7",
+    "score": 0.8499
+  },
+  {
+    "startSec": 19.25,
+    "endSec": 19.75,
+    "name": "F",
+    "score": 0.9812
+  },
+  {
+    "startSec": 19.5,
+    "endSec": 20,
+    "name": "Am",
+    "score": 0.999
+  },
+  {
+    "startSec": 19.75,
+    "endSec": 21.2,
+    "name": "Dm",
+    "score": 1.0895
+  }
+]

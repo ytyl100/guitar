@@ -1,0 +1,10 @@
+{
+  "name": "GuitarMate 吉他伴奏与课程",
+  "description": "基于React/Taro体系打造的微信小程序级吉他培训与伴奏教学平台，集成吉他伴奏歌词高亮滚动、进阶课程与真人和弦AI麦克风听音检测、仿真吉他调音器与精准节拍器。",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

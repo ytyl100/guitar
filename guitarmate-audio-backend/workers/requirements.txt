@@ -1,0 +1,35 @@
+# GuitarMate 音频转录 Worker 依赖
+# ================================
+#
+# 分两档安装，避免为了「只想跑通链路」的开发者装 2GB 的 TensorFlow：
+#
+# ── 档位 A：完整真实转录（推荐生产环境）────────────────────────────
+#   python -m pip install -r workers/requirements.txt
+#
+# ── 档位 B：只装最小的重采样/导出能力 ──────────────────────────────
+#   python -m pip install torch demucs
+#   （Basic Pitch 缺失时，Node 侧会自动回退「模拟转录」，链路依然可跑通）
+#
+# 注意：
+# - `midi_to_tab.py` 是**纯标准库**实现，不需要任何依赖；
+# - `yt-dlp` 是 URL 下载用的，装成 Python 包时 Node 侧会以
+#   `python -m yt_dlp` 的方式调用；
+# - GPU 加速：先把 torch 换成 CUDA 版本，再装 demucs：
+#     pip install torch --index-url https://download.pytorch.org/whl/cu121
+
+# ── 乐器分离 ──
+demucs>=4.1.0            # htdemucs_6s（6 轨：drums/bass/other/vocals/guitar/piano）
+torch>=2.0.0             # Demucs 与 Basic Pitch 共用；CPU 版即可跑通
+torchaudio>=2.0.0
+
+# ── 音频 → MIDI 转录 ──
+basic-pitch>=0.3.0       # Spotify Basic Pitch（依赖 tensorflow / librosa / pretty_midi）
+pretty_midi>=0.2.10
+librosa>=0.10.0          # 也被 transcribe.py 用于 BPM 估计
+
+# ── URL 下载（yt-dlp；也可用独立二进制代替）──
+yt-dlp>=2024.1.0
+
+# ── 可选：音高/节拍辅助（内部调试用，非必需）──
+# scipy>=1.10.0
+# soundfile>=0.12.1

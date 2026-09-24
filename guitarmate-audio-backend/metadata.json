@@ -1,0 +1,6 @@
+{
+  "name": "GuitarMate Audio Backend",
+  "description": "GuitarMate 音频后台管理系统核心后端服务，基于 NestJS 10 + Prisma 5 + SQLite 构建，提供音频切片、OSS 上传、小节发布与曲目查询服务。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,407 @@
+{
+  "title": "A 小调练习曲（solo + 和弦）",
+  "artist": "GuitarMate 内置样品",
+  "license": "public_domain",
+  "note": "本文件是合成样品的真值标注（不是转录结果），仅用于验证识别准确率。",
+  "bpm": 96,
+  "timeSignature": "4/4",
+  "key": "A minor",
+  "bars": 8,
+  "durationSec": 21.2,
+  "chords": [
+    "Am",
+    "Am",
+    "F",
+    "F",
+    "C",
+    "C",
+    "G",
+    "G"
+  ],
+  "notes": [
+    {
+      "startSec": -0.008,
+      "midi": 69,
+      "bar": 1,
+      "eighth": 1
+    },
+    {
+      "startSec": 0.3075,
+      "midi": 72,
+      "bar": 1,
+      "eighth": 2
+    },
+    {
+      "startSec": 0.623,
+      "midi": 74,
+      "bar": 1,
+      "eighth": 3
+    },
+    {
+      "startSec": 0.9385,
+      "midi": 72,
+      "bar": 1,
+      "eighth": 4
+    },
+    {
+      "startSec": 1.254,
+      "midi": 76,
+      "bar": 1,
+      "eighth": 5
+    },
+    {
+      "startSec": 1.5695,
+      "midi": 74,
+      "bar": 1,
+      "eighth": 6
+    },
+    {
+      "startSec": 1.868,
+      "midi": 72,
+      "bar": 1,
+      "eighth": 7
+    },
+    {
+      "startSec": 2.1835,
+      "midi": 69,
+      "bar": 1,
+      "eighth": 8
+    },
+    {
+      "startSec": 2.492,
+      "midi": 72,
+      "bar": 2,
+      "eighth": 1
+    },
+    {
+      "startSec": 2.8075,
+      "midi": 74,
+      "bar": 2,
+      "eighth": 2
+    },
+    {
+      "startSec": 3.123,
+      "midi": 76,
+      "bar": 2,
+      "eighth": 3
+    },
+    {
+      "startSec": 3.4385,
+      "midi": 79,
+      "bar": 2,
+      "eighth": 4
+    },
+    {
+      "startSec": 3.754,
+      "midi": 81,
+      "bar": 2,
+      "eighth": 5
+    },
+    {
+      "startSec": 4.0695,
+      "midi": 79,
+      "bar": 2,
+      "eighth": 6
+    },
+    {
+      "startSec": 4.368,
+      "midi": 76,
+      "bar": 2,
+      "eighth": 7
+    },
+    {
+      "startSec": 4.6835,
+      "midi": 74,
+      "bar": 2,
+      "eighth": 8
+    },
+    {
+      "startSec": 4.992,
+      "midi": 77,
+      "bar": 3,
+      "eighth": 1
+    },
+    {
+      "startSec": 5.3075,
+      "midi": 74,
+      "bar": 3,
+      "eighth": 2
+    },
+    {
+      "startSec": 5.623,
+      "midi": 72,
+      "bar": 3,
+      "eighth": 3
+    },
+    {
+      "startSec": 5.9385,
+      "midi": 69,
+      "bar": 3,
+      "eighth": 4
+    },
+    {
+      "startSec": 6.254,
+      "midi": 72,
+      "bar": 3,
+      "eighth": 5
+    },
+    {
+      "startSec": 6.5695,
+      "midi": 74,
+      "bar": 3,
+      "eighth": 6
+    },
+    {
+      "startSec": 6.868,
+      "midi": 77,
+      "bar": 3,
+      "eighth": 7
+    },
+    {
+      "startSec": 7.1835,
+      "midi": 74,
+      "bar": 3,
+      "eighth": 8
+    },
+    {
+      "startSec": 7.492,
+      "midi": 76,
+      "bar": 4,
+      "eighth": 1
+    },
+    {
+      "startSec": 7.8075,
+      "midi": 74,
+      "bar": 4,
+      "eighth": 2
+    },
+    {
+      "startSec": 8.123,
+      "midi": 72,
+      "bar": 4,
+      "eighth": 3
+    },
+    {
+      "startSec": 8.4385,
+      "midi": 74,
+      "bar": 4,
+      "eighth": 4
+    },
+    {
+      "startSec": 8.754,
+      "midi": 76,
+      "bar": 4,
+      "eighth": 5
+    },
+    {
+      "startSec": 9.0695,
+      "midi": 79,
+      "bar": 4,
+      "eighth": 6
+    },
+    {
+      "startSec": 9.368,
+      "midi": 77,
+      "bar": 4,
+      "eighth": 7
+    },
+    {
+      "startSec": 9.6835,
+      "midi": 74,
+      "bar": 4,
+      "eighth": 8
+    },
+    {
+      "startSec": 9.992,
+      "midi": 72,
+      "bar": 5,
+      "eighth": 1
+    },
+    {
+      "startSec": 10.3075,
+      "midi": 76,
+      "bar": 5,
+      "eighth": 2
+    },
+    {
+      "startSec": 10.623,
+      "midi": 79,
+      "bar": 5,
+      "eighth": 3
+    },
+    {
+      "startSec": 10.9385,
+      "midi": 76,
+      "bar": 5,
+      "eighth": 4
+    },
+    {
+      "startSec": 11.254,
+      "midi": 72,
+      "bar": 5,
+      "eighth": 5
+    },
+    {
+      "startSec": 11.5695,
+      "midi": 74,
+      "bar": 5,
+      "eighth": 6
+    },
+    {
+      "startSec": 11.868,
+      "midi": 72,
+      "bar": 5,
+      "eighth": 7
+    },
+    {
+      "startSec": 12.1835,
+      "midi": 69,
+      "bar": 5,
+      "eighth": 8
+    },
+    {
+      "startSec": 12.492,
+      "midi": 74,
+      "bar": 6,
+      "eighth": 1
+    },
+    {
+      "startSec": 12.8075,
+      "midi": 76,
+      "bar": 6,
+      "eighth": 2
+    },
+    {
+      "startSec": 13.123,
+      "midi": 79,
+      "bar": 6,
+      "eighth": 3
+    },
+    {
+      "startSec": 13.4385,
+      "midi": 81,
+      "bar": 6,
+      "eighth": 4
+    },
+    {
+      "startSec": 13.754,
+      "midi": 79,
+      "bar": 6,
+      "eighth": 5
+    },
+    {
+      "startSec": 14.0695,
+      "midi": 76,
+      "bar": 6,
+      "eighth": 6
+    },
+    {
+      "startSec": 14.368,
+      "midi": 74,
+      "bar": 6,
+      "eighth": 7
+    },
+    {
+      "startSec": 14.6835,
+      "midi": 72,
+      "bar": 6,
+      "eighth": 8
+    },
+    {
+      "startSec": 14.992,
+      "midi": 71,
+      "bar": 7,
+      "eighth": 1
+    },
+    {
+      "startSec": 15.3075,
+      "midi": 74,
+      "bar": 7,
+      "eighth": 2
+    },
+    {
+      "startSec": 15.623,
+      "midi": 79,
+      "bar": 7,
+      "eighth": 3
+    },
+    {
+      "startSec": 15.9385,
+      "midi": 74,
+      "bar": 7,
+      "eighth": 4
+    },
+    {
+      "startSec": 16.254,
+      "midi": 71,
+      "bar": 7,
+      "eighth": 5
+    },
+    {
+      "startSec": 16.5695,
+      "midi": 74,
+      "bar": 7,
+      "eighth": 6
+    },
+    {
+      "startSec": 16.868,
+      "midi": 76,
+      "bar": 7,
+      "eighth": 7
+    },
+    {
+      "startSec": 17.1835,
+      "midi": 74,
+      "bar": 7,
+      "eighth": 8
+    },
+    {
+      "startSec": 17.492,
+      "midi": 74,
+      "bar": 8,
+      "eighth": 1
+    },
+    {
+      "startSec": 17.8075,
+      "midi": 72,
+      "bar": 8,
+      "eighth": 2
+    },
+    {
+      "startSec": 18.123,
+      "midi": 71,
+      "bar": 8,
+      "eighth": 3
+    },
+    {
+      "startSec": 18.4385,
+      "midi": 69,
+      "bar": 8,
+      "eighth": 4
+    },
+    {
+      "startSec": 18.754,
+      "midi": 67,
+      "bar": 8,
+      "eighth": 5
+    },
+    {
+      "startSec": 19.0695,
+      "midi": 69,
+      "bar": 8,
+      "eighth": 6
+    },
+    {
+      "startSec": 19.368,
+      "midi": 72,
+      "bar": 8,
+      "eighth": 7
+    },
+    {
+      "startSec": 19.6835,
+      "midi": 69,
+      "bar": 8,
+      "eighth": 8
+    }
+  ]
+}

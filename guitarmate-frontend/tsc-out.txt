@@ -1,0 +1,263 @@
+src/components/MusicTab.tsx(105,10): error TS1005: ',' expected.
+src/components/MusicTab.tsx(109,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,36): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,41): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,59): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,75): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,80): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,85): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,102): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,111): error TS1005: ';' expected.
+src/components/MusicTab.tsx(109,129): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,53): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,66): error TS1005: ';' expected.
+src/components/MusicTab.tsx(121,77): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(136,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(136,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(149,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(149,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(168,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(168,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(185,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(185,43): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(185,62): error TS1005: ';' expected.
+src/components/MusicTab.tsx(185,67): error TS1005: ';' expected.
+src/components/MusicTab.tsx(185,84): error TS1005: ';' expected.
+src/components/MusicTab.tsx(196,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(196,46): error TS1005: ';' expected.
+src/components/MusicTab.tsx(196,63): error TS1005: ';' expected.
+src/components/MusicTab.tsx(221,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(221,34): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(221,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(221,55): error TS1005: ';' expected.
+src/components/MusicTab.tsx(221,69): error TS1005: ';' expected.
+src/components/MusicTab.tsx(221,87): error TS1005: ';' expected.
+src/components/MusicTab.tsx(229,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(229,38): error TS1005: ';' expected.
+src/components/MusicTab.tsx(229,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(229,56): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(239,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,36): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,41): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,63): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,74): error TS1005: ';' expected.
+src/components/MusicTab.tsx(239,85): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(255,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,36): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,41): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,63): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,74): error TS1005: ';' expected.
+src/components/MusicTab.tsx(255,85): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(269,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,39): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,54): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,61): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,72): error TS1005: ';' expected.
+src/components/MusicTab.tsx(269,79): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(283,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(283,37): error TS1005: ';' expected.
+src/components/MusicTab.tsx(283,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(283,51): error TS1005: ';' expected.
+src/components/MusicTab.tsx(290,37): error TS1005: ';' expected.
+src/components/MusicTab.tsx(290,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,40): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,45): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,56): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,66): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,74): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,84): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,95): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(305,113): error TS1005: ';' expected.
+src/components/MusicTab.tsx(305,119): error TS1005: ';' expected.
+src/components/MusicTab.tsx(314,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(314,39): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(314,52): error TS1443: Module declaration names may only use ' or " quoted strings.
+src/components/MusicTab.tsx(324,37): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(324,55): error TS1005: ';' expected.
+src/components/MusicTab.tsx(324,62): error TS1005: ';' expected.
+src/components/MusicTab.tsx(326,32): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,27): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(330,43): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(330,52): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,61): error TS6188: Numeric separators are not allowed here.
+src/components/MusicTab.tsx(330,64): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(330,90): error TS6188: Numeric separators are not allowed here.
+src/components/MusicTab.tsx(330,95): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(330,121): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,138): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,146): error TS1109: Expression expected.
+src/components/MusicTab.tsx(330,154): error TS1109: Expression expected.
+src/components/MusicTab.tsx(330,162): error TS1109: Expression expected.
+src/components/MusicTab.tsx(330,168): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,181): error TS1005: ';' expected.
+src/components/MusicTab.tsx(330,191): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(379,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(379,37): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(379,61): error TS1005: ';' expected.
+src/components/MusicTab.tsx(379,74): error TS1005: ';' expected.
+src/components/MusicTab.tsx(379,78): error TS1005: ';' expected.
+src/components/MusicTab.tsx(379,87): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(379,90): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(379,112): error TS1005: ';' expected.
+src/components/MusicTab.tsx(379,124): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,48): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,55): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,71): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(397,75): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,85): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,95): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,110): error TS1005: ';' expected.
+src/components/MusicTab.tsx(397,117): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(418,41): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,59): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,67): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,72): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,79): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,90): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,98): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(418,102): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,112): error TS1005: ';' expected.
+src/components/MusicTab.tsx(418,137): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,56): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,72): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,86): error TS1005: ';' expected.
+src/components/MusicTab.tsx(436,104): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,42): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(464,46): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,53): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,61): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,66): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,83): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,92): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,97): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,104): error TS1005: ';' expected.
+src/components/MusicTab.tsx(464,122): error TS1005: ';' expected.
+src/components/MusicTab.tsx(473,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(473,37): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,31): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,38): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,45): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,61): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(494,65): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,75): error TS1005: ';' expected.
+src/components/MusicTab.tsx(494,86): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(520,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(520,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(520,48): error TS1005: ';' expected.
+src/components/MusicTab.tsx(520,59): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(542,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,38): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(542,56): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,71): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,76): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,81): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,94): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,109): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,120): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,129): error TS6188: Numeric separators are not allowed here.
+src/components/MusicTab.tsx(542,131): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(542,161): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,176): error TS1005: ';' expected.
+src/components/MusicTab.tsx(542,202): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,19): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,40): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,56): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,61): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,67): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,72): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,84): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,102): error TS1005: ';' expected.
+src/components/MusicTab.tsx(600,115): error TS1005: ';' expected.
+src/components/MusicTab.tsx(608,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(608,31): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(608,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(608,64): error TS1005: ';' expected.
+src/components/MusicTab.tsx(615,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(615,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(615,40): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,30): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,48): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,56): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(623,60): error TS1005: ';' expected.
+src/components/MusicTab.tsx(623,70): error TS1005: ';' expected.
+src/components/MusicTab.tsx(636,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(636,42): error TS1005: ';' expected.
+src/components/MusicTab.tsx(636,51): error TS1005: ';' expected.
+src/components/MusicTab.tsx(636,69): error TS1005: ';' expected.
+src/components/MusicTab.tsx(636,89): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,30): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,36): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,41): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,46): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,59): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,67): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,79): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,98): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,111): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,134): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,144): error TS1005: ';' expected.
+src/components/MusicTab.tsx(647,162): error TS1005: ';' expected.
+src/components/MusicTab.tsx(660,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(660,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(660,45): error TS1005: ';' expected.
+src/components/MusicTab.tsx(660,63): error TS1005: ';' expected.
+src/components/MusicTab.tsx(660,71): error TS1005: ';' expected.
+src/components/MusicTab.tsx(670,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(670,35): error TS1005: ';' expected.
+src/components/MusicTab.tsx(696,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(696,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(696,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(703,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(703,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,19): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,37): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,53): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,59): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,68): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(745,71): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(745,93): error TS1005: ';' expected.
+src/components/MusicTab.tsx(745,124): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,23): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,28): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,44): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,57): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,66): error TS1005: ';' expected.
+src/components/MusicTab.tsx(755,73): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(762,27): error TS1005: ';' expected.
+src/components/MusicTab.tsx(762,37): error TS1005: ';' expected.
+src/components/MusicTab.tsx(762,47): error TS1005: ';' expected.
+src/components/MusicTab.tsx(762,56): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(771,29): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,36): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,43): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,59): error TS1351: An identifier or keyword cannot immediately follow a numeric literal.
+src/components/MusicTab.tsx(771,63): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,73): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,83): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,92): error TS1005: ';' expected.
+src/components/MusicTab.tsx(771,99): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(782,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(782,33): error TS1005: ';' expected.
+src/components/MusicTab.tsx(782,49): error TS1005: ';' expected.
+src/components/MusicTab.tsx(801,21): error TS1005: ';' expected.
+src/components/MusicTab.tsx(801,25): error TS1005: ';' expected.
+src/components/MusicTab.tsx(801,38): error TS1005: ';' expected.
+src/components/MusicTab.tsx(801,58): error TS1005: ';' expected.
+src/components/MusicTab.tsx(803,11): error TS1434: Unexpected keyword or identifier.
+src/components/MusicTab.tsx(817,1): error TS1160: Unterminated template literal.
