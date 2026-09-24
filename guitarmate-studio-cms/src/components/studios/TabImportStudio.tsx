@@ -38,6 +38,11 @@ import {
 
 interface TabImportStudioProps {
   darkMode: boolean;
+  /**
+   * 从转录项目的「生成数据契约」跳进来时带上的项目 id：
+   * 进入后自动拉取该项目的 TabProject 填入工作台，管理员校对统一 JSON 后发布。
+   */
+  initialProjectId?: string;
   /** 保存成功后跳到「音频与六线谱对齐」工作台继续做音频对齐 + 发布 */
   onOpenInAudioStudio?: (scoreId: string) => void;
 }
@@ -139,7 +144,7 @@ const parseTuningText = (text: string): string[] | null => {
  * ⑤ 补音频 → POST /api/measures/publish → 小程序
  * ```
  */
-export const TabImportStudio: React.FC<TabImportStudioProps> = ({ darkMode, onOpenInAudioStudio }) => {
+export const TabImportStudio: React.FC<TabImportStudioProps> = ({ darkMode, initialProjectId, onOpenInAudioStudio }) => {
   const [sourceMode, setSourceMode] = useState<SourceMode>('paste');
   const [toast, setToast] = useState<string | null>(null);
 
@@ -292,6 +297,44 @@ export const TabImportStudio: React.FC<TabImportStudioProps> = ({ darkMode, onOp
     },
     [content, base64, format, fileName, site, instrument, rights, rightsNote, strumPattern, showToast],
   );
+
+  /**
+   * 从转录项目的「生成数据契约」跳进来：把该项目的 TabProject 当作 `tab-project`
+   * 格式喂给**同一条解析管线** —— 不新增后端接口，也不复制「TabProject → 契约」的转换逻辑，
+   * 因此这里看到的就是最终发布给小程序的数据。
+   */
+  const loadedProjectRef = useRef<string>('');
+  useEffect(() => {
+    if (!initialProjectId || loadedProjectRef.current === initialProjectId) return;
+    loadedProjectRef.current = initialProjectId;
+    (async () => {
+      try {
+        const res = await api.getTranscriptionProject(initialProjectId);
+        const project = res.project?.tabProject;
+        if (!project) {
+          showToast('⚠️ 该项目还没有产出 TabProject（流水线可能尚未跑完）');
+          return;
+        }
+        const json = JSON.stringify(project, null, 2);
+        const name = `${res.project.title || 'transcription'}.tabproject.json`;
+        setSourceMode('paste');
+        setContent(json);
+        setFormat('tab-project');
+        setFileName(name);
+        setBase64(undefined);
+        /** 已镜像过的曲目 → 默认发布到同一条 Score，避免重复建曲 */
+        if (res.project.scoreId) {
+          setTargetMode('existing');
+          setScoreId(res.project.scoreId);
+        }
+        showToast(`📥 已带入转录项目《${res.project.title}》，校对统一 JSON 后即可保存 / 发布`);
+        await runParse({ content: json, format: 'tab-project', fileName: name });
+      } catch (err: any) {
+        const msg = err instanceof ApiError ? err.message : err?.message || String(err);
+        showToast(`⚠️ 带入转录项目失败：${msg}`);
+      }
+    })();
+  }, [initialProjectId, runParse, showToast]);
 
   const handleParseSample = async (sample: TabSample) => {
     setParsing(true);

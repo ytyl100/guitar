@@ -84,6 +84,8 @@ export interface StandardTabRendererProps {
    * 复核纠错建议切到 `'fret'`，学员端（小程序）固定 `'finger'`。
    */
   noteLabel?: 'finger' | 'fret';
+  /** 是否在品位数字旁画手指上标（默认 false：把位优先） */
+  showFinger?: boolean;
 }
 
 export const StandardTabRenderer: React.FC<StandardTabRendererProps> = ({
@@ -106,7 +108,8 @@ export const StandardTabRenderer: React.FC<StandardTabRendererProps> = ({
   showClef = true,
   showTempo = false,
   isLastMeasure = false,
-  noteLabel = 'finger',
+  noteLabel = 'fret',
+  showFinger = false,
 }) => {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [measuredWidth, setMeasuredWidth] = useState<number>(0);
@@ -161,6 +164,7 @@ export const StandardTabRenderer: React.FC<StandardTabRendererProps> = ({
         showTempo,
         isLastMeasure,
         noteLabel,
+        showFinger,
         metrics: CMS_TAB_METRICS,
       }),
     [

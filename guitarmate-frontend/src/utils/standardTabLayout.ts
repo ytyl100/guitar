@@ -7,16 +7,16 @@
  * 任何排版规则改动都要**同时改两处**，否则 CMS 预览与小程序实际渲染会不一致。
  * 两端唯一允许不同的是 `metrics`（像素密度）：CMS 用 1080 宽，小程序用 600 宽紧凑版。
  *
- * 输出与市面主流练习谱一致的样式：
+ * 输出与市面主流练习谱一致的样式（**把位优先**）：
  * ```
- *  ♪ = 90
- *     C                        G                    ← 和弦名（弦线上方）
- *  5  0────0────1────3────┬────3────1────0────       ← 品味数直接落在弦线上（弦线被挖空）
- *   T│─0──0──1──3──┬──3──1──0─│                     ← TAB 谱号 + 手指上标
- *   A│─────────────┼──────────│
- *   B│═════════════╪══════════│                     ← 低音 E 弦线加粗
- *      │   │   │   │     │   │   │   │              ← 拍点刻度
- *      ╞═══════╡           ╞═══════╡                ← 节奏连接符
+ *  ♪ = 90         第 1–3 小节（一个「编辑段落」= 2-3 小节并排）
+ *    D        A        Bm            ← 推荐和弦（每小节一个）
+ *  2 把位   1 把位    1 把位          ← 把位是第一顺位标注（每小节左上角）
+ *   T│─0──2───┬─2──0───┬─4──4───│
+ *   A│─────────┼─────────┼─────────│
+ *   B│═════════╪═════════╪═════════│      ← 低音 E 弦线加粗
+ *      │   │   │   │   │   │   │   │
+ *      ╞════╡  ╞════╡  ╞══════╡        ← 节奏线：符干 + 连接符
  * ```
  */
 
@@ -53,6 +53,12 @@ export interface StandardTabMetrics {
   fontSize: number;
   fingerFontSize: number;
   staffLeftX: number;
+  /** 节奏线（符干 / 连接符）与最低弦线的间距 */
+  rhythmRowGap: number;
+  /** 谱内进度条与最低弦线的间距（播放行进指示） */
+  progressRowGap: number;
+  /** 不画谱号时内容区相对 `noteAreaLeft` 的左移量（TAB 谱号 + 拍号占的宽度） */
+  clefWidth: number;
 }
 
 /** 小程序紧凑版式（与 TabViewport 同为 600×142） */
@@ -68,11 +74,16 @@ export const MINI_TAB_METRICS: StandardTabMetrics = {
   fontSize: 10.5,
   fingerFontSize: 7,
   staffLeftX: 4,
+  rhythmRowGap: 19,
+  progressRowGap: 43,
+  clefWidth: 22,
 };
 
 export interface StandardTabLayoutOptions {
   notes: StandardTabNoteInput[];
   chords?: StandardTabChordInput[];
+  /** 推荐和弦（小节级）：`chords[]` 为空时画在小节左上角 */
+  chord?: string;
   measureDuration: number;
   bpm: number;
   timeSignature?: string;
@@ -86,11 +97,17 @@ export interface StandardTabLayoutOptions {
   isLastMeasure?: boolean;
   /**
    * 弦线上的数字写什么：
-   * - `'finger'`（默认，市场练习谱写法）：数字 = **左手手指号**（1-4，0 = ○），
-   *   品位由左上角把位标记 + `fret = position + finger − 1` 反推；
-   * - `'fret'`：数字 = 品位，手指号作为右上方小号上标。
+   * - `'fret'`（**默认**，把位优先）：数字 = **品位**；
+   * - `'finger'`：数字 = 左手手指号（1-4，0 = ○），仅在复核纠错时用。
    */
   noteLabel?: 'finger' | 'fret';
+  /**
+   * 是否在品位数字右上角画**手指上标**（1-4 / ○）。
+   * 默认 `false` —— 把位才是第一顺位标注，手指只在复核时才需要。
+   */
+  showFinger?: boolean;
+  /** 是否画节奏线（符干 / 连接符 / 符尾）；默认 true */
+  showRhythm?: boolean;
   metrics?: StandardTabMetrics;
 }
 
@@ -136,12 +153,27 @@ export interface StandardTabLayoutNote {
   strumId?: string;
 }
 
+/** 节奏线的符干：从发音点最低的那根弦垂到节奏线 */
+export interface StandardTabStem {
+  x: number;
+  y1: number;
+  y2: number;
+  /** 0 = 四分音符及以上（只有符干）；≥1 = 需要连接符，落单时画符尾 */
+  levels: number;
+  /** 所属连接符组；落单的短音符没有此字段 → 渲染层画符尾 */
+  beamId?: string;
+}
+
 export interface StandardTabLayout {
   metrics: StandardTabMetrics;
   stringCount: number;
   stringYs: number[];
   staffTop: number;
   staffBottom: number;
+  /** 节奏线的 y（符干终点 / 连接符基线） */
+  rhythmY: number;
+  /** 谱内进度条的 y（播放行进指示） */
+  progressY: number;
   lines: Array<{ x1: number; y1: number; x2: number; y2: number; width: number }>;
   barlines: Array<{ x1: number; y1: number; x2: number; y2: number; width: number }>;
   beatTicks: Array<{ x: number; y1: number; y2: number }>;
@@ -149,8 +181,87 @@ export interface StandardTabLayout {
   notes: StandardTabLayoutNote[];
   strums: Array<{ id: string; x: number; yTop: number; yBottom: number; direction: 'down' | 'up'; stringCount: number }>;
   beams: Array<{ x1: number; x2: number; y: number; level: number }>;
+  /** 节奏线的符干（每个发音点一条，和弦簇共用一条） */
+  stems: StandardTabStem[];
   lineGaps: Array<{ y: number; x1: number; x2: number }>;
+  /** 音符内容区左右边界（谱行布局靠它把小节横向平移） */
+  contentLeft: number;
+  contentRight: number;
   timeToX: (offsetSec: number) => number;
+  /** 本小节的基准拍长（= 小节时长 / 拍数，与拍点刻度同一口径） */
+  beatSec: number;
+}
+
+// ─────────────────────────────────────────────
+// 谱行（System）排版 —— 一个「编辑段落」= 2-3 个小节并排
+// ─────────────────────────────────────────────
+
+export interface StandardTabSystemMeasureInput {
+  /** 显示小节号（1 起）；≤0 表示不画 */
+  index: number;
+  notes: StandardTabNoteInput[];
+  chords?: StandardTabChordInput[];
+  /** 推荐和弦（小节级） */
+  chord?: string;
+  /** 本小节把位（第 P 把位） */
+  position?: number;
+  /** 本小节时长（秒）；缺省用谱行的 `measureDuration` */
+  duration?: number;
+  label?: string;
+}
+
+export interface StandardTabSystemMeasureLayout {
+  index: number;
+  label?: string;
+  contentLeft: number;
+  contentRight: number;
+  /** 时间 → x（**小节内**相对秒数） */
+  timeToX: (offsetSec: number) => number;
+  duration: number;
+  position?: number;
+  chord?: string;
+  noteCount: number;
+}
+
+export interface StandardTabSystemOptions {
+  /** 一个谱行 2-3 个小节（`MAX_MEASURES_PER_SYSTEM` 封顶） */
+  measures: StandardTabSystemMeasureInput[];
+  bpm: number;
+  timeSignature?: string;
+  tuning?: number[];
+  measureDuration?: number;
+  width: number;
+  height: number;
+  showClef?: boolean;
+  showTempo?: boolean;
+  isLastSystem?: boolean;
+  noteLabel?: 'finger' | 'fret';
+  /** 是否画手指上标（默认 false：把位优先） */
+  showFinger?: boolean;
+  showRhythm?: boolean;
+  metrics?: StandardTabMetrics;
+}
+
+export interface StandardTabSystemLayout {
+  metrics: StandardTabMetrics;
+  stringCount: number;
+  stringYs: number[];
+  staffTop: number;
+  staffBottom: number;
+  rhythmY: number;
+  /** 谱内进度条的 y（播放行进指示） */
+  progressY: number;
+  lines: Array<{ x1: number; y1: number; x2: number; y2: number; width: number }>;
+  barlines: Array<{ x1: number; y1: number; x2: number; y2: number; width: number }>;
+  beatTicks: Array<{ x: number; y1: number; y2: number }>;
+  texts: StandardTabText[];
+  notes: StandardTabLayoutNote[];
+  strums: Array<{ id: string; x: number; yTop: number; yBottom: number; direction: 'down' | 'up'; stringCount: number }>;
+  beams: Array<{ x1: number; x2: number; y: number; level: number }>;
+  stems: StandardTabStem[];
+  lineGaps: Array<{ y: number; x1: number; x2: number }>;
+  /** 谱行内的小节（按顺序，含各自的 timeToX） */
+  measures: StandardTabSystemMeasureLayout[];
   beatSec: number;
 }
 
@@ -207,15 +318,22 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
   const [beatsRaw, beatValueRaw] = String(options.timeSignature || '4/4').split('/');
   const beatsPerMeasure = parseInt(beatsRaw, 10) || 4;
   const beatValue = parseInt(beatValueRaw, 10) || 4;
-  const beatSec = (60 / (options.bpm > 0 ? options.bpm : 120)) * (4 / beatValue);
+  /**
+   * 一拍的秒数 = **小节时长 / 拍数**（与拍点刻度同一口径）。
+   * 不用 `60 / bpm`：历史数据的「小节窗口」与 BPM 经常对不上，用 BPM 算节奏线会与谱面错位。
+   */
+  const beatSec = measureDuration / beatsPerMeasure;
 
   const staffTop = metrics.staffTop;
   const stringYs = Array.from({ length: stringCount }, (_, i) => staffTop + i * metrics.lineSpacing);
   const staffBottom = stringYs[stringCount - 1];
   const staffLeft = metrics.staffLeftX;
   const staffRight = width - metrics.noteAreaRight;
-  const contentLeft = options.showClef ? metrics.noteAreaLeft : metrics.noteAreaLeft - 22;
+  const contentLeft = options.showClef ? metrics.noteAreaLeft : metrics.noteAreaLeft - metrics.clefWidth;
   const contentWidth = Math.max(40, staffRight - contentLeft);
+
+  /** 谱内进度条（播放行进条）的 y */
+  const progressY = staffBottom + metrics.progressRowGap;
 
   const timeToX = (offsetSec: number) => {
     const ratio = Math.min(1, Math.max(0, Number(offsetSec) / measureDuration));
@@ -320,6 +438,17 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
     texts.push({ text: name, x: timeToX(chord.offsetSec), y: metrics.chordRowY, size: metrics.fontSize + 0.5, role: 'chord' });
   }
 
+  // 推荐和弦（小节级）：`chords[]` 没给时当本小节的编配提示
+  const recommendedChord = String(options.chord || '').trim();
+  if (recommendedChord) {
+    const hasChordAtStart = (options.chords || []).some(
+      (c) => Math.abs(Number(c.offsetSec) || 0) < CLUSTER_TOLERANCE_SEC,
+    );
+    if (!hasChordAtStart) {
+      texts.push({ text: recommendedChord, x: contentLeft, y: metrics.chordRowY, size: metrics.fontSize + 0.5, role: 'chord' });
+    }
+  }
+
   const sorted = [...(options.notes || [])].sort((a, b) => a.offsetSec - b.offsetSec || a.string - b.string);
 
   const notes: StandardTabLayoutNote[] = [];
@@ -334,8 +463,8 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
     const y = stringYs[stringIndex - 1];
     const fingerMark =
       typeof note.finger === 'number' && FINGER_MARKS[note.finger] ? FINGER_MARKS[note.finger] : undefined;
-    // 主数字：默认写手指号（品位由把位标记反推），复核模式写品位
-    const useFingerAsDigit = (options.noteLabel || 'finger') === 'finger' && !!fingerMark;
+    // 主数字：默认写**品位**（把位优先），复核纠错时可切到手指号
+    const useFingerAsDigit = (options.noteLabel || 'fret') === 'finger' && !!fingerMark;
     const text = note.fret < 0 ? 'x' : useFingerAsDigit ? (fingerMark as string) : String(note.fret);
     const maskWidth = metrics.fontSize * 0.68 * Math.max(1, text.length) + 4;
     const maskHeight = metrics.fontSize + 3;
@@ -353,8 +482,8 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
       maskHeight,
     };
 
-    // 主数字已经是手指号时不再重复画上标
-    if (fingerMark && !useFingerAsDigit) {
+    // 主数字已经是手指号时不再重复画上标；默认也不画（把位优先）
+    if (fingerMark && !useFingerAsDigit && options.showFinger) {
       laid.fingerText = fingerMark;
       laid.fingerX = x + maskWidth / 2 - 1;
       laid.fingerY = y - maskHeight / 2 + 1;
@@ -389,7 +518,6 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
 
   /** 和弦簇 / 扫弦：同一时刻 ≥3 根弦 → 画扫弦箭头 */
   const strums: StandardTabLayout['strums'] = [];
-  const clusterMemberIds = new Set<string>();
   let strumSeq = 0;
   let i = 0;
   while (i < paired.length) {
@@ -397,49 +525,86 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
     let j = i;
     while (j + 1 < paired.length && Math.abs(paired[j + 1].input.offsetSec - onset) <= CLUSTER_TOLERANCE_SEC) j += 1;
     const group = paired.slice(i, j + 1);
-    if (group.length >= 2) {
-      for (const member of group) clusterMemberIds.add(member.laid.id);
-      if (group.length >= 3) {
-        const id = `strum_${strumSeq++}`;
-        const ys = group.map((g) => g.laid.y);
-        for (const member of group) member.laid.strumId = id;
-        strums.push({
-          id,
-          x: Math.min(...group.map((g) => g.laid.x)) - 9,
-          yTop: Math.min(...ys) - 4,
-          yBottom: Math.max(...ys) + 4,
-          direction: 'down',
-          stringCount: group.length,
-        });
-      }
+    if (group.length >= 3) {
+      const id = `strum_${strumSeq++}`;
+      const ys = group.map((g) => g.laid.y);
+      for (const member of group) member.laid.strumId = id;
+      strums.push({
+        id,
+        x: Math.min(...group.map((g) => g.laid.x)) - 9,
+        yTop: Math.min(...ys) - 4,
+        yBottom: Math.max(...ys) + 4,
+        direction: 'down',
+        stringCount: group.length,
+      });
     }
     i = j + 1;
   }
 
-  /** 节奏连接符：同一拍内相邻的 8/16 分音符成组 */
+  /**
+   * 节奏线：弦线下方一整行 —— 符干（每个发音点一条）+ 连接符（同拍内的 8/16 分音符）+ 符尾。
+   * 时间轴用 `beatSec = 小节时长 / 拍数`，与拍点刻度同口径。
+   */
+  const stems: StandardTabStem[] = [];
   const beams: StandardTabLayout['beams'] = [];
-  const beamBaseY = staffBottom + 16;
+  const rhythmY = staffBottom + metrics.rhythmRowGap;
+  /** 节奏线总开关：关掉后既不画符干也不画连接符 */
+  const showRhythm = options.showRhythm !== false;
+
+  /** 发音点（同一时刻 ±20ms 的所有弦归为一组） */
+  const onsets: Array<{ x: number; yBottom: number; levels: number; beatIndex: number }> = [];
+  let oi = 0;
+  while (oi < paired.length) {
+    const onset = paired[oi].input.offsetSec;
+    let oj = oi;
+    let maxDuration = 0;
+    while (oj + 1 < paired.length && Math.abs(paired[oj + 1].input.offsetSec - onset) <= CLUSTER_TOLERANCE_SEC) oj += 1;
+    const group = paired.slice(oi, oj + 1);
+    for (const member of group) maxDuration = Math.max(maxDuration, member.input.durationSec);
+    onsets.push({
+      x: group[0].laid.x,
+      yBottom: Math.max(...group.map((g) => g.laid.y)),
+      levels: durationToBeamLevels(maxDuration, beatSec),
+      beatIndex: Math.floor(onset / (beatSec || 1) + 1e-6),
+    });
+    oi = oj + 1;
+  }
+
+  if (showRhythm) {
+    for (const onset of onsets) {
+      stems.push({ x: onset.x, y1: onset.yBottom + 4, y2: rhythmY, levels: onset.levels });
+    }
+  }
+
+  let beamSeq = 0;
   let beamGroup: Array<{ x: number; levels: number; beatIndex: number }> = [];
   const flushBeamGroup = () => {
-    if (beamGroup.length >= 2) {
-      const x1 = Math.min(...beamGroup.map((g) => g.x));
-      const x2 = Math.max(...beamGroup.map((g) => g.x));
+    if (showRhythm && beamGroup.length >= 2) {
+      const id = `beam_${beamSeq++}`;
       const maxLevel = Math.max(...beamGroup.map((g) => g.levels));
       for (let level = 1; level <= maxLevel; level += 1) {
-        beams.push({ x1, x2, y: beamBaseY + (level - 1) * 4.5, level });
+        // 高层横线只覆盖真正需要的音（16 分音符的第二条横线不跨到 8 分音符上）
+        const members = beamGroup.filter((g) => g.levels >= level);
+        if (members.length === 0) continue;
+        const xs = members.map((g) => g.x);
+        const x1 = Math.min(...xs);
+        /** 该层落单 → 画一小段部分横线（fractional beam） */
+        const x2 = members.length === 1 ? x1 + 5 : Math.max(...xs);
+        beams.push({ x1, x2, y: rhythmY + (level - 1) * 4.5, level });
+      }
+      for (const stem of stems) {
+        if (beamGroup.some((g) => Math.abs(g.x - stem.x) < 0.01)) stem.beamId = id;
       }
     }
     beamGroup = [];
   };
-  for (const { input, laid } of paired) {
-    const levels = durationToBeamLevels(input.durationSec, beatSec);
-    if (levels <= 0 || clusterMemberIds.has(laid.id)) {
+  for (const onset of onsets) {
+    if (onset.levels <= 0) {
       flushBeamGroup();
       continue;
     }
-    const beatIndex = Math.floor(input.offsetSec / (beatSec || 1) + 1e-6);
-    if (beamGroup.length > 0 && beamGroup[beamGroup.length - 1].beatIndex !== beatIndex) flushBeamGroup();
-    beamGroup.push({ x: laid.x, levels, beatIndex });
+    if (beamGroup.length > 0 && beamGroup[beamGroup.length - 1].beatIndex !== onset.beatIndex) flushBeamGroup();
+    beamGroup.push(onset);
   }
   flushBeamGroup();
 
@@ -449,6 +614,8 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
     stringYs,
     staffTop,
     staffBottom,
+    rhythmY,
+    progressY,
     lines,
     barlines,
     beatTicks,
@@ -456,8 +623,197 @@ export function buildStandardTabLayout(options: StandardTabLayoutOptions): Stand
     notes,
     strums,
     beams,
+    stems,
     lineGaps,
+    contentLeft,
+    contentRight: staffRight,
     timeToX,
+    beatSec,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 谱行（System）：把 2-3 个小节排进同一行
+// ─────────────────────────────────────────────
+
+/** 一个谱行最多放几个小节（参考谱面 2-3 个，超过 3 个品位数会挤到看不清） */
+export const MAX_MEASURES_PER_SYSTEM = 3;
+/** 小节之间的留白（避免上一小节末尾的音符压到小节线） */
+const MEASURE_GUTTER = 12;
+
+/**
+ * 谱行排版引擎：**一个「编辑段落」= 2-3 个小节并排**。
+ *
+ * 每个小节仍由 `buildStandardTabLayout()` 排版（同一套规则、单测已覆盖），
+ * 谱行层只做：切槽位 → 整体平移（`dx = 目标 contentLeft − 实际 contentLeft`）→
+ * 重铺公共元素（字符串横贯整行 / 小节线画在槽位之间 / 谱号与速度只画一次）。
+ */
+export function buildStandardTabSystemLayout(options: StandardTabSystemOptions): StandardTabSystemLayout {
+  const metrics = options.metrics || MINI_TAB_METRICS;
+  const source: StandardTabSystemMeasureInput[] =
+    options.measures && options.measures.length ? options.measures : [{ index: 0, notes: [] }];
+  const inputMeasures = source.slice(0, MAX_MEASURES_PER_SYSTEM);
+  const count = inputMeasures.length;
+
+  const systemLeft = metrics.noteAreaLeft;
+  const systemRight = Math.max(systemLeft + 60, options.width - metrics.noteAreaRight);
+  const slotWidth = (systemRight - systemLeft) / count;
+
+  const texts: StandardTabText[] = [];
+  const notes: StandardTabLayoutNote[] = [];
+  const lineGaps: StandardTabSystemLayout['lineGaps'] = [];
+  const stems: StandardTabStem[] = [];
+  const beams: StandardTabSystemLayout['beams'] = [];
+  const strums: StandardTabSystemLayout['strums'] = [];
+  const beatTicks: StandardTabSystemLayout['beatTicks'] = [];
+  const layoutMeasures: StandardTabSystemMeasureLayout[] = [];
+
+  let staffTop = metrics.staffTop;
+  let staffBottom = metrics.staffTop + 5 * metrics.lineSpacing;
+  let rhythmY = staffBottom + metrics.rhythmRowGap;
+  let progressY = staffBottom + metrics.progressRowGap;
+  let stringYs: number[] = [];
+  let stringCount = 6;
+  let beatSec = 0;
+
+  inputMeasures.forEach((measure, slot) => {
+    const slotLeft = systemLeft + slot * slotWidth;
+    const slotRight = slot === count - 1 ? systemRight : slotLeft + slotWidth - MEASURE_GUTTER;
+    const duration = Math.max(
+      0.05,
+      measure.duration && measure.duration > 0
+        ? measure.duration
+        : options.measureDuration && options.measureDuration > 0
+          ? options.measureDuration
+          : 2,
+    );
+
+    /** 本小节单独排版时的内容区宽度 —— 由目标槽位宽度反推画布宽度 */
+    const showClef = !!options.showClef && slot === 0;
+    const innerContentLeft = showClef ? metrics.noteAreaLeft : metrics.noteAreaLeft - metrics.clefWidth;
+    const targetWidth = Math.max(60, slotRight - slotLeft);
+    const inner = buildStandardTabLayout({
+      notes: measure.notes,
+      chords: measure.chords,
+      chord: measure.chord,
+      measureDuration: duration,
+      bpm: options.bpm,
+      timeSignature: options.timeSignature,
+      tuning: options.tuning,
+      position: measure.position,
+      width: targetWidth + innerContentLeft + metrics.noteAreaRight,
+      height: options.height,
+      measureIndex: measure.index,
+      showClef,
+      showTempo: !!options.showTempo && slot === 0,
+      noteLabel: options.noteLabel,
+      showFinger: options.showFinger,
+      showRhythm: options.showRhythm,
+      metrics,
+    });
+
+    const dx = slotLeft - inner.contentLeft;
+    const shift = (x: number) => x + dx;
+
+    if (slot === 0) {
+      staffTop = inner.staffTop;
+      staffBottom = inner.staffBottom;
+      rhythmY = inner.rhythmY;
+      progressY = inner.progressY;
+      stringYs = inner.stringYs;
+      stringCount = inner.stringCount;
+      beatSec = inner.beatSec;
+    }
+
+    for (const note of inner.notes) {
+      notes.push({
+        ...note,
+        x: shift(note.x),
+        fingerX: typeof note.fingerX === 'number' ? shift(note.fingerX) : note.fingerX,
+        techniqueX: typeof note.techniqueX === 'number' ? shift(note.techniqueX) : note.techniqueX,
+      });
+    }
+    for (const stem of inner.stems) stems.push({ ...stem, x: shift(stem.x) });
+    for (const beam of inner.beams) beams.push({ ...beam, x1: shift(beam.x1), x2: shift(beam.x2) });
+    for (const strum of inner.strums) strums.push({ ...strum, x: shift(strum.x) });
+    for (const gap of inner.lineGaps) lineGaps.push({ ...gap, x1: shift(gap.x1), x2: shift(gap.x2) });
+    for (const tick of inner.beatTicks) beatTicks.push({ ...tick, x: shift(tick.x) });
+
+    /**
+     * 文字按「小节槽位」重新定位：
+     * - 把位 / 「把位」小字 → 本小节**左上角**（第一顺位标注）
+     * - 速度标记 → 谱行最左侧
+     * - 小节号 → 本小节**右上角**（与把位对角分开）
+     */
+    for (const text of inner.texts) {
+      if (text.role === 'position') {
+        texts.push({ ...text, x: slotLeft + 2 });
+      } else if (text.role === 'positionLabel') {
+        const positionText = inner.texts.find((t) => t.role === 'position');
+        const offset = positionText ? positionText.text.length * positionText.size * 0.62 + 4 : 0;
+        texts.push({ ...text, x: slotLeft + 2 + offset });
+      } else if (text.role === 'measureNumber') {
+        texts.push({ ...text, x: slotRight - 2 - text.text.length * text.size * 0.62 });
+      } else if (text.role === 'tempo' || text.role === 'clef' || text.role.startsWith('time')) {
+        texts.push(text);
+      } else {
+        texts.push({ ...text, x: shift(text.x) });
+      }
+    }
+
+    layoutMeasures.push({
+      index: measure.index,
+      label: measure.label,
+      contentLeft: inner.contentLeft + dx,
+      contentRight: inner.contentRight + dx,
+      timeToX: (offsetSec: number) => shift(inner.timeToX(offsetSec)),
+      duration,
+      position: measure.position,
+      chord: measure.chord,
+      noteCount: inner.notes.length,
+    });
+  });
+
+  const staffLeft = metrics.staffLeftX;
+  const lines: StandardTabSystemLayout['lines'] = Array.from({ length: stringCount }, (_, i) => ({
+    x1: staffLeft,
+    y1: stringYs[i],
+    x2: systemRight,
+    y2: stringYs[i],
+    width: i === stringCount - 1 ? 2 : 1,
+  }));
+
+  const barY1 = staffTop - 4;
+  const barY2 = staffBottom + 4;
+  const barlines: StandardTabSystemLayout['barlines'] = [];
+  for (let slot = 0; slot < count; slot += 1) {
+    const x = slot === count - 1 ? systemRight : systemLeft + (slot + 1) * slotWidth - MEASURE_GUTTER / 2;
+    /** 粗收尾线只给**本谱行的最后一个小节** */
+    const isFinalBar = options.isLastSystem && slot === count - 1;
+    barlines.push({ x1: x, y1: barY1, x2: x, y2: barY2, width: isFinalBar ? 3.5 : 1.3 });
+  }
+  if (options.isLastSystem) {
+    barlines.unshift({ x1: systemRight - 6, y1: barY1, x2: systemRight - 6, y2: barY2, width: 1 });
+  }
+
+  return {
+    metrics,
+    stringCount,
+    stringYs,
+    staffTop,
+    staffBottom,
+    rhythmY,
+    progressY,
+    lines,
+    barlines,
+    beatTicks,
+    texts,
+    notes,
+    strums,
+    beams,
+    stems,
+    lineGaps,
+    measures: layoutMeasures,
     beatSec,
   };
 }

@@ -131,6 +131,16 @@ export interface LessonStep {
     drillMin: number; // e.g. 4m
     songMin: number; // e.g. 3m
   };
+  /**
+   * 自定义时间切片模块（可选）。
+   *
+   * 为什么不直接用 `timeAllocation`？—— 它的 5 个字段（tuning/video/quiz/drill/song）
+   * 是**教学法固定维度**，被 C 端与卡点引擎直接消费，不能随便加字段；
+   * 而教研偶尔需要额外模块（如「节奏跟拍」「视奏」）。两者并存：
+   * `timeAllocation` 永远是这 5 项的分钟数，`timeModules` 存在时用于**覆盖展示名称/顺序/颜色**
+   * 以及承载额外模块（额外模块的分钟数只在这里维护，不计入黄金 20 分钟校验）。
+   */
+  timeModules?: TimeModule[];
   videoData: {
     videoId: string;
     title: string;
@@ -140,12 +150,18 @@ export interface LessonStep {
     transcodeStatus: 'READY' | 'PROCESSING' | 'FAILED';
     keyPoints: VideoKeyPoint[];
   };
+  /** 关联的教学视频（多对多）；为空时回退到 `videoData` 的那一个 */
+  videoIds?: string[];
+  /** 关联的和弦练习组（多对多，提供和弦练习） */
+  chordGroupIds?: string[];
   trainerData: {
     chordPairs: ChordPairConfig[];
     toleranceCents: number; // ±15 cents
     initialBpm: number;
     targetBpm: number;
     noiseGateDb: number;
+    /** 练习阶段列表（每个和弦组合可配置多阶段）；为空时回退 `chordPairs[0]` */
+    stages?: ChordDrillStage[];
   };
   songBinding: {
     songId: string;
@@ -154,6 +170,23 @@ export interface LessonStep {
     tabSyncId: string;
     originalArtist?: string;
   };
+}
+
+/** 时间切片模块（用于课时的可视化分配；内置 5 个模块的元信息在这里统一） */
+export interface TimeModule {
+  /** 内置模块 = tuningMin/videoMin/quizMin/drillMin/songMin；自定义模块 = `custom-*` */
+  key: string;
+  name: string;
+  minutes: number;
+  /** 标配分钟数（界面提示用） */
+  defaultMin: number;
+  /** Tailwind 背景色（进度条分段） */
+  color: string;
+  /** Tailwind 文字色（卡片标题） */
+  textCol: string;
+  desc: string;
+  /** true = 教研自定义模块，不计入黄金 20 分钟校验 */
+  custom?: boolean;
 }
 
 export interface Chapter {
@@ -173,12 +206,71 @@ export interface Course {
   chapters: Chapter[];
 }
 
+/** 成长阶段编码：放开到 L9（新增阶段时自动取下一个未占用编码） */
+export type StageCode = 'L1' | 'L2' | 'L3' | 'L4' | 'L5' | 'L6' | 'L7' | 'L8' | 'L9';
+
 export interface Stage {
   id: string;
-  stageCode: 'L1' | 'L2' | 'L3' | 'L4' | 'L5';
+  stageCode: StageCode;
   name: string;
   focus: string;
+  /** 排序（缺省按数组顺序） */
+  order?: number;
   courses: Course[];
+}
+
+/** 教学视频（视频库实体，可被多个课时复用） */
+export interface TeachingVideo {
+  id: string;
+  title: string;
+  instructor: string;
+  /** 视频源地址（CDN / OSS）；管理员上传后由后端转码写入 */
+  videoUrl: string;
+  coverUrl?: string;
+  durationSec: number;
+  resolution: '1080P' | '4K' | '720P';
+  transcodeStatus: 'READY' | 'PROCESSING' | 'FAILED';
+  status: 'draft' | 'ready' | 'archived';
+  tags: string[];
+  keyPoints: VideoKeyPoint[];
+  /** 首次由哪个课时创建（溯源用，不参与引用计数） */
+  sourceLessonId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** 和弦练习组：一组和弦 + 一组练习阶段，可被多个课时复用 */
+export interface ChordGroup {
+  id: string;
+  name: string;
+  description: string;
+  /** `ChordConfig` 的 key（如 `C` / `Am`） */
+  chordKeys: string[];
+  difficulty: '入门' | '进阶' | '挑战';
+  /** 组内默认练习阶段（组内所有和弦对共用） */
+  stages: ChordDrillStage[];
+  /**
+   * 对某些和弦对的单独覆盖：key = `${fromChord}|${toChord}`。
+   * 命中时该和弦对用这里的阶段，其余用 `stages`。
+   */
+  pairStages?: Record<string, ChordDrillStage[]>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** 练习阶段（BPM 阶梯的一段）：一个和弦组合可由多个阶段递进 */
+export interface ChordDrillStage {
+  id: string;
+  name: string;
+  /** `ChordConfig` 的 key */
+  fromChord: string;
+  toChord: string;
+  startBpm: number;
+  targetBpm: number;
+  stepBpm: number;
+  passBars: number;
+  toleranceCents: number;
+  order: number;
 }
 
 export interface MusicVersion {
@@ -206,6 +298,10 @@ export interface MusicTrack {
   createdAt: string;
   updatedAt: string;
   cEndPlayCount?: number; // C端学员学习播放人次
+  /** 来源转录项目 id（「编辑六线谱」按钮回到校正工作台时用） */
+  sourceProjectId?: string;
+  /** 发布后的后端 Score id（音乐库与 C 端曲目对应用） */
+  backendScoreId?: string;
 }
 
 export interface HardChordMetric {

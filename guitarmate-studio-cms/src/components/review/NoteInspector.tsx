@@ -104,10 +104,12 @@ export const NoteInspector: React.FC<NoteInspectorProps> = ({
           置信度低于 {(LOW_CONFIDENCE_THRESHOLD * 100).toFixed(0)}% 的音符会标红，建议逐一确认后再发布。
         </p>
         <div className={`mt-3 rounded-lg border px-2.5 py-2 text-[10px] leading-relaxed ${darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'}`}>
-          <div className="text-slate-400 font-semibold mb-1">关于手指标注</div>
-          六线谱上的品位数只告诉你看第几品，<span className="text-amber-400">用哪根手指按</span>是另一回事：
+          <div className="text-slate-400 font-semibold mb-1">关于把位与手指标注</div>
+          谱面<span className="text-slate-300">优先标注把位</span>：每小节左上角的「N 把位」= 食指按第 N 品，弦线上的数字是<span className="text-slate-300">品位</span>；
+          把位确定后，用哪根手指按是唯一解（<span className="text-amber-400">finger = 品位 − 把位 + 1</span>）。
           <div className="mt-1 font-mono">1 = 食指 · 2 = 中指 · 3 = 无名指 · 4 = 小指 · ○ = 空弦</div>
-          音频转录与 ASCII tab 本身不带指法，由后端按「最低把位优先 + 同帧整体出手型」推定，可以在下方逐音符修正。
+          音频转录与 ASCII tab 本身不带指法，由后端按「最低把位优先 + 同帧整体出手型」推定，可以在下方逐音符修正；
+          需要同时看手指号时，点上方「弦线数字」按钮右侧的开关即可在弦线上直接显示手指号。
         </div>
       </div>
     );

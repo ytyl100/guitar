@@ -63,6 +63,8 @@ export interface ReviewMeasure {
   beats: number;
   /** 本小节把位：P = 第 P 把位（食指按第 P 品）；undefined = 未指定 */
   position?: number;
+  /** 推荐和弦（本小节的编配提示）：显式和弦标记优先，其次取音符上的 chordName */
+  chord?: string;
   notes: ReviewNote[];
   /** 和弦标记（谱面上方和弦名） */
   chords: ReviewChord[];
@@ -224,6 +226,12 @@ export function tabProjectToReviewMeasures(tabProject: ApiTabProject | null): Re
       position: Number.isFinite(Number((measure as any).position))
         ? Number((measure as any).position)
         : undefined,
+      /**
+       * 推荐和弦：优先用显式 `<harmony>` / 和弦表给出的第一个和弦；
+       * 没有显式和弦标记时，退回音符自带的 `chordName`（转录/导入时已推定）。
+       * 刻意**不去数音反推**——那是导入流水线 `deriveChords()` 的职责。
+       */
+      chord: chords[0]?.name || notes.find((n) => !!n.chordName)?.chordName || undefined,
       notes,
       chords,
       lowConfidenceCount: notes.filter((n) => n.confidence < LOW_CONFIDENCE_THRESHOLD).length,
@@ -273,10 +281,80 @@ export function applyNoteEdit(
 }
 
 /**
+ * 在某小节**新增一个音符**（需求 2.2：校正时不只是删改，还要能加）。
+ *
+ * - `midi` 按 `空弦 + 品位 + 变调夹` 重算 —— 与 `applyNoteEdit` 同一口径，
+ *   不重算会让 C 端音高与谱面对不上；
+ * - 插入后**按 `offsetSec` 重排**：契约要求 `notes` 按 relativeTime 升序，
+ *   发布时后端依赖这个顺序生成 `relativeTime`；
+ * - 人工录入的音符 `confidence = 1`（不需要复核）。
+ */
+export function applyAddNote(
+  tabProject: ApiTabProject,
+  measureIndex: number,
+  spec: {
+    string: number;
+    fret: number;
+    /** 相对小节起点的秒数 */
+    offsetSec: number;
+    durationSec: number;
+    technique?: string;
+    position?: number;
+    finger?: number;
+  },
+): ApiTabProject {
+  const tuning = tabProject.tuning || [];
+  const capo = tabProject.capo || 0;
+  const string = Math.max(1, Math.min(tuning.length || 6, Math.round(spec.string)));
+  const fret = Math.round(spec.fret);
+  const offsetSec = Math.max(0, Number(spec.offsetSec) || 0);
+  const durationSec = Math.max(0.02, Number(spec.durationSec) || 0.25);
+  const beatsPerMeasure = Number((tabProject.tracks?.[0]?.measures?.[measureIndex] as any)?.beats) || 4;
+  const measureDuration = (() => {
+    const m = tabProject.tracks?.[0]?.measures?.[measureIndex] as any;
+    const start = Number(m?.startTime) || 0;
+    const end = Number(m?.endTime) || 0;
+    return end > start ? end - start : 0;
+  })();
+
+  const newNote = {
+    id: `manual_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`,
+    string,
+    fret,
+    midi: Number(tuning[string - 1] ?? 0) + fret + capo,
+    offsetSec: Number(offsetSec.toFixed(4)),
+    beat: measureDuration > 0 ? Number((offsetSec / (measureDuration / beatsPerMeasure)).toFixed(4)) : 0,
+    durationSec: Number(durationSec.toFixed(4)),
+    technique: spec.technique || 'normal',
+    finger: typeof spec.finger === 'number' ? spec.finger : undefined,
+    position: typeof spec.position === 'number' ? spec.position : undefined,
+    confidence: 1,
+    velocity: 90,
+  };
+
+  return {
+    ...tabProject,
+    tracks: tabProject.tracks.map((track, trackIndex) =>
+      trackIndex !== 0
+        ? track
+        : {
+            ...track,
+            measures: track.measures.map((measure, index) => {
+              if (index !== measureIndex) return measure;
+              const notes = [...measure.notes, newNote as any].sort(
+                (a: any, b: any) => Number(a.offsetSec || 0) - Number(b.offsetSec || 0),
+              );
+              return { ...measure, notes };
+            }),
+          },
+    ),
+  };
+}
+
+/**
  * 修改小节把位（把位是**小节级**属性：一个小节内换把意味着手型整体平移）。
  * 传入 `undefined` 表示清除标记。
- */
-export function applyMeasurePosition(
+ */export function applyMeasurePosition(
   tabProject: ApiTabProject,
   measureIndex: number,
   position: number | undefined,

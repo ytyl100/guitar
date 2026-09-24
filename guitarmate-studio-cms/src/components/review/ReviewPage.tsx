@@ -7,10 +7,13 @@ import {
   Cloud,
   Cpu,
   Download,
+  Eye,
   FileJson,
   Loader2,
   Music2,
+  Pause,
   Play,
+  PlusCircle,
   RefreshCw,
   RotateCcw,
   Save,
@@ -27,10 +30,20 @@ import {
   type ApiTranscriptionProjectSummary,
   type ApiTranscriptionPublishResult,
 } from '../../services/api';
-import { StandardTabRenderer } from './StandardTabRenderer';
+import { StandardTabSystemRenderer } from './StandardTabSystemRenderer';
 import { NoteInspector } from './NoteInspector';
+import { RevisionPanel, type PublishedRevision } from './RevisionPanel';
+import { TrackMixerPanel } from './TrackMixerPanel';
+import { useDraftHistory } from './useDraftHistory';
+import { practicePackageToTabProject, type PackageLike } from './revisionStore';
+import { NoteAddDialog, type NewNoteSpec } from '../studios/tablature/NoteAddDialog';
+import { useMultiTrackPlayer, type MultiTrackSource } from '../../hooks/useMultiTrackPlayer';
+import { useTabAutoScroll } from '../../hooks/useTabAutoScroll';
+import { audioEngine } from '../../utils/audioEngine';
+import { stemLabel } from '../../utils/instrumentLabels';
 import {
   DEFAULT_REVIEW_META,
+  applyAddNote,
   applyMeasurePosition,
   applyMeasureRefinger,
   applyNoteEdit,
@@ -67,12 +80,15 @@ export interface ReviewPageProps {
   initialProjectId?: string;
   /** 发布并镜像到既有发布链路后，可跳到「音频与六线谱对齐」继续精修 */
   onOpenInAudioStudio?: (scoreId: string) => void;
+  /** 点「预览」→ 打开该曲目的预览页（按小程序渲染 + 音频对齐播放） */
+  onPreviewProject?: (projectId: string) => void;
 }
 
 export const ReviewPage: React.FC<ReviewPageProps> = ({
   darkMode,
   initialProjectId,
   onOpenInAudioStudio,
+  onPreviewProject,
 }) => {
   // ── 全局状态 ──
   const [capabilities, setCapabilities] = useState<ApiTranscriptionCapabilitiesResponse | null>(null);
@@ -83,19 +99,52 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const [busy, setBusy] = useState<string>('');
   const [message, setMessage] = useState<{ kind: 'info' | 'error' | 'success'; text: string } | null>(null);
 
-  // ── 复核草稿 ──
-  const [draft, setDraft] = useState<ApiTabProject | null>(null);
-  const [dirty, setDirty] = useState(false);
+  // ── 复核草稿 + 撤销历史（需求 2.3：回滚到之前的修改点）──
+  const {
+    present: draft,
+    dirty,
+    commit: commitDraft,
+    reset: loadDraft,
+    undo: undoDraft,
+    redo: redoDraft,
+    canUndo,
+    canRedo,
+    undoCount,
+    redoCount,
+    markClean: markDraftClean,
+  } = useDraftHistory<ApiTabProject>();
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [onlyLowConfidence, setOnlyLowConfidence] = useState(false);
   /** 检查器可折叠：窄窗口下可以把它收起来，把宽度全留给谱面 */
   const [showInspector, setShowInspector] = useState(true);
   /**
-   * 弦线上的数字：默认与学员端一致写**手指号**（品位由把位标记反推）；
-   * 复核纠正错品时切到 `'fret'` 看真实品位 + 手指上标。
+   * 弦线上的数字：默认 `'fret'`（**品位优先**）—— 六线谱的第一信息就是品位，
+   * 把位则由每小节左上角的「N 把位」给出（第一顺位标注）。
+   * `'finger'` 只在复核左手指法时切换。
    */
-  const [noteLabel, setNoteLabel] = useState<'finger' | 'fret'>('finger');
+  const [noteLabel, setNoteLabel] = useState<'finger' | 'fret'>('fret');
+  /**
+   * 每个**编辑段落**（谱行）放几个小节 —— 与市面练习谱一致：2-3 个小节一行。
+   * 选修正好覆盖「单小节精修 / 标准练习谱版式 / 紧凑版式」三种复核习惯。
+   */
+  const [perSystem, setPerSystem] = useState<1 | 2 | 3>(2);
   const [collapsedMeasures, setCollapsedMeasures] = useState<Set<number>>(new Set());
+
+  // ── 对照音频校正（需求 2.1 / 2.2）──
+  /** 源音频可访问 URL（原声全轨），分轨走 detail.tracks[].stemUrl */
+  const [sourceAudioUrl, setSourceAudioUrl] = useState<string>('');
+  /** 波形面板折叠（**默认折叠**：把纵向空间留给谱面，谱面自带进度条+播放头） */
+  const [mixerCollapsed, setMixerCollapsed] = useState(true);
+  /** 新增节点弹窗 */
+  const [isAddNoteOpen, setIsAddNoteOpen] = useState(false);
+  /** 波形 128 点能量包络（拿不到波形时为 []，不影响校正） */
+  const [waveformPeaks, setWaveformPeaks] = useState<number[]>([]);
+  /** 上一次录入的节点设置（连续录入时不用每次重选） */
+  const [lastNoteSpec, setLastNoteSpec] = useState<Partial<NewNoteSpec>>({});
+  /** 发布历史（回滚到任意一次发布） */
+  const [publishedRevisions, setPublishedRevisions] = useState<PublishedRevision[]>([]);
+  /** 第 ① 步导入区的拖拽高亮 */
+  const [dragActive, setDragActive] = useState(false);
 
   // ── 新建项目表单 ──
   const [newTitle, setNewTitle] = useState('');
@@ -151,8 +200,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         const res = await api.getTranscriptionProject(projectId);
         setDetail(res.project);
         if (!keepDraft) {
-          setDraft(res.project.tabProject);
-          setDirty(false);
+          loadDraft(res.project.tabProject);
           setSelectedNoteId(null);
         }
         return res.project;
@@ -181,8 +229,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     const timer = setInterval(async () => {
       const next = await loadDetail(selectedId, true);
       if (next && !runningStatuses.includes(next.status)) {
-        setDraft(next.tabProject);
-        setDirty(false);
+        loadDraft(next.tabProject);
         loadProjects();
       }
     }, 2000);
@@ -204,6 +251,20 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     [measures, onlyLowConfidence],
   );
 
+  /**
+   * 「编辑段落」（谱行）= 每行 1-3 个小节。
+   * 谱面按段落整行排版（与市面练习谱一致），复核时一眼就能看到
+   * 「这 2-3 小节的把位 / 推荐和弦 / 节奏型」是否连贯。
+   */
+  const systems = useMemo(() => {
+    const size = Math.max(1, Math.min(3, perSystem));
+    const out: ReviewMeasure[][] = [];
+    for (let i = 0; i < visibleMeasures.length; i += size) {
+      out.push(visibleMeasures.slice(i, i + size));
+    }
+    return out;
+  }, [visibleMeasures, perSystem]);
+
   /** 全曲扁平音符顺序（用于检查器的上一个/下一个） */
   const flatNotes: ReviewNote[] = useMemo(() => measures.flatMap((m) => m.notes), [measures]);
   const selectedIndex = useMemo(
@@ -221,6 +282,130 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const simulated = useMemo(() => isSimulatedTabProject(draft), [draft]);
 
   // ═══════════════════════════════════════════
+  // 对照音频：多音轨播放 + 谱面跟随（需求 2.1 / 2.2）
+  // ═══════════════════════════════════════════
+
+  /**
+   * 音轨清单 = 原声（全轨）+ 各条分轨。
+   *
+   * 降级约定（与产品确认过）：Demucs 不可用时后端只会产出 1 条 `guitar` 分轨，
+   * 此时清单自然是「原声（全轨）/ 吉他分轨」两条 —— 也就是**原声 / 伴奏**双声道，
+   * 组件层不需要特判。
+   */
+  const playerSources: MultiTrackSource[] = useMemo(() => {
+    const list: MultiTrackSource[] = [];
+    if (sourceAudioUrl) {
+      list.push({ id: 'original', label: '原声（全轨）', url: sourceAudioUrl, role: 'original' });
+    }
+    for (const track of detail?.tracks || []) {
+      if (!track.stemUrl) continue;
+      if (track.stemUrl === sourceAudioUrl) continue;
+      list.push({
+        id: `stem:${track.instrument}`,
+        label: stemLabel(track.instrument),
+        url: track.stemUrl,
+        role: 'stem',
+        instrument: track.instrument,
+      });
+    }
+    return list;
+  }, [detail?.tracks, sourceAudioUrl]);
+
+  const player = useMultiTrackPlayer(playerSources, { timeUpdateIntervalMs: 50 });
+
+  /** 播放头落在哪个小节（-1 = 不在任何小节内） */
+  const [activeMeasureIndex, setActiveMeasureIndex] = useState(-1);
+  useEffect(() => {
+    const t = player.currentTimeSec;
+    const idx = measures.findIndex((m) => t >= m.startTime - 1e-6 && t < m.endTime + 1e-6);
+    setActiveMeasureIndex((prev) => (prev === idx ? prev : idx));
+  }, [player.currentTimeSec, measures]);
+
+  /** 谱面随音频滚动：把当前小节滚到列表中间 */
+  const { containerRef: measureListRef, registerItem: registerMeasureRow } = useTabAutoScroll(
+    activeMeasureIndex,
+    player.isPlaying,
+    { smooth: true },
+  );
+
+  /** 波形峰值：抓一次源音频算 128 点包络；跨域/失败则退化成"只有播放头与刻度" */
+  const peaksCacheRef = useRef<Map<string, number[]>>(new Map());
+  useEffect(() => {
+    if (!sourceAudioUrl) return;
+    const cached = peaksCacheRef.current.get(sourceAudioUrl);
+    if (cached) {
+      setWaveformPeaks(cached);
+      return;
+    }
+    let cancelled = false;
+    setWaveformPeaks([]);
+    (async () => {
+      try {
+        const res = await fetch(sourceAudioUrl);
+        if (!res.ok) throw new Error(String(res.status));
+        const buffer = await res.arrayBuffer();
+        const { peaks } = await audioEngine.extractWaveformPeaks(buffer, 128);
+        if (cancelled) return;
+        peaksCacheRef.current.set(sourceAudioUrl, peaks);
+        setWaveformPeaks(peaks);
+      } catch {
+        /* 拿不到波形不影响校正：仍可拖拽/点击时间轴 */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sourceAudioUrl]);
+
+  /** 源音频 URL + 发布历史（切项目时刷新） */
+  useEffect(() => {
+    if (!selectedId) {
+      setSourceAudioUrl('');
+      setPublishedRevisions([]);
+      return;
+    }
+    let cancelled = false;
+    api
+      .getTranscriptionAudioUrl(selectedId)
+      .then((res) => {
+        if (!cancelled) setSourceAudioUrl(res.audioUrl || res.url || '');
+      })
+      .catch(() => {
+        if (!cancelled) setSourceAudioUrl('');
+      });
+    api
+      .getTranscriptionRevisions(selectedId)
+      .then((res) => {
+        if (!cancelled) setPublishedRevisions(res.revisions || []);
+      })
+      .catch(() => {
+        if (!cancelled) setPublishedRevisions([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedId, detail?.updatedAt]);
+
+  /** 切换项目时把播放器归零（避免上一首的播放头/音轨残留） */
+  useEffect(() => {
+    player.reset();
+    setActiveMeasureIndex(-1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
+
+  const activeMeasure = activeMeasureIndex >= 0 ? measures[activeMeasureIndex] : undefined;
+  const waveformMarkers = useMemo(
+    () =>
+      measures.map((m, i) => ({
+        time: m.startTime,
+        label: `M${m.displayIndex}`,
+        active: i === activeMeasureIndex,
+        title: `第 ${m.displayIndex} 小节 · ${m.startTime.toFixed(2)}s`,
+      })),
+    [measures, activeMeasureIndex],
+  );
+
+  // ═══════════════════════════════════════════
   // 交互
   // ═══════════════════════════════════════════
 
@@ -228,22 +413,19 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     patch: Partial<Pick<ReviewNote, 'string' | 'fret' | 'durationSec' | 'technique' | 'finger'>>,
   ) => {
     if (!draft || !selectedNote) return;
-    setDraft(applyNoteEdit(draft, selectedNote.measureIndex, selectedNote.id, patch));
-    setDirty(true);
+    commitDraft(applyNoteEdit(draft, selectedNote.measureIndex, selectedNote.id, patch));
   };
 
   /** 改小节把位（小节级属性：一个小节内换把意味着手型整体平移） */
   const patchMeasurePosition = (measureIndex: number, position: number | undefined) => {
     if (!draft) return;
-    setDraft(applyMeasurePosition(draft, measureIndex, position));
-    setDirty(true);
+    commitDraft(applyMeasurePosition(draft, measureIndex, position));
   };
 
   /** 按当前把位重算本小节所有音符的手指 */
   const refingerMeasureAt = (measureIndex: number) => {
     if (!draft) return;
-    setDraft(applyMeasureRefinger(draft, measureIndex));
-    setDirty(true);
+    commitDraft(applyMeasureRefinger(draft, measureIndex));
   };
 
   const deleteSelectedNote = () => {
@@ -264,10 +446,64 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
             },
       ),
     };
-    setDraft(next);
-    setDirty(true);
+    commitDraft(next);
     setSelectedNoteId(null);
   };
+
+  /**
+   * 在**播放头**位置新增一个节点（需求 2.2：校正不只是删改，还要能加）。
+   * 目标小节优先取播放头所在小节，其次取当前选中音符所在小节。
+   */
+  const handleAddNote = (spec: NewNoteSpec) => {
+    if (!draft) return;
+    const measureIndex = activeMeasureIndex >= 0 ? activeMeasureIndex : (selectedNote?.measureIndex ?? 0);
+    const target = measures[measureIndex];
+    if (!target) {
+      notify('error', '没有可写入的小节，请先把播放头移到谱面范围内');
+      return;
+    }
+    const relativeSec = Math.max(0, Math.min(target.duration, player.currentTimeSec - target.startTime));
+    commitDraft(applyAddNote(draft, measureIndex, { ...spec, offsetSec: relativeSec }));
+    setLastNoteSpec(spec);
+    setIsAddNoteOpen(false);
+    notify('success', `已在第 ${target.displayIndex} 小节 +${relativeSec.toFixed(2)}s 新增 ${spec.string} 弦 ${spec.fret} 品`);
+  };
+
+  /** 恢复本地存点到草稿（只改内存，仍需「保存复核」才落库；可再撤销） */
+  const handleRestoreSnapshot = (project: ApiTabProject, label: string) => {
+    commitDraft(project);
+    notify('info', `已恢复到存点「${label}」—— 确认后点「保存复核」写回后端`);
+  };
+
+  /** 回滚到某个已发布版本：拉发布快照 → 反解成 TabProject 草稿 */
+  const handleRollbackToRevision = async (revision: number) => {
+    if (!selectedId || !draft) return;
+    setBusy(`rollback-${revision}`);
+    try {
+      const res = await api.getTranscriptionPackage(selectedId, revision);
+      commitDraft(practicePackageToTabProject(res.package as PackageLike, draft));
+      notify('info', `已回滚到发布快照 r${revision} —— 确认无误后点「保存复核」`);
+    } catch (err) {
+      notify('error', `回滚失败：${describeError(err)}`);
+    } finally {
+      setBusy('');
+    }
+  };
+
+  /** Ctrl+Z / Ctrl+Shift+Z 撤销重做（仅在编辑区、未聚焦输入框时生效） */
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z') return;
+      const el = e.target as HTMLElement | null;
+      const tag = el?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || el?.isContentEditable) return;
+      e.preventDefault();
+      if (e.shiftKey) redoDraft();
+      else undoDraft();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [redoDraft, undoDraft]);
 
   const saveReview = async () => {
     if (!selectedId || !draft) return;
@@ -281,7 +517,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         tuning: draft.tuning,
         license: detail?.license || undefined,
       });
-      setDirty(false);
+      markDraftClean();
       notify('success', '复核结果已保存（发布时会使用这份数据，而不是模型原始输出）');
       await loadDetail(selectedId, true);
     } catch (err) {
@@ -405,7 +641,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
       await api.deleteTranscriptionProject(selectedId);
       setSelectedId('');
       setDetail(null);
-      setDraft(null);
+      loadDraft(null);
       notify('info', '项目已删除');
       await loadProjects();
     } catch (err) {
@@ -490,18 +726,23 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         )}
 
         {capabilities && (caps?.simulate ?? false) && (!caps?.demucs.available || !caps?.basicPitch.available) && (
-          <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
-            <div className="font-semibold mb-1">当前为「模拟转录」模式（Python 依赖不全）</div>
-            <div className="text-amber-200/80">
-              链路完全可用，但音符是按节拍网格生成的练习乐句，**不能当作真实转录结果上线**。
-              安装依赖后可获得真实转录：
+          /**
+           * 默认折叠：这条提示讲的是「本机依赖」，与当前曲目无关，
+           * 但展开时占 100+px，会把「波形 + 谱面」挤到看不全 —— 折成一行摘要。
+           */
+          <details className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
+            <summary className="cursor-pointer font-semibold select-none">
+              当前为「模拟转录」模式（Python 依赖不全）—— 展开查看安装命令
+            </summary>
+            <div className="mt-1 text-amber-200/80">
+              链路完全可用，但音符是按节拍网格生成的练习乐句，不能当作真实转录结果上线。安装依赖后可获得真实转录：
             </div>
             <ul className="mt-1 list-disc list-inside font-mono text-amber-200/80">
               {(capabilities.installHints || []).map((h) => (
                 <li key={h}>{h}</li>
               ))}
             </ul>
-          </div>
+          </details>
         )}
       </div>
 
@@ -604,8 +845,140 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         {/* ── 中：谱面复核 ── */}
         <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
           {!detail ? (
-            <div className="flex-1 flex items-center justify-center text-xs text-slate-500">
-              请选择左侧的一个转录项目（或新建）
+            /* ═══ 第 ① 步：导入音频（整条流水线的关键入口） ═══ */
+            <div className="flex-1 overflow-y-auto px-6 py-8">
+              <div className="mx-auto max-w-3xl space-y-5">
+                {/* 步骤导览 */}
+                <div className="flex items-center gap-2 flex-wrap text-[11px]">
+                  {[
+                    { n: '①', label: '导入音频' },
+                    { n: '②', label: '校正六线谱' },
+                    { n: '③', label: '预览跟弹' },
+                    { n: '④', label: '数据契约' },
+                    { n: '⑤', label: '发布到音乐库' },
+                  ].map((step, i) => (
+                    <React.Fragment key={step.n}>
+                      {i > 0 && <span className="text-slate-600">→</span>}
+                      <span
+                        className={`rounded-full border px-2.5 py-1 ${
+                          i === 0
+                            ? 'border-amber-500/50 bg-amber-500/15 text-amber-300 font-semibold'
+                            : 'border-slate-700 text-slate-500'
+                        }`}
+                      >
+                        {step.n} {step.label}
+                      </span>
+                    </React.Fragment>
+                  ))}
+                </div>
+
+                <div className={`rounded-2xl border p-6 ${surface}`}>
+                  <div className="flex items-center gap-2">
+                    <Upload size={16} className="text-amber-400" />
+                    <h3 className="text-sm font-semibold">上传音频文件，自动转成标准六线谱</h3>
+                  </div>
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    支持 MP3 / WAV / FLAC（≤24MB）。上传后自动跑 download → Demucs 分离 → 音高转录 → 转谱，
+                    产出可编辑的六线谱；也可以直接粘贴音频 URL（YouTube / B站 / 直链）。
+                  </p>
+
+                  {/* 拖拽区 */}
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragActive(true);
+                    }}
+                    onDragLeave={() => setDragActive(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setDragActive(false);
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) void handleUploadFile(file);
+                    }}
+                    className={`mt-4 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition ${
+                      dragActive
+                        ? 'border-amber-400 bg-amber-500/10'
+                        : darkMode
+                          ? 'border-slate-700 hover:border-slate-500'
+                          : 'border-slate-300 hover:border-slate-400'
+                    }`}
+                  >
+                    <Upload size={22} className="mx-auto text-amber-400" />
+                    <div className="mt-2 text-xs">把音频拖到这里，或</div>
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={busy === 'upload'}
+                      className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-amber-400 disabled:opacity-40"
+                    >
+                      {busy === 'upload' ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                      {busy === 'upload' ? '上传中…' : '选择音频文件'}
+                    </button>
+                  </div>
+
+                  {/* URL 导入 */}
+                  <div className="mt-4 flex items-center gap-2">
+                    <input
+                      value={newUrl}
+                      onChange={(e) => setNewUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void handleCreateFromUrl();
+                      }}
+                      placeholder="或粘贴音频 URL（yt-dlp：YouTube / B站 / 直链）"
+                      className={`flex-1 rounded-lg border px-3 py-2 text-xs ${field}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreateFromUrl}
+                      disabled={!newUrl.trim() || busy === 'url'}
+                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs disabled:opacity-40 ${field}`}
+                    >
+                      {busy === 'url' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
+                      下载并转录
+                    </button>
+                  </div>
+
+                  {/* 可选：曲目名 / BPM */}
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      placeholder="曲目名（可留空，默认用文件名）"
+                      className={`rounded-lg border px-3 py-2 text-xs ${field}`}
+                    />
+                    <input
+                      value={newBpm}
+                      onChange={(e) => setNewBpm(e.target.value)}
+                      placeholder="BPM（可空，自动估计）"
+                      className={`rounded-lg border px-3 py-2 text-xs ${field}`}
+                    />
+                  </div>
+                </div>
+
+                {/* 最近的转录项目 */}
+                {projects.length > 0 && (
+                  <div className={`rounded-2xl border p-4 ${surface}`}>
+                    <div className="text-xs font-semibold mb-2">或继续之前的项目</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {projects.slice(0, 6).map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setSelectedId(p.id)}
+                          className={`rounded-xl border px-3 py-2 text-left text-[11px] transition ${hoverRow} ${
+                            darkMode ? 'border-slate-800' : 'border-slate-200'
+                          }`}
+                        >
+                          <div className="truncate font-medium">{p.title}</div>
+                          <div className="mt-0.5 text-[10px] text-slate-500">
+                            {p.statusLabel} · {p.counts?.tracks ?? 0} 轨 · {p.durationSec ? `${p.durationSec.toFixed(0)}s` : '—'}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <>
@@ -672,6 +1045,24 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                     </button>
                     <button
                       type="button"
+                      onClick={() => setIsAddNoteOpen(true)}
+                      disabled={!draft}
+                      title="在播放头位置新增一个节点（弦 / 品位 / 时值 / 把位 / 技巧）"
+                      className="flex items-center gap-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 px-2.5 py-1.5 text-xs text-sky-300 hover:bg-sky-500/20 disabled:opacity-40"
+                    >
+                      <PlusCircle size={12} /> 新增节点
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => selectedId && onPreviewProject?.(selectedId)}
+                      disabled={!selectedId}
+                      title="按小程序渲染预览（带音频对齐播放）；发现问题可回到本页继续校正"
+                      className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs disabled:opacity-40 ${field}`}
+                    >
+                      <Eye size={12} /> 预览
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => runPublish(false)}
                       disabled={!draft || busy === 'publish'}
                       className="flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-amber-400 disabled:opacity-40"
@@ -715,16 +1106,38 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                   </label>
                   <button
                     type="button"
-                    onClick={() => setNoteLabel((v) => (v === 'finger' ? 'fret' : 'finger'))}
-                    title="谱面弦线上的数字：手指号（学员端样式）↔ 品位号 + 手指上标（复核纠错用）"
+                    onClick={() => setNoteLabel((v) => (v === 'fret' ? 'finger' : 'fret'))}
+                    title="谱面弦线上的数字：品位（默认，把位优先）↔ 手指号（复核左手指法用）"
                     className={`rounded-lg border px-2 py-1 transition ${
-                      noteLabel === 'finger'
+                      noteLabel === 'fret'
                         ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
                         : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
                     }`}
                   >
-                    {noteLabel === 'finger' ? '弦线数字：手指数' : '弦线数字：品位数'}
+                    {noteLabel === 'fret' ? '弦线数字：品位数' : '弦线数字：手指数'}
                   </button>
+                  <span className="inline-flex items-center gap-1">
+                    <span>每行小节数</span>
+                    {([1, 2, 3] as const).map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        onClick={() => setPerSystem(n)}
+                        title={
+                          n === 1
+                            ? '单小节一行（最宽的谱面，适合逐音精修）'
+                            : `${n} 小节一行（练习谱的「编辑段落」版式）`
+                        }
+                        className={`rounded-md border px-2 py-0.5 transition ${
+                          perSystem === n
+                            ? 'border-amber-500/50 bg-amber-500/15 text-amber-300'
+                            : 'border-slate-600/50 text-slate-400 hover:border-slate-500'
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </span>
                 </div>
 
                 {warnings.length > 0 && (
@@ -741,8 +1154,31 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                 )}
               </div>
 
+              {/* ② 对照音频：波形 + 播放 + 多音轨（需求 2.1） */}
+              <div className="shrink-0 px-5 pt-4">
+                <TrackMixerPanel
+                  isDark={darkMode}
+                  player={player}
+                  sources={playerSources}
+                  peaks={waveformPeaks}
+                  durationSec={detail.durationSec || player.durationSec}
+                  markers={waveformMarkers}
+                  onSeek={(sec) => player.seek(sec)}
+                  activeMeasureLabel={activeMeasure ? `第 ${activeMeasure.displayIndex} 小节` : undefined}
+                  hint={
+                    playerSources.length <= 1
+                      ? simulated
+                        ? '本机 Demucs 不可用，当前是「模拟转录」：只有原声 / 伴奏两路可听。谱面校正与发布链路不受影响。'
+                        : '该项目只有 1 条音轨，已降级为「原声」单路试听。'
+                      : undefined
+                  }
+                  collapsed={mixerCollapsed}
+                  onToggleCollapse={() => setMixerCollapsed((v) => !v)}
+                />
+              </div>
+
               {/* 小节列表 */}
-              <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+              <div ref={measureListRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
                 {!draft && (
                   <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-[11px] text-amber-200">
                     转录尚未产出 TabProject。请等待流水线跑完（状态变为「待人工复核」），
@@ -754,59 +1190,99 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                   <div className="text-xs text-slate-500">没有符合筛选条件的小节。</div>
                 )}
 
-                {visibleMeasures.map((measure) => {
-                  const collapsed = collapsedMeasures.has(measure.index);
+                {systems.map((group, systemIndex) => {
+                  const anchor = group[0];
+                  const collapsed = collapsedMeasures.has(anchor.index);
+                  const first = group[0];
+                  const last = group[group.length - 1];
+                  const isLastSystem =
+                    systemIndex === systems.length - 1 && last.index === measures[measures.length - 1]?.index;
+                  const lowCount = group.reduce((sum, m) => sum + m.lowConfidenceCount, 0);
+                  /** 当前播放位置落在这一行 → 高亮（谱面随音频滚动时的「你现在在这」） */
+                  const isActiveSystem =
+                    activeMeasureIndex >= first.index && activeMeasureIndex <= last.index;
                   return (
-                    <section key={measure.index} className={`rounded-2xl border overflow-hidden ${surface}`}>
+                    <section
+                      key={anchor.index}
+                      ref={(el) => registerMeasureRow(anchor.index, el)}
+                      className={`rounded-2xl border overflow-hidden transition-shadow ${surface} ${
+                        isActiveSystem ? 'ring-2 ring-emerald-500/50' : ''
+                      }`}
+                    >
                       <header className={`flex items-center justify-between px-4 py-2 ${subtle}`}>
                         <button
                           type="button"
-                          onClick={() => toggleMeasure(measure.index)}
+                          onClick={() => toggleMeasure(anchor.index)}
                           className="flex items-center gap-2 text-xs font-medium"
                         >
                           {collapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
-                          {measure.label}
+                          {group.length > 1
+                            ? `编辑段落 ${first.displayIndex}–${last.displayIndex}`
+                            : first.label}
                           <span className="text-[10px] text-slate-500 font-normal">
-                            {measure.startTime.toFixed(2)}s–{measure.endTime.toFixed(2)}s ·{' '}
-                            {(measure.duration).toFixed(2)}s · {measure.notes.length} 音符
+                            {first.startTime.toFixed(2)}s–{last.endTime.toFixed(2)}s ·{' '}
+                            {group.reduce((sum, m) => sum + m.duration, 0).toFixed(2)}s ·{' '}
+                            {group.reduce((sum, m) => sum + m.notes.length, 0)} 音符
                           </span>
-                          {typeof measure.position === 'number' && measure.position >= 1 && (
-                            <span
-                              className="ml-1 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300"
-                              title={positionLabel(measure.position)}
-                            >
-                              {measure.position} 把位
+                          {/* 推荐和弦 + 把位（每个小节一组，与谱面标注一一对应） */}
+                          {group.map((m) => (
+                            <span key={m.index} className="flex items-center gap-1">
+                              {m.chord && (
+                                <span
+                                  className="rounded border border-sky-500/40 bg-sky-500/10 px-1.5 py-0.5 text-[10px] text-sky-300"
+                                  title={`第 ${m.displayIndex} 小节推荐和弦`}
+                                >
+                                  {m.chord}
+                                </span>
+                              )}
+                              {typeof m.position === 'number' && m.position >= 1 && (
+                                <span
+                                  className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-300"
+                                  title={`第 ${m.displayIndex} 小节：${positionLabel(m.position)}`}
+                                >
+                                  {m.position} 把位
+                                </span>
+                              )}
                             </span>
-                          )}
+                          ))}
                         </button>
-                        {measure.lowConfidenceCount > 0 && (
-                          <span className="text-[10px] text-rose-400">
-                            {measure.lowConfidenceCount} 个待复核
-                          </span>
+                        {lowCount > 0 && (
+                          <span className="text-[10px] text-rose-400">{lowCount} 个待复核</span>
                         )}
                       </header>
 
                       {!collapsed && (
                         <div className="px-4 py-3">
-                          <StandardTabRenderer
-                            notes={measure.notes}
-                            chords={measure.chords}
-                            measureDuration={measure.duration}
+                          <StandardTabSystemRenderer
+                            measures={group.map((m) => ({
+                              index: m.displayIndex,
+                              label: m.label,
+                              /** 整曲时间轴起点 —— 播放头/谱内进度条靠它定位 */
+                              startTime: m.startTime,
+                              notes: m.notes,
+                              chords: m.chords,
+                              chord: m.chord,
+                              position: m.position,
+                              duration: m.duration,
+                            }))}
                             bpm={tabBpm}
                             timeSignature={tabTimeSignature}
                             tuning={tuning}
                             capo={tabCapo}
-                            position={measure.position}
+                            measureDuration={group[0].duration}
                             isDark={darkMode}
                             selectedNoteId={selectedNoteId}
                             onSelectNote={(id) => setSelectedNoteId(id)}
-                            showLegend={measure.index === visibleMeasures[0]?.index}
-                            /** 每条“谱线”的第一小节画 TAB 谱号 + 拍号；全曲第一小节加速度标记 */
-                            showClef={measure.index === 0}
-                            showTempo={measure.index === 0}
-                            isLastMeasure={measure.index === measures.length - 1}
-                            measureIndex={measure.displayIndex}
+                            showLegend={systemIndex === 0}
+                            /** 每条谱行都画 TAB 谱号 + 拍号；全曲第一条谱行加速度标记 */
+                            showClef
+                            showTempo={systemIndex === 0}
+                            isLastSystem={isLastSystem}
                             noteLabel={noteLabel}
+                            /** 复核时把手指上标也画出来（品位 + 手指一起看，改错更快） */
+                            showFinger={noteLabel === 'fret'}
+                            /** 播放行进条：谱内进度条 + 播放头 + 当前音符高亮 */
+                            playheadTimeSec={player.currentTimeSec}
                           />
                         </div>
                       )}
@@ -846,6 +1322,23 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
             hasPrev={selectedIndex > 0}
             hasNext={selectedIndex >= 0 && selectedIndex < flatNotes.length - 1}
             onClose={() => setSelectedNoteId(null)}
+          />
+
+          {/* 修订点：撤销 / 存点 / 回滚到已发布版本（需求 2.3） */}
+          <RevisionPanel
+            projectId={selectedId}
+            isDark={darkMode}
+            draft={draft}
+            canUndo={canUndo}
+            canRedo={canRedo}
+            undoCount={undoCount}
+            redoCount={redoCount}
+            onUndo={undoDraft}
+            onRedo={redoDraft}
+            onRestore={handleRestoreSnapshot}
+            onRollbackToRevision={handleRollbackToRevision}
+            publishedRevisions={publishedRevisions}
+            busy={busy}
           />
 
           {/* 流水线时间线 */}
@@ -934,6 +1427,27 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
           </div>
         </aside>
       </div>
+
+      {/* 新增节点对话框（需求 2.2）：时间取播放头，落在当前小节内 */}
+      <NoteAddDialog
+        isOpen={isAddNoteOpen}
+        onClose={() => setIsAddNoteOpen(false)}
+        onSubmit={handleAddNote}
+        isDark={darkMode}
+        atSec={player.currentTimeSec}
+        relativeSec={
+          activeMeasure
+            ? Math.max(0, Math.min(activeMeasure.duration, player.currentTimeSec - activeMeasure.startTime))
+            : 0
+        }
+        measureLabel={activeMeasure ? `第 ${activeMeasure.displayIndex} 小节` : undefined}
+        beatSec={60 / (tabBpm > 0 ? tabBpm : 90)}
+        tuning={tuning}
+        capo={tabCapo}
+        defaultPosition={activeMeasure?.position ?? 1}
+        occupiedStrings={activeMeasure?.notes.map((n) => n.string) ?? []}
+        lastUsed={lastNoteSpec}
+      />
     </div>
   );
 };

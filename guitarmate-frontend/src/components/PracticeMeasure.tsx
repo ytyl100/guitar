@@ -63,10 +63,10 @@ const STRING_LABELS: Record<number, string> = { 1: 'e', 2: 'B', 3: 'G', 4: 'D', 
  * 1. **图片模式**：`trackData.tabImageUrl` 非空 → 渲染图片，节点/横按/和弦按
  *    `x`/`y` 归一化坐标绝对定位叠加，播放竖条固定 33.33%；
  * 2. **矢量模式**（默认）：调用 `buildStandardTabLayout()` 输出**标准六线谱**——
- *    TAB 谱号、拍号、速度标记、小节号、和弦名、节奏连接符、扫弦箭头、
- *    手指标注（1食指·2中指·3无名指·4小指·○空弦）、把位罗马数字、加粗低音弦线。
- *    与 CMS 复核工作台**同一套排版规则**（仅像素密度不同），因此「后台看到什么、
- *    学员就练到什么」。
+ *    TAB 谱号、拍号、速度标记、小节号、**把位（左上角阿拉伯数字，第一顺位标注）**、
+ *    推荐和弦 / 和弦名、**弦线数字 = 品位**、节奏线（符干 + 连接符）、扫弦箭头、
+ *    加粗低音弦线。与 CMS 复核工作台**同一套排版规则**（仅像素密度不同），
+ *    因此「后台看到什么、学员就练到什么」。
  */
 export const PracticeMeasure: React.FC<PracticeMeasureProps> = ({
   measure,
@@ -459,7 +459,16 @@ export const PracticeMeasure: React.FC<PracticeMeasureProps> = ({
             />
           ))}
 
-          {/* ⑤ 节奏连接符（8/16 分音符） */}
+          {/* ⑤ 节奏线：符干 + 符尾 + 连接符（8/16 分音符） */}
+          {layout.stems.map((stem, i) => (
+            <g key={`stem-${i}`} stroke={lineColor} strokeWidth={1.1} strokeLinecap="round">
+              <line x1={stem.x} y1={stem.y1} x2={stem.x} y2={stem.y2} />
+              {/* 同拍内落单的短音符 → 符尾 */}
+              {stem.levels >= 1 && !stem.beamId && (
+                <line x1={stem.x} y1={stem.y2} x2={stem.x + 3.5} y2={stem.y2 + 5} />
+              )}
+            </g>
+          ))}
           {layout.beams.map((beam, i) => (
             <line
               key={`beam-${i}`}
@@ -515,13 +524,8 @@ export const PracticeMeasure: React.FC<PracticeMeasureProps> = ({
             const source = notes.find((n) => n.id === laid.id);
             const isActive = activeNoteIds.has(laid.id);
             const isNext = nextNote?.id === laid.id;
-            /** 主数字就是手指号时用琥珀色（1-4）/ 灰色（○），与品位号区分 */
-            const digitColor =
-              laid.finger !== undefined && laid.fingerText === undefined && laid.text !== 'x'
-                ? laid.finger === 0
-                  ? dimColor
-                  : accent
-                : textColor;
+            /** 弦线上的数字 = **品位**（把位优先；把位由左上角「N 把位」给出） */
+            const digitColor = textColor;
             return (
               <g
                 key={laid.id}

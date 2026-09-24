@@ -1,4 +1,15 @@
-import { AudioTabSyncConfig, Stage, ChordConfig, HardChordMetric, LessonDropoffFunnelStep, MusicTrack } from '../types';
+import {
+  AudioTabSyncConfig,
+  Stage,
+  ChordConfig,
+  ChordDrillStage,
+  ChordGroup,
+  HardChordMetric,
+  LessonDropoffFunnelStep,
+  LessonStep,
+  MusicTrack,
+  TeachingVideo,
+} from '../types';
 
 // 128 acoustic waveform points for high-energy guitar strumming and solo peaks
 const generateDefaultWaveform = (): number[] => {
@@ -712,6 +723,126 @@ export const CHORD_LIBRARY: Record<string, ChordConfig> = {
     tips: '【防哑音要点】食指指尖顶在6弦下腹消音；食指第2品横按5弦至1弦，掌根微微内收保持手型紧凑。',
   },
 };
+
+// ─────────────────────────────────────────────
+// 教学视频库 / 和弦练习组（可复用资源，种子数据）
+// ─────────────────────────────────────────────
+
+/**
+ * 从现有课程体系里**抽取**视频库种子。
+ *
+ * 为什么不手写一份？—— 现有 5 个课时的 `videoData` 已经是真实内容，
+ * 再抄一遍必然与课时里的不一致（改了一处另一处忘）。这里按 `videoId` 去重生成，
+ * 保证「视频库 ↔ 课时」既有数据天然对齐；`keyPoints` 直接沿用该视频的打点。
+ */
+export function buildInitialVideoLibrary(stages: Stage[]): TeachingVideo[] {
+  const seen = new Map<string, TeachingVideo>();
+  const now = new Date().toISOString();
+
+  for (const stage of stages) {
+    for (const course of stage.courses) {
+      for (const chapter of course.chapters) {
+        for (const lesson of chapter.lessons) {
+          const video = lesson.videoData;
+          if (!video?.videoId || seen.has(video.videoId)) continue;
+          seen.set(video.videoId, {
+            id: video.videoId,
+            title: video.title,
+            instructor: video.instructor,
+            videoUrl: `https://cdn.guitarmate.dev/videos/${video.videoId}.mp4`,
+            durationSec: video.durationSec,
+            resolution: video.resolution,
+            transcodeStatus: video.transcodeStatus,
+            status: 'ready',
+            tags: [stage.stageCode, lesson.type],
+            keyPoints: video.keyPoints,
+            sourceLessonId: lesson.id,
+            createdAt: now,
+            updatedAt: now,
+          });
+        }
+      }
+    }
+  }
+  return [...seen.values()];
+}
+
+/** 一条练习阶段（组内默认阶段用） */
+function drillStage(
+  name: string,
+  fromChord: string,
+  toChord: string,
+  startBpm: number,
+  targetBpm: number,
+  order: number,
+  extra: Partial<ChordDrillStage> = {},
+): ChordDrillStage {
+  return {
+    id: `stage-${fromChord}-${toChord}-${order}`.replace(/\s+/g, ''),
+    name,
+    fromChord,
+    toChord,
+    startBpm,
+    targetBpm,
+    stepBpm: 5,
+    passBars: 4,
+    toleranceCents: 15,
+    order,
+    ...extra,
+  };
+}
+
+/**
+ * 种子和弦练习组：覆盖「入门四和弦」与「横按突破」两个最典型场景。
+ * 组内给一套**默认阶段**（慢速 → 加速 → 达标 BPM），并演示 `pairStages` 覆盖。
+ */
+export const INITIAL_CHORD_GROUPS: ChordGroup[] = [
+  {
+    id: 'group-open-4',
+    name: '万能和弦 C-G-Am-F',
+    description: '流行歌最常出现的四和弦循环，配套三阶段 BPM 阶梯（40→60→80）。',
+    chordKeys: ['C', 'G', 'Am', 'F'],
+    difficulty: '入门',
+    stages: [
+      drillStage('阶段 1 · 找准按弦', 'C', 'G', 40, 50, 1, { passBars: 4 }),
+      drillStage('阶段 2 · 提速换把', 'C', 'G', 50, 60, 2, { passBars: 8 }),
+      drillStage('阶段 3 · 达标跟拍', 'C', 'G', 60, 80, 3, { passBars: 8, toleranceCents: 12 }),
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'group-barre',
+    name: '横按突破 F-Bm',
+    description: '大横按专项：先解决发声纯净度，再谈速度；容差从 20 音分逐步收紧到 15。',
+    chordKeys: ['F', 'Bm'],
+    difficulty: '挑战',
+    stages: [
+      drillStage('阶段 1 · 单次发声达标', 'F', 'Bm', 30, 40, 1, { passBars: 2, toleranceCents: 20 }),
+      drillStage('阶段 2 · 连续四小节', 'F', 'Bm', 40, 55, 2, { passBars: 4, toleranceCents: 18 }),
+      drillStage('阶段 3 · 与原曲同速', 'F', 'Bm', 55, 75, 3, { passBars: 8 }),
+    ],
+    /** 演示「对某对和弦单独覆盖」：Bm→F 比 F→Bm 更难，单独放慢 */
+    pairStages: {
+      'Bm|F': [
+        drillStage('阶段 1 · 反向换把降速', 'Bm', 'F', 25, 35, 1, { passBars: 2, toleranceCents: 22 }),
+        drillStage('阶段 2 · 反向提速', 'Bm', 'F', 35, 50, 2, { passBars: 4, toleranceCents: 20 }),
+      ],
+    },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+/** 把「没有挂任何和弦组/视频」的课时补上默认关联（只在首次生成时用） */
+export function withDerivedLessonLinks(lesson: LessonStep, videoLibrary: TeachingVideo[]): LessonStep {
+  const videoIds = lesson.videoIds?.length
+    ? lesson.videoIds
+    : lesson.videoData?.videoId && videoLibrary.some((v) => v.id === lesson.videoData.videoId)
+      ? [lesson.videoData.videoId]
+      : undefined;
+  return videoIds ? { ...lesson, videoIds } : lesson;
+}
 
 // Top Chords Barrier Leaderboard for Learning Analytics
 export const HARD_CHORDS_METRICS: HardChordMetric[] = [

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "verify:tab-layout": "tsx scripts/verify-tab-layout.ts"
+    "verify:tab-layout": "tsx scripts/verify-tab-layout.ts",
+    "verify:curriculum": "tsx scripts/verify-curriculum-ops.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

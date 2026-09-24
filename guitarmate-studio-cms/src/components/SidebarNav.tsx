@@ -15,12 +15,15 @@ import {
   Keyboard,
   FileInput,
   Waves,
+  Hand,
 } from 'lucide-react';
 
 export type StudioTab =
   | 'music-library'
   | 'audio-tab-sync'
   | 'tab-import'
+  | 'tab-layout-preview'
+  | 'song-preview'
   | 'transcription-review'
   | 'curriculum'
   | 'video-cms'
@@ -45,40 +48,49 @@ export const SidebarNav: React.FC<SidebarNavProps> = ({
 }) => {
   const navItems = [
     {
+      id: 'transcription-review' as StudioTab,
+      name: '① 音频导入与六线谱校正',
+      enName: 'Audio Import & Tab Correction',
+      badge: '主入口',
+      badgeColor: 'bg-violet-500/20 text-violet-300 border-violet-500/40',
+      icon: Waves,
+      desc: '上传音频 / 音频 URL → AI 转录 → 多音轨对照校正 → 预览 → 发布',
+    },
+    {
       id: 'music-library' as StudioTab,
       name: '音乐库工程列表',
       enName: 'Music Library CMS',
-      badge: '默认首页',
+      badge: '发布归档',
       badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
       icon: Library,
-      desc: '全量曲目工程 / 草稿·存档·发布 / 多版本管理',
-    },
-    {
-      id: 'audio-tab-sync' as StudioTab,
-      name: '音频与六线谱对齐',
-      enName: 'Audio-Tab Sync Studio',
-      badge: '核心重器',
-      badgeColor: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-      icon: Music,
-      desc: '128点波形解析 / 60FPS挂载 / 空格跟敲',
+      desc: '已发布曲目 / 草稿·存档 / 点「编辑六线谱」回到校正工作台',
     },
     {
       id: 'tab-import' as StudioTab,
-      name: '六线谱导入工作台',
-      enName: 'Tab Import Studio',
-      badge: '外部谱源',
+      name: '④ 数据契约核准与发布',
+      enName: 'Tab Import & Contract',
+      badge: '统一 JSON',
       badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
       icon: FileInput,
-      desc: 'ASCII/MusicXML/GPX/和弦表 → 统一 TabProject',
+      desc: '承接转录项目 / ASCII·MusicXML·GPX 导入 → 校对统一 TabProject → 发布',
     },
     {
-      id: 'transcription-review' as StudioTab,
-      name: '音频转录复核工作台',
-      enName: 'Transcription Review',
-      badge: 'AI 转录',
-      badgeColor: 'bg-violet-500/20 text-violet-400 border-violet-500/30',
-      icon: Waves,
-      desc: '音频/URL → Demucs·Basic Pitch·Tayuya → 标准六线谱逐音符复核',
+      id: 'tab-layout-preview' as StudioTab,
+      name: '六线谱排版规范自检',
+      enName: 'Tab Layout Preview',
+      badge: '排版基线',
+      badgeColor: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+      icon: Hand,
+      desc: '卡农样例（无音频）：把位 / 推荐和弦 / 节奏线排版基线。曲目预览请从校正工作台点「预览」',
+    },
+    {
+      id: 'audio-tab-sync' as StudioTab,
+      name: '音频与六线谱对齐（兼容）',
+      enName: 'Audio-Tab Sync Studio',
+      badge: '高级',
+      badgeColor: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+      icon: Music,
+      desc: '仅用于**已发布**曲目的毫秒级音频切片对齐（回流链路）；新建曲目请走 ①',
     },
     {
       id: 'curriculum' as StudioTab,
