@@ -12,19 +12,24 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  // 跨域支持 (支持小程序与前端 CMS 联调)
+  //
+  // ⚠️ 必须在 `useStaticAssets` **之前**注册：CORS 本质是 express 中间件，
+  // 静态资源如果先挂载，请求根本不会再经过 CORS 中间件 → `/uploads/**` 缺
+  // `Access-Control-Allow-Origin`，CMS 里 fetch 这些音频（波形提取）会被浏览器拦截，
+  // 而 `<audio src>` 播放却正常 —— 症状很隐蔽。
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
+
   // 确保 uploads 目录存在并开放静态访问
   const uploadsDir = join(process.cwd(), 'uploads');
   if (!existsSync(uploadsDir)) {
     mkdirSync(uploadsDir, { recursive: true });
   }
   app.useStaticAssets(uploadsDir, { prefix: '/uploads/' });
-
-  // 跨域支持 (支持小程序与前端 CMS 联调)
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-  });
 
   // 全局参数校验与类型自动转换
   app.useGlobalPipes(

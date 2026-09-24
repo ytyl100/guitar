@@ -267,7 +267,7 @@ export const MusicLibraryStudio: React.FC<MusicLibraryStudioProps> = ({
             className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center gap-2 shadow-lg shadow-amber-500/20 transition-transform active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>新增曲目并进入六线谱对齐</span>
+            <span>新增曲目：导入音频并生成六线谱</span>
           </button>
         </div>
       </div>

@@ -3,18 +3,17 @@
  * ======================
  *
  * 排版是**纯函数**，所以能像业务逻辑一样被断言 —— 不必靠肉眼看截图。
- * 这里逐条校验参考谱面（6strings-1.jpg）要求的标准元素：
+ * 这里逐条校验参考谱面（卡农古典吉他谱 / 练习谱）要求的标准元素：
  *
  * ```
- *   ♪ = 90                                                     5   ← 小节号（右上角）
- *      C              G                       ← 和弦名（弦线上方）
- *   2  1───1───2───○──┬─2───1───4──           ← 弦线数字 = 手指号（1食指…4小指·○空弦）
- *   把位┌─────────────┴────────│
- *   T│─1─1─2─○─┬─2─1─4─│                      ← TAB 谱号 / 加粗低音弦
- *   A│─────────┼───────│
- *   B│═════════╪═══════│
- *      │   │   │   │                            ← 拍点刻度
- *      ╞═══════╡                                ← 节奏连接符
+ *   ♪ = 84                                    12          13     ← 小节号（每小节右上角）
+ *      D                    A                                    ← 推荐和弦（每小节一个）
+ *   1 把位                5 把位                                  ← **把位 = 第一顺位标注**
+ *   T│─0──2──3──┬───5──7──7───│
+ *   A│───────────┼─────────────│
+ *   B│═══════════╪═════════════│                                ← 加粗低音弦
+ *      │   │   │   │  │   │   │   │
+ *      ╞════════╡   ╞════════╡                                 ← 节奏线（符干 + 连接符）
  * ```
  *
  * 运行：`npm run verify:tab-layout`
@@ -25,9 +24,16 @@ import {
   FINGER_MARKS,
   MINI_TAB_METRICS,
   buildStandardTabLayout,
+  buildStandardTabSystemLayout,
   durationToBeamLevels,
   type StandardTabNoteInput,
 } from '../src/components/review/standardTabLayout';
+import {
+  CANON_IN_D_BPM,
+  CANON_IN_D_MEASURES,
+  CANON_IN_D_TIME_SIGNATURE,
+  chunkCanonMeasures,
+} from '../src/data/canonInD';
 
 let passed = 0;
 let failed = 0;
@@ -160,16 +166,41 @@ check(
   layout.lineGaps.every((gap, i) => Math.abs(gap.y - layout.notes[i].y) < 0.01 && layout.notes[i].x >= gap.x1 && layout.notes[i].x <= gap.x2),
 );
 
-// 默认模式：弦线上的数字 = 手指号（0 = ○），不再重复画上标
+// 默认模式（把位优先）：弦线上的数字 = 品位，手指号降级为右上角上标
 check(
-  '默认（finger 模式）弦线数字 = 手指号',
-  layout.notes.every((n) => n.text === FINGER_MARKS[n.finger as number]),
+  '默认模式弦线数字 = 品位（六线谱的第一信息）',
+  layout.notes.every((n) => n.text === String(n.fret)),
   layout.notes.map((n) => n.text).join(','),
 );
-check('默认模式下不再重复画手指上标', layout.notes.every((n) => n.fingerText === undefined));
 check(
-  '空弦在两种模式下都写成 ○',
-  layout.notes.filter((n) => n.fret === 0).every((n) => n.text === '○'),
+  '默认不画手指上标（把位优先，谱面只留「把位 + 品位」）',
+  layout.notes.every((n) => n.fingerText === undefined),
+  layout.notes.map((n) => n.fingerText ?? '-').join(','),
+);
+check(
+  '打开 showFinger 后手指上标全部绘制（0 显示为 ○）',
+  (() => {
+    const withFinger = buildStandardTabLayout({
+      notes: NOTES,
+      chords: CHORDS,
+      measureDuration: BEAT * 4,
+      bpm: BPM,
+      tuning: [64, 59, 55, 50, 45, 40],
+      width: 1080,
+      height: 168,
+      showClef: true,
+      showFinger: true,
+      metrics: CMS_TAB_METRICS,
+    });
+    return (
+      withFinger.notes.every((n) => !!n.fingerText) &&
+      withFinger.notes.every((n) => (n.fingerX ?? 0) > n.x && (n.fingerY ?? 0) < n.y)
+    );
+  })(),
+);
+check(
+  '空弦写成 0（品位写法），不是 ○',
+  layout.notes.filter((n) => n.fret === 0).every((n) => n.text === '0'),
   `${layout.notes.filter((n) => n.fret === 0).length} 个空弦`,
 );
 check(
@@ -178,13 +209,13 @@ check(
   layout.notes.map((n) => n.fret).join(','),
 );
 check(
-  '弦线数字宽度按实际字符计算（1 字宽，不再是两位数宽）',
+  '弦线数字宽度按实际字符计算（1 字宽）',
   layout.notes[1].maskWidth < CMS_TAB_METRICS.fontSize * 0.68 * 2 + 5,
   `${layout.notes[1].maskWidth.toFixed(1)}px`,
 );
 
-// fret 模式（复核纠错）：弦线数字 = 品位，手指号变成右上角上标
-const fretMode = buildStandardTabLayout({
+// finger 模式（复核左手指法）：弦线数字 = 手指号，0 写成 ○
+const fingerMode = buildStandardTabLayout({
   notes: NOTES,
   chords: CHORDS,
   measureDuration: BEAT * 4,
@@ -196,23 +227,19 @@ const fretMode = buildStandardTabLayout({
   height: 168,
   measureIndex: 5,
   showClef: true,
-  noteLabel: 'fret',
+  noteLabel: 'finger',
   metrics: CMS_TAB_METRICS,
 });
 check(
-  'fret 模式弦线数字 = 品位号',
-  fretMode.notes.map((n) => n.text).join(',') === '0,2,3,0,1,0,2,3',
-  fretMode.notes.map((n) => n.text).join(','),
+  'finger 模式弦线数字 = 手指号（0 显示为 ○）',
+  fingerMode.notes.every((n) => n.text === FINGER_MARKS[n.finger as number]),
+  fingerMode.notes.map((n) => n.text).join(','),
 );
-check(
-  'fret 模式下手指上标全部绘制（0 显示为 ○）',
-  fretMode.notes.every((n) => !!n.fingerText),
-  fretMode.notes.map((n) => n.fingerText).join(','),
-);
-check('fret 模式手指上标在数字右上方', fretMode.notes.every((n) => (n.fingerX ?? 0) > n.x && (n.fingerY ?? 0) < n.y));
+check('finger 模式下不再重复画手指上标', fingerMode.notes.every((n) => n.fingerText === undefined));
+check('finger 模式手指上标位置为空（未绘制）', fingerMode.notes.every((n) => n.fingerX === undefined));
 check(
   '两种模式除了写什么字符，几何位置完全一致',
-  fretMode.notes.every((n, i) => Math.abs(n.x - layout.notes[i].x) < 0.01 && Math.abs(n.y - layout.notes[i].y) < 0.01),
+  fingerMode.notes.every((n, i) => Math.abs(n.x - layout.notes[i].x) < 0.01 && Math.abs(n.y - layout.notes[i].y) < 0.01),
 );
 
 // ── 4b. 换把标记（小节内手位变化）─────────────────
@@ -251,13 +278,17 @@ check(
   `y=${shiftMarks[0]?.y.toFixed(0)} staffTop=${shifted.staffTop}`,
 );
 check(
-  '不变式：任意音符都能由 position + 手指号反推品位',
+  '不变式：任意音符都能由 position + 手指号反推品位（fret = position + finger − 1）',
   shifted.notes.every((n) => {
-    const position = n.position ?? 1;
-    const decoded = n.fret <= 0 ? '○' : FINGER_MARKS[Math.min(4, Math.max(1, n.fret - position + 1))];
-    return n.text === decoded;
+    if (!n.finger) return n.fret <= 0;
+    return n.fret === (n.position ?? 1) + n.finger - 1;
   }),
-  shifted.notes.map((n) => `${n.fret}→${n.text}@p${n.position}`).join(' '),
+  shifted.notes.map((n) => `${n.fret}→p${n.position}/f${n.finger}`).join(' '),
+);
+check(
+  '弦线数字始终是**品位**（把位优先，不因换把而变成手指号）',
+  shifted.notes.every((n) => n.text === String(n.fret)),
+  shifted.notes.map((n) => n.text).join(','),
 );
 
 // ── 5. 节奏连接符 ───────────────────────────
@@ -273,6 +304,66 @@ check(
   layout.beams.every((b) => b.x1 < layout.notes[4].x),
   `四分音符 x=${layout.notes[4].x.toFixed(0)}`,
 );
+
+// ── 5b. 节奏线（符干 / 符尾 / 拍内分组）──────
+console.log('\n\u001b[1m[5b] 节奏线（符干 + 连接符）\u001b[0m');
+check(
+  '每个发音点一条符干（含和弦簇，共 6 个发音点）',
+  layout.stems.length === 6,
+  `${layout.stems.length} 条`,
+);
+check(
+  '符干从最低发声弦下方垂到节奏线',
+  layout.stems.every((s) => s.y2 === layout.rhythmY && s.y1 < layout.rhythmY),
+  `rhythmY=${layout.rhythmY}`,
+);
+check('节奏线在最低弦线之下、画布之内', layout.rhythmY > layout.staffBottom && layout.rhythmY < 168);
+check(
+  '四分音符只有符干、没有连接符（levels = 0）',
+  layout.stems.filter((s) => !s.beamId).length === 2,
+  `${layout.stems.filter((s) => !s.beamId).length} 条无连接符`,
+);
+check(
+  '同拍内成组的符干带上 beamId（渲染层据此不再画符尾）',
+  layout.stems.filter((s) => !!s.beamId).length === 4,
+  `${layout.stems.filter((s) => !!s.beamId).length} 条在连接符组内`,
+);
+check(
+  '连接符按拍分组：两组各 2 个八分音符',
+  layout.beams.length === 2 && layout.beams.every((b) => b.level === 1),
+  layout.beams.map((b) => `L${b.level}`).join(','),
+);
+check(
+  '十六分音符产生两层连接符',
+  durationToBeamLevels(BEAT / 4, BEAT) === 2 && durationToBeamLevels(BEAT / 8, BEAT) === 3,
+);
+check(
+  '关闭节奏线时符干/连接符都不生成（showRhythm = false）',
+  (() => {
+    const noRhythm = buildStandardTabLayout({
+      notes: NOTES,
+      chords: CHORDS,
+      measureDuration: BEAT * 4,
+      bpm: BPM,
+      tuning: [64, 59, 55, 50, 45, 40],
+      width: 1080,
+      height: 168,
+      showClef: true,
+      showRhythm: false,
+      metrics: CMS_TAB_METRICS,
+    });
+    return noRhythm.stems.length === 0 && noRhythm.beams.length === 0;
+  })(),
+);
+
+// ── 5c. 谱内进度条（播放行进条）──────────────
+console.log('\n\u001b[1m[5c] 谱内进度条（播放行进条）\u001b[0m');
+check(
+  '进度条 y = 最低弦线 + progressRowGap',
+  layout.progressY === layout.staffBottom + CMS_TAB_METRICS.progressRowGap,
+  `progressY=${layout.progressY} staffBottom=${layout.staffBottom}`,
+);
+check('进度条在节奏线之下、画布之内', layout.progressY > layout.rhythmY && layout.progressY < 168);
 
 // ── 6. 和弦簇 / 扫弦 ────────────────────────
 console.log('\n\u001b[1m[6] 和弦簇与扫弦箭头\u001b[0m');
@@ -332,6 +423,246 @@ check(
   `最大 beamY=${Math.max(...mini.beams.map((b) => b.y))}`,
 );
 check('两端排版规则一致（都来自 buildStandardTabLayout）', mini.notes.length === layout.notes.length && mini.beams.length === layout.beams.length);
+check(
+  '小程序端进度条 y = 132（与 PracticeMeasure 的 PROGRESS_Y 常量一致）',
+  mini.progressY === 132,
+  `${mini.progressY}`,
+);
+
+// ── 10. 谱行（编辑段落 = 2-3 小节并排）───────
+console.log('\n\u001b[1m[10] 谱行排版（一个编辑段落 = 2-3 小节）\u001b[0m');
+
+const measureA = { index: 1, notes: NOTES, chords: CHORDS, chord: 'C', position: 2, duration: BEAT * 4 };
+const measureB = { index: 2, notes: NOTES, chord: 'G', position: 5, duration: BEAT * 4 };
+const system = buildStandardTabSystemLayout({
+  measures: [measureA, measureB],
+  bpm: BPM,
+  timeSignature: '4/4',
+  tuning: [64, 59, 55, 50, 45, 40],
+  width: 1080,
+  height: 168,
+  showClef: true,
+  showTempo: true,
+  isLastSystem: true,
+  metrics: CMS_TAB_METRICS,
+});
+
+check('谱行内小节数 = 2', system.measures.length === 2, `${system.measures.length}`);
+check(
+  '两个小节横向依次排列、互不重叠',
+  system.measures[0].contentLeft < system.measures[0].contentRight &&
+    system.measures[0].contentRight < system.measures[1].contentLeft &&
+    system.measures[1].contentRight <= 1080 - CMS_TAB_METRICS.noteAreaRight + 0.01,
+  `${system.measures.map((m) => `${m.contentLeft.toFixed(0)}–${m.contentRight.toFixed(0)}`).join(' | ')}`,
+);
+check(
+  '小节号 / 把位各画一次，推荐和弦在没有显式和弦时补上',
+  system.texts.filter((t) => t.role === 'measureNumber').length === 2 &&
+    system.texts.filter((t) => t.role === 'position').length === 2 &&
+    system.texts.filter((t) => t.role === 'chord').length === 3,
+  `小节号 ${system.texts.filter((t) => t.role === 'measureNumber').length} · 把位 ${system.texts.filter((t) => t.role === 'position').length} · 和弦 ${system.texts.filter((t) => t.role === 'chord').length}`,
+);
+check(
+  '推荐和弦落在本小节内容区左边界（和弦行最左）',
+  (() => {
+    const mine = system.texts.filter((t) => t.role === 'chord' && Math.abs(t.x - system.measures[1].contentLeft) < 0.01);
+    return mine.length === 1 && mine[0].text === 'G';
+  })(),
+  system.texts.filter((t) => t.role === 'chord').map((t) => `${t.text}@${t.x.toFixed(0)}`).join(' '),
+);
+check(
+  '每个小节的把位标记落在该小节左上角',
+  system.texts
+    .filter((t) => t.role === 'position')
+    .every((t, i) => Math.abs(t.x - (system.measures[i].contentLeft + 2)) < 0.01),
+  system.texts.filter((t) => t.role === 'position').map((t) => t.x.toFixed(0)).join(','),
+);
+check(
+  '弦线上的数字跟着小节走（第二小节整体在小节区右移）',
+  system.notes.filter((n) => n.x > system.measures[1].contentLeft - 1).length === NOTES.length,
+);
+check(
+  '弦线横贯整条谱行（不是每小节画一段）',
+  system.lines.length === 6 && system.lines.every((l) => l.x2 === 1080 - CMS_TAB_METRICS.noteAreaRight),
+);
+check(
+  '谱号 / 拍号 / 速度只在谱行最左侧画一次',
+  system.texts.filter((t) => t.role === 'clef').length === 3 &&
+    system.texts.filter((t) => t.role === 'tempo').length === 1,
+);
+check(
+  '中间小节线画在槽位之间、只有末尾是粗收尾线',
+  system.barlines.length === 3 &&
+    system.barlines.some((b) => b.x1 > system.measures[0].contentRight && b.x1 < system.measures[1].contentLeft) &&
+    (() => {
+      const rightmost = system.barlines.reduce((max, b) => (b.x1 > max.x1 ? b : max));
+      return rightmost.width === Math.max(...system.barlines.map((b) => b.width)) && rightmost.width >= 4;
+    })(),
+  system.barlines.map((b) => `${b.x1.toFixed(0)}/${b.width}`).join(' '),
+);
+check(
+  '节奏线按小节铺开（符号数 = 单小节 × 2）',
+  system.stems.length === layout.stems.length * 2 && system.beams.length === layout.beams.length * 2,
+  `符干 ${system.stems.length} · 连接符 ${system.beams.length}`,
+);
+check(
+  '单小节谱行与多小节谱行的音符坐标连续（第 2 小节 = 第 1 小节 + 位移）',
+  Math.abs(
+    system.notes[NOTES.length].x - system.notes[0].x - (system.measures[1].contentLeft - system.measures[0].contentLeft),
+  ) < 0.01,
+);
+check(
+  '小节数超过 3 时被截断（避免品位数挤到看不清）',
+  buildStandardTabSystemLayout({
+    measures: [measureA, measureB, { ...measureA, index: 3 }, { ...measureA, index: 4 }],
+    bpm: BPM,
+    tuning: [64, 59, 55, 50, 45, 40],
+    width: 1080,
+    height: 168,
+    metrics: CMS_TAB_METRICS,
+  }).measures.length === 3,
+);
+check(
+  '单小节仍由同一个引擎排版（谱行调用的就是 buildStandardTabLayout）',
+  Math.abs(system.measures[0].timeToX(0) - system.measures[0].contentLeft) < 0.01 &&
+    Math.abs(system.measures[0].timeToX(BEAT * 4) - system.measures[0].contentRight) < 0.01,
+);
+check(
+  '谱行的进度条 y 与小节一致（播放行进条跨整行可用）',
+  system.progressY === layout.progressY,
+  `system=${system.progressY} single=${layout.progressY}`,
+);
+check(
+  '小程序端谱行规则一致（同样 2 小节、同样音符数）',
+  (() => {
+    const miniSystem = buildStandardTabSystemLayout({
+      measures: [measureA, measureB],
+      bpm: BPM,
+      timeSignature: '4/4',
+      tuning: [64, 59, 55, 50, 45, 40],
+      width: 600,
+      height: 142,
+      showClef: true,
+      metrics: MINI_TAB_METRICS,
+    });
+    return miniSystem.measures.length === 2 && miniSystem.notes.length === system.notes.length;
+  })(),
+);
+
+// ── 11. 卡农前 16 小节（真实测试数据）────────
+console.log('\n\u001b[1m[11] 卡农前 16 小节（把位 / 推荐和弦 / 节奏线）\u001b[0m');
+
+const canonChords = CANON_IN_D_MEASURES.map((m) => m.chord);
+check('共 16 小节', CANON_IN_D_MEASURES.length === 16, `${CANON_IN_D_MEASURES.length} 小节`);
+check(
+  '和声骨架 = 卡农固定低音（D A Bm F#m G D G A 走两遍）',
+  canonChords.join(',') === 'D,A,Bm,F#m,G,D,G,A,D,A,Bm,F#m,G,D,G,A',
+  canonChords.join(','),
+);
+check(
+  '每个小节都有推荐和弦与把位（用户要求的两项小节级标注数据）',
+  CANON_IN_D_MEASURES.every((m) => !!m.chord && m.position >= 1),
+);
+const canonPositions = Array.from(new Set(CANON_IN_D_MEASURES.map((m) => m.position))).sort((a, b) => a - b);
+check('把位覆盖 1 / 2 / 3 / 5 / 7（含多次换把）', canonPositions.join(',') === '1,2,3,5,7', canonPositions.join(','));
+check(
+  '不变式：每个音符 fret = position + finger − 1（或空弦 finger = 0）',
+  CANON_IN_D_MEASURES.every((m) =>
+    m.notes.every((n) => (n.fret <= 0 ? n.finger === 0 : n.fret === n.position + n.finger - 1)),
+  ),
+);
+check(
+  '所有音符都落在小节窗口内（offsetSec + durationSec ≤ 小节时长）',
+  CANON_IN_D_MEASURES.every((m) =>
+    m.notes.every((n) => n.offsetSec + n.durationSec <= m.duration + 1e-6),
+  ),
+);
+
+const canonSystems = chunkCanonMeasures(2);
+check('每行 2 小节 → 8 条谱行', canonSystems.length === 8, `${canonSystems.length} 行`);
+
+const canonSystemLayouts = canonSystems.map((group, i) =>
+  buildStandardTabSystemLayout({
+    measures: group.map((m) => ({
+      index: m.index,
+      notes: m.notes,
+      chord: m.chord,
+      position: m.position,
+      duration: m.duration,
+    })),
+    bpm: CANON_IN_D_BPM,
+    timeSignature: CANON_IN_D_TIME_SIGNATURE,
+    tuning: [64, 59, 55, 50, 45, 40],
+    width: 1080,
+    height: 168,
+    showClef: true,
+    showTempo: i === 0,
+    isLastSystem: i === canonSystems.length - 1,
+    metrics: CMS_TAB_METRICS,
+  }),
+);
+
+check(
+  '8 条谱行的音符总数为 131',
+  canonSystemLayouts.reduce((sum, l) => sum + l.notes.length, 0) === 131,
+  `${canonSystemLayouts.reduce((sum, l) => sum + l.notes.length, 0)}`,
+);
+check(
+  '每条谱行都渲染出把位标记（2 个小节 → 2 个）',
+  canonSystemLayouts.every((l) => l.texts.filter((t) => t.role === 'position').length === 2),
+);
+check(
+  '每条谱行都渲染出推荐和弦（2 个小节 → 2 个）',
+  canonSystemLayouts.every((l) => l.texts.filter((t) => t.role === 'chord').length === 2),
+);
+check(
+  '音符 / 节奏线不越出画布，也不压到谱面外',
+  canonSystemLayouts.every((l) =>
+    l.notes.every((n) => n.x > 0 && n.x < 1080) &&
+    l.stems.every((s) => s.y2 === l.rhythmY && s.x > 0 && s.x < 1080),
+  ),
+);
+check(
+  '第 5 条谱行（第 9-10 小节）出现两层连接符（第 10 小节含 16 分音符对）',
+  canonSystemLayouts[4].beams.some((b) => b.level === 2),
+  `levels=${Array.from(new Set(canonSystemLayouts[4].beams.map((b) => b.level))).join(',')}`,
+);
+check(
+  '最后一条谱行有扫弦箭头（第 16 小节以 6 音和弦收尾）',
+  canonSystemLayouts[7].strums.length === 1 &&
+    canonSystemLayouts[7].strums[0].stringCount === 6,
+  `${canonSystemLayouts[7].strums.length} 个扫弦`,
+);
+check(
+  '换把处两条谱行的把位标记不同（第 11 / 12 小节 = 7 / 2 把位）',
+  canonSystemLayouts[5].texts
+    .filter((t) => t.role === 'position')
+    .map((t) => t.text)
+    .join(',') === '7,2',
+  canonSystemLayouts[5].texts.filter((t) => t.role === 'position').map((t) => t.text).join(','),
+);
+check(
+  '小程序端用同一份数据也能排出 8 条谱行（两端一致）',
+  canonSystems.every((group) => {
+    const l = buildStandardTabSystemLayout({
+      measures: group.map((m) => ({
+        index: m.index,
+        notes: m.notes,
+        chord: m.chord,
+        position: m.position,
+        duration: m.duration,
+      })),
+      bpm: CANON_IN_D_BPM,
+      timeSignature: CANON_IN_D_TIME_SIGNATURE,
+      tuning: [64, 59, 55, 50, 45, 40],
+      width: 600,
+      height: 142,
+      showClef: true,
+      metrics: MINI_TAB_METRICS,
+    });
+    return l.measures.length === group.length && l.notes.length === group.reduce((s, m) => s + m.notes.length, 0);
+  }),
+);
 
 // ── 汇总 ────────────────────────────────────
 console.log(`\n\u001b[1m汇总\u001b[0m：${passed}/${passed + failed} 通过`);

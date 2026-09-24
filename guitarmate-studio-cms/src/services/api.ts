@@ -1028,6 +1028,23 @@ export const api = {
         createdAt: string;
       }>;
     }>(`/api/transcription/projects/${projectId}/revisions`),
+
+  /**
+   * 项目源音频的可访问 URL —— 「对照音频校正六线谱」的播放源。
+   * 分轨（吉他 / 贝斯 / 鼓 …）不走这里，直接用 `detail.tracks[].stemUrl`。
+   *
+   * ⚠️ 后端字段名是 `audioUrl`（不是 `url`），`url` 仅作兼容兜底。
+   */
+  getTranscriptionAudioUrl: (projectId: string) =>
+    request<{
+      success: boolean;
+      audioUrl?: string | null;
+      /** @deprecated 旧版字段名，仅兼容 */
+      url?: string | null;
+      relativePath?: string | null;
+      durationSec?: number;
+      title?: string;
+    }>(`/api/transcription/projects/${projectId}/audio-url`),
 };
 
 export default api;
