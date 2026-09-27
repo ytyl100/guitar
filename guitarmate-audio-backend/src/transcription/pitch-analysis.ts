@@ -193,6 +193,10 @@ export interface TranscribeResult {
   peakRms: number;
   /** 是否走的起音引导切分（false = 退回逐帧归组） */
   onsetGuided?: boolean;
+  /** 检测到的起音（音符事件）数量 —— 用于诊断「谱面节点比听到的少」 */
+  onsetCount?: number;
+  /** 实际生效的帧级置信度门限（自适应放宽后 < 默认 0.45） */
+  minFrameConfidenceUsed?: number;
 }
 
 /** 单帧 RMS */
@@ -246,7 +250,40 @@ export function transcribeMonophonic(pcm: PcmAudio, options: TranscribeOptions =
    * 单帧的毛刺会让「同音高的连续帧」判断不停断裂 —— 中值滤波能滤掉毛刺
    * 而保留真实的音高跳进（真实演奏的音高跳变会持续好几帧）。
    */
-  const voicedFlags = frames.map((f) => f.midi > 0 && f.amp >= silence && f.conf >= minConfidence);
+  const flagsWith = (confGate: number, silenceFloor: number) =>
+    frames.map((f) => f.midi > 0 && f.amp >= silenceFloor && f.conf >= confGate);
+  const ratioOf = (flags: boolean[]) =>
+    flags.length ? flags.filter(Boolean).length / flags.length : 0;
+
+  /**
+   * **自适应浊音门限**（关键修正）。
+   *
+   * 混音素材（没有 Demucs 分轨时，人声/鼓/贝斯全混在一起）的帧级 YIN 置信度天然偏低，
+   * 固定 0.45 会把绝大多数帧判成“非浊音” → 起音处找不到 probe 帧 → 整段被丢弃，
+   * 最终只产出零星几个音符（用户报的「大部分节点没标注 / 谱面明显少于听到的音」）。
+   *
+   * 因此：仅当**整体浊音率过低**时逐级放宽，干净独奏（浊音率高）完全不受影响。
+   * 放宽后的实际门限会随结果一并返回，便于排查。
+   */
+  let usedMinConfidence = minConfidence;
+  let usedSilence = silence;
+  let voicedFlags = flagsWith(usedMinConfidence, usedSilence);
+  if (ratioOf(voicedFlags) < 0.25) {
+    for (const [confGate, silFactor] of [
+      [0.3, 0.02],
+      [0.2, 0.015],
+      [0.12, 0.01],
+    ] as const) {
+      const floor = Math.max(1e-5, peakRms * silFactor);
+      const candidate = flagsWith(confGate, floor);
+      if (ratioOf(candidate) > ratioOf(voicedFlags)) {
+        voicedFlags = candidate;
+        usedMinConfidence = confGate;
+        usedSilence = floor;
+      }
+      if (ratioOf(voicedFlags) >= 0.25) break;
+    }
+  }
   const filtered = frames.map((f, i) => {
     if (!voicedFlags[i]) return f.midi;
     const window: number[] = [];
@@ -280,11 +317,36 @@ export function transcribeMonophonic(pcm: PcmAudio, options: TranscribeOptions =
     options.minNoteSec ?? minNoteSec,
   );
 
-  if (onsets.length >= 2) {
+  /**
+   * **补一轮更密的起音检测**。
+   *
+   * RMS 上升沿达到「局部峰值 22%」这个判据，对**干净独奏**很准，
+   * 但混音里整体包络被鼓/人声顶得很高、拨弦的相对上升量就达不到 22% → 起音漏检 →
+   * 整段没有音符。当起音密度明显偏低（< 0.8 个/秒）时，用更宽松的判据再跑一轮并取并集。
+   */
+  let onsetsMerged: number[] = onsets;
+  const durationSec = frames.length * hopSec;
+  if (durationSec > 1 && onsets.length / durationSec < 0.8) {
+    const dense = detectOnsets(
+      frames.map((f) => f.amp),
+      hopSec,
+      Math.min(0.06, options.minNoteSec ?? minNoteSec),
+      0.1,
+    );
+    const minGap = Math.max(1, Math.round((options.minNoteSec ?? minNoteSec) / Math.max(1e-6, hopSec)));
+    const merged: number[] = [];
+    for (const idx of [...new Set([...onsets, ...dense])].sort((a, b) => a - b)) {
+      if (!merged.length || idx - merged[merged.length - 1] >= minGap) merged.push(idx);
+    }
+    onsetsMerged = merged;
+  }
+  const onsetsFinal = onsetsMerged;
+
+  if (onsetsFinal.length >= 2) {
     const notes: MonophonicNote[] = [];
-    for (let k = 0; k < onsets.length; k += 1) {
-      const startIdx = onsets[k];
-      const nextIdx = k + 1 < onsets.length ? onsets[k + 1] : frames.length;
+    for (let k = 0; k < onsetsFinal.length; k += 1) {
+      const startIdx = onsetsFinal[k];
+      const nextIdx = k + 1 < onsetsFinal.length ? onsetsFinal[k + 1] : frames.length;
 
       // 起音后的前几帧：新音刚起、旧音尾最弱，音高估计最干净
       const probe: number[] = [];
@@ -334,6 +396,8 @@ export function transcribeMonophonic(pcm: PcmAudio, options: TranscribeOptions =
       frameCount: frames.length,
       peakRms,
       onsetGuided: true,
+      onsetCount: onsetsFinal.length,
+      minFrameConfidenceUsed: usedMinConfidence,
     };
   }
 
@@ -349,6 +413,8 @@ export function transcribeMonophonic(pcm: PcmAudio, options: TranscribeOptions =
     frameCount: frames.length,
     peakRms,
     onsetGuided: false,
+    onsetCount: onsetsFinal.length,
+    minFrameConfidenceUsed: usedMinConfidence,
   };
 }
 

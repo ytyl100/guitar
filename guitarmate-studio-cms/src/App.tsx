@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { TopHeader } from './components/TopHeader';
 import { SidebarNav, StudioTab } from './components/SidebarNav';
 import { MusicLibraryStudio } from './components/studios/MusicLibraryStudio';
@@ -32,8 +32,10 @@ import {
   MusicVersion,
 } from './types';
 import { ApiTranscriptionPublishResult } from './services/api';
+import { buildPublishedMusicTrack, type PublishedTrackMeta } from './utils/publishedTrack';
 import { audioEngine } from './utils/audioEngine';
 import { usePersistentState } from './hooks/usePersistentState';
+import { useCurriculumStore } from './hooks/useCurriculumStore';
 import { flattenLessons, replaceLesson } from './utils/curriculumOps';
 
 /** 取课程体系里的第一个课时（用于「当前焦点课时」的初始化 / 兜底） */
@@ -77,42 +79,15 @@ export default function App() {
     () => activeTrack.tabConfig || INITIAL_AUDIO_TAB_SYNC
   );
   /**
-   * 课程体系大纲（Stage ➔ Course ➔ Chapter ➔ Lesson）。
-   * 用 localStorage 持久化 —— 之前刷新页面管理员编的大纲会全部丢失。
+   * 课程体系大纲（Stage ➔ Course ➔ Chapter ➔ Lesson）+ 视频库 + 和弦库 + 和弦组。
+   *
+   * ⚠️ 2026-09-26 起**后端 API 是唯一数据源**（原来是 localStorage，导致小程序读不到、
+   * 换浏览器就丢）。四个 slice 的读写接口没变，只是持久化换成了
+   * `GET/PUT /api/curriculum`（见 `hooks/useCurriculumStore.ts`）。
    */
-  const [stages, setStages] = usePersistentState<Stage[]>('curriculum_stages', INITIAL_STAGES, {
-    storageKey: 'guitarmate_curriculum_stages',
-    sanitize: (value) => (Array.isArray(value) && value.length > 0 ? (value as Stage[]) : null),
-  });
-
-  /** 教学视频库（可被多个课时复用；课时通过 `videoIds` 多对多关联） */
-  const [videoLibrary, setVideoLibrary] = usePersistentState<TeachingVideo[]>(
-    'video_library',
-    buildInitialVideoLibrary(INITIAL_STAGES),
-    {
-      storageKey: 'guitarmate_video_library',
-      sanitize: (value) => (Array.isArray(value) ? (value as TeachingVideo[]) : null),
-    },
-  );
-
-  /** 和弦库（可在「和弦微测与 BPM 阶梯」页增删改） */
-  const [chords, setChords] = usePersistentState<Record<string, ChordConfig>>('chord_library', CHORD_LIBRARY, {
-    storageKey: 'guitarmate_chord_library',
-    sanitize: (value) =>
-      value && typeof value === 'object' && Object.keys(value as object).length > 0
-        ? (value as Record<string, ChordConfig>)
-        : null,
-  });
-
-  /** 和弦练习组（一组和弦 + 一组 BPM 阶梯阶段，课时通过 `chordGroupIds` 关联） */
-  const [chordGroups, setChordGroups] = usePersistentState<ChordGroup[]>(
-    'chord_groups',
-    INITIAL_CHORD_GROUPS,
-    {
-      storageKey: 'guitarmate_chord_groups',
-      sanitize: (value) => (Array.isArray(value) ? (value as ChordGroup[]) : null),
-    },
-  );
+  const curriculum = useCurriculumStore();
+  const { stages, setStages, videoLibrary, setVideoLibrary, chords, setChords, chordGroups, setChordGroups } =
+    curriculum;
 
   /** 当前焦点课时：课程大纲 / 视频库 / 和弦阶梯三个工作台共享它 */
   const [selectedLesson, setSelectedLesson] = useState<LessonStep>(() => firstLessonOf(stages));
@@ -336,50 +311,118 @@ export default function App() {
    * - 否则新建一条 `published` 工程，并记下 `sourceProjectId`，
    *   这样列表里的「编辑六线谱」能直接回到这个转录项目继续改。
    */
-  const handleSongPublished = (result: ApiTranscriptionPublishResult, title: string) => {
+  const handleSongPublished = (
+    result: ApiTranscriptionPublishResult,
+    title: string,
+    projectId?: string,
+    meta?: PublishedTrackMeta,
+  ) => {
     const scoreId = result.mirrored?.scoreId;
-    if (!scoreId) {
-      setSaveBannerMessage(
-        '⚠️ PracticePackage 已发布，但没有镜像到 Score 链路 → 音乐库不会出现条目。请用预览页的「发布到小程序」（已开启镜像）。',
-      );
-      setTimeout(() => setSaveBannerMessage(null), 8000);
-      return;
-    }
+    const sourceProjectId = projectId || previewProjectId || undefined;
     const now = new Date().toISOString();
+
     setTracks((prev) => {
-      const idx = prev.findIndex((t) => t.backendScoreId === scoreId);
+      // 去重：优先 backendScoreId；未镜像时退化为按 sourceProjectId 去重
+      let idx = scoreId ? prev.findIndex((t) => t.backendScoreId === scoreId) : -1;
+      if (idx < 0 && sourceProjectId) {
+        idx = prev.findIndex((t) => t.sourceProjectId === sourceProjectId);
+      }
       if (idx >= 0) {
         const next = [...prev];
         next[idx] = {
           ...next[idx],
           title: title || next[idx].title,
           status: 'published' as MusicStatus,
-          backendScoreId: scoreId,
-          sourceProjectId: previewProjectId || next[idx].sourceProjectId,
+          backendScoreId: scoreId || next[idx].backendScoreId,
+          sourceProjectId,
+          currentVersion: `r${result.revision}`,
           updatedAt: now,
         };
         return next;
       }
-      const template = prev[0] || INITIAL_MUSIC_TRACKS[0];
-      const created: MusicTrack = {
-        ...template,
-        id: `track-${Date.now()}`,
-        title: title || '未命名曲目',
-        status: 'published' as MusicStatus,
-        currentVersion: `r${result.revision}`,
-        versions: [] as MusicVersion[],
-        tags: Array.from(new Set([...(template.tags || []), '自动转录'])),
-        createdAt: now,
-        updatedAt: now,
-        cEndPlayCount: 0,
-        backendScoreId: scoreId,
-        sourceProjectId: previewProjectId || undefined,
-      };
+      /**
+       * ⚠️ 这里**不能**用 `{ ...prev[0] }` 当模板 —— 那会把上一条曲目的
+       * 原唱/调性/风格/时长/tabConfig 全部带进来（实测：转录音频卡片显示成
+       * 「原唱/伴奏: 周杰伦 · G大调 · 19.2s」）。用干净的构造器（见 utils/publishedTrack.ts）。
+       */
+      const created = buildPublishedMusicTrack({
+        title,
+        projectId: sourceProjectId,
+        revision: result.revision,
+        measureCount: result.stats?.measureCount,
+        meta,
+        stamp: now,
+      });
       return [created, ...prev];
     });
-    setSaveBannerMessage(`🚀 《${title || '未命名曲目'}》已发布到小程序，并写入音乐库工程列表`);
+
+    setSaveBannerMessage(
+      scoreId
+        ? `🚀 《${title || '未命名曲目'}》已发布到小程序，并写入音乐库工程列表`
+        : `🚀 《${title || '未命名曲目'}》已发布 PracticePackage 并写入音乐库` +
+          `（未镜像到 Score 链路 —— 需要旧链路数据时点「发布并镜像」）`,
+    );
     setTimeout(() => setSaveBannerMessage(null), 6000);
   };
+
+  /**
+   * 把「已发布」的转录项目**同步进音乐库**（幂等 upsert）。
+   * 补齐历史缺口：早期从复核页发布时没有回写音乐库，导致「发布成功但音乐库看不到」。
+   * 未变化时返回原引用，避免不必要的重渲染。
+   */
+  const handleSyncPublishedProjects = useCallback(
+    (
+      items: Array<{
+        projectId: string;
+        title: string;
+        scoreId?: string | null;
+        updatedAt?: string;
+        meta?: PublishedTrackMeta;
+      }>,
+    ) => {
+      if (!items.length) return;
+      setTracks((prev) => {
+        let next = prev;
+        let changed = false;
+        for (const item of items) {
+          const idx = next.findIndex(
+            (t) =>
+              (item.scoreId && t.backendScoreId === item.scoreId) ||
+              t.sourceProjectId === item.projectId,
+          );
+          if (idx >= 0) {
+            const cur = next[idx];
+            const needsUpdate =
+              cur.status !== 'published' || (!!item.scoreId && !cur.backendScoreId);
+            if (needsUpdate) {
+              next = [...next];
+              next[idx] = {
+                ...cur,
+                status: 'published' as MusicStatus,
+                backendScoreId: item.scoreId || cur.backendScoreId,
+                sourceProjectId: item.projectId,
+              };
+              changed = true;
+            }
+            continue;
+          }
+          const stamp = item.updatedAt || new Date().toISOString();
+          // 同步历史已发布项目时同样不能拿别人当模板（见 utils/publishedTrack.ts）
+          const created = buildPublishedMusicTrack({
+            title: item.title,
+            projectId: item.projectId,
+            revision: 1,
+            meta: { ...(item.meta || {}), scoreId: item.scoreId || undefined },
+            stamp,
+          });
+          next = [created, ...next];
+          changed = true;
+        }
+        return changed ? next : prev;
+      });
+    },
+    [],
+  );
 
   const handleQuickSave = () => {
     setHasUnsavedChanges(false);
@@ -521,12 +564,55 @@ export default function App() {
                 );
                 setTimeout(() => setSaveBannerMessage(null), 5000);
               }}
+              onPublished={(result, title, projectId, meta) =>
+                handleSongPublished(result, title, projectId, meta)
+              }
+              onSyncPublished={handleSyncPublishedProjects}
             />
           )}
 
           {/* 3. Curriculum Outline Studio（课程大纲增删改查 + 20 分钟切片 + 资源关联） */}
           {activeTab === 'curriculum' && (
-            <CurriculumOutlineStudio
+            <>
+              {/**
+                * 课程大纲的**后端同步状态条**。
+                * ⚠️ 必须可见：课程大纲从「localStorage」改成「后端唯一数据源」后，
+                * 管理员需要一眼看出「我这次的调整到底进后端了没有」——
+                * 静默失败是这类改造最危险的失败模式（看着保存成功，其实只存在本机）。
+                */}
+              <div
+                className={`mx-4 mt-3 px-3 py-2 rounded-xl border text-xs flex items-center justify-between gap-3 ${
+                  curriculum.sync.status === 'error'
+                    ? 'bg-amber-500/10 border-amber-500/40 text-amber-300'
+                    : curriculum.sync.status === 'ready'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : 'bg-slate-500/10 border-slate-500/30 text-slate-300'
+                }`}
+              >
+                <span>
+                  {curriculum.sync.status === 'error' ? '⚠ ' : '☁ '}
+                  {curriculum.sync.message}
+                </span>
+                <span className="flex items-center gap-2 shrink-0">
+                  {curriculum.sync.status === 'error' && (
+                    <button
+                      onClick={() => void curriculum.reload()}
+                      className="px-2 py-0.5 rounded-lg border border-current font-semibold"
+                    >
+                      重载后端
+                    </button>
+                  )}
+                  {curriculum.sync.status === 'ready' && (
+                    <button
+                      onClick={() => void curriculum.save()}
+                      className="px-2 py-0.5 rounded-lg border border-current font-semibold"
+                    >
+                      立即保存
+                    </button>
+                  )}
+                </span>
+              </div>
+              <CurriculumOutlineStudio
               stages={stages}
               onChangeStages={setStages}
               selectedLesson={selectedLesson}
@@ -538,6 +624,7 @@ export default function App() {
               onGoToVideoStudio={() => setActiveTab('video-cms')}
               onGoToChordStudio={() => setActiveTab('chord-drill')}
             />
+            </>
           )}
 
           {/* 4. Video Keypoint CMS Studio（视频库 CRUD + 课时多对多关联 + 打点） */}

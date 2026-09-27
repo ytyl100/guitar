@@ -510,8 +510,15 @@ export const MusicLibraryStudio: React.FC<MusicLibraryStudioProps> = ({
                         </div>
 
                         <div className="text-[10px] font-mono shrink-0 text-slate-400 flex flex-col items-end">
-                          <span className="text-slate-300 font-bold">{track.tabConfig.bpm || 80} BPM</span>
-                          <span>{track.tabConfig.audioDurationSec.toFixed(1)}s</span>
+                          {/* 不知道就写“未标注”，不要假装成 80 BPM / 0.0s（转录音频常见无 BPM/时长） */}
+                          <span className="text-slate-300 font-bold">
+                            {track.tabConfig.bpm ? `${track.tabConfig.bpm} BPM` : 'BPM 未标注'}
+                          </span>
+                          <span>
+                            {track.tabConfig.audioDurationSec > 0
+                              ? `${track.tabConfig.audioDurationSec.toFixed(1)}s`
+                              : '时长未标注'}
+                          </span>
                         </div>
                       </div>
 
@@ -661,7 +668,10 @@ export const MusicLibraryStudio: React.FC<MusicLibraryStudioProps> = ({
                       <td className="py-3 px-4 font-mono text-slate-300">
                         <span>{track.keySignature}</span>
                         <span className="text-slate-500 mx-1">·</span>
-                        <span className="text-amber-400">{track.tabConfig.bpm} BPM</span>
+                        {/* 同上：缺失时不要用 80 这个默认值冒充真实 BPM */}
+                        <span className="text-amber-400">
+                          {track.tabConfig.bpm ? `${track.tabConfig.bpm} BPM` : 'BPM 未标注'}
+                        </span>
                       </td>
 
                       <td className="py-3 px-4">

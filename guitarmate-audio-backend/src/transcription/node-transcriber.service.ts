@@ -71,6 +71,11 @@ export interface NodeTranscribeOutput extends TranscribeWorkerResult {
     frameCount: number;
     peakRms: number;
     chordSegments: number;
+    /** 检测到的起音（音符事件）数 —— 与最终音符数差太多说明门限/切分有问题 */
+    onsetCount?: number;
+    onsetGuided?: boolean;
+    /** 实际生效的帧级置信度门限（自适应放宽后 < 0.45） */
+    minFrameConfidenceUsed?: number;
   };
 }
 
@@ -159,7 +164,9 @@ export class NodeTranscriberService {
     this.logger.log(
       `[node-yin] ${input.instrument}：${durationSec.toFixed(1)}s → ${notes.length} 音符 / ` +
         `${chords.length} 个和弦段 · BPM ${bpm}${knownBpm ? '' : '（自动估计）'} · ` +
-        `有音高帧占比 ${(monophonic.voicedRatio * 100).toFixed(1)}% · ${Date.now() - startedAt}ms`,
+        `有音高帧占比 ${(monophonic.voicedRatio * 100).toFixed(1)}% · ` +
+        `起音 ${monophonic.onsetCount ?? 0} 个 · 帧门限 ${monophonic.minFrameConfidenceUsed ?? 0.45} · ` +
+        `${Date.now() - startedAt}ms`,
     );
 
     return {
@@ -184,6 +191,9 @@ export class NodeTranscriberService {
         frameCount: monophonic.frameCount,
         peakRms: round4(monophonic.peakRms),
         chordSegments: chords.length,
+        onsetCount: monophonic.onsetCount ?? 0,
+        onsetGuided: !!monophonic.onsetGuided,
+        minFrameConfidenceUsed: monophonic.minFrameConfidenceUsed ?? 0.45,
       },
     };
   }

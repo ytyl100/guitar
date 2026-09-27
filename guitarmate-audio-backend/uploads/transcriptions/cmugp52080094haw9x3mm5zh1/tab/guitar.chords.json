@@ -1,0 +1,2888 @@
+[
+  {
+    "startSec": 0,
+    "endSec": 0.5,
+    "name": "A#",
+    "score": 0.7253
+  },
+  {
+    "startSec": 0.25,
+    "endSec": 1.75,
+    "name": "E",
+    "score": 0.9493
+  },
+  {
+    "startSec": 1.5,
+    "endSec": 2.5,
+    "name": "Am",
+    "score": 1.0817
+  },
+  {
+    "startSec": 2.25,
+    "endSec": 2.75,
+    "name": "A",
+    "score": 1.1142
+  },
+  {
+    "startSec": 2.5,
+    "endSec": 3.25,
+    "name": "Am",
+    "score": 1.0844
+  },
+  {
+    "startSec": 3,
+    "endSec": 3.5,
+    "name": "Bm7",
+    "score": 0.9362
+  },
+  {
+    "startSec": 3.25,
+    "endSec": 4,
+    "name": "B",
+    "score": 1.0308
+  },
+  {
+    "startSec": 3.75,
+    "endSec": 5.25,
+    "name": "Bm",
+    "score": 0.9603
+  },
+  {
+    "startSec": 5,
+    "endSec": 5.75,
+    "name": "B",
+    "score": 1.0106
+  },
+  {
+    "startSec": 5.5,
+    "endSec": 6,
+    "name": "Em",
+    "score": 0.895
+  },
+  {
+    "startSec": 5.75,
+    "endSec": 7,
+    "name": "E",
+    "score": 0.8824
+  },
+  {
+    "startSec": 6.75,
+    "endSec": 8.5,
+    "name": "Am",
+    "score": 0.9817
+  },
+  {
+    "startSec": 8.25,
+    "endSec": 9,
+    "name": "B",
+    "score": 0.9194
+  },
+  {
+    "startSec": 8.75,
+    "endSec": 10.5,
+    "name": "Bm",
+    "score": 0.9479
+  },
+  {
+    "startSec": 10.25,
+    "endSec": 11,
+    "name": "B",
+    "score": 0.9105
+  },
+  {
+    "startSec": 10.75,
+    "endSec": 11.25,
+    "name": "Em",
+    "score": 0.8399
+  },
+  {
+    "startSec": 11,
+    "endSec": 12.25,
+    "name": "E",
+    "score": 0.8906
+  },
+  {
+    "startSec": 12,
+    "endSec": 12.5,
+    "name": "Am",
+    "score": 1.0302
+  },
+  {
+    "startSec": 12.25,
+    "endSec": 13,
+    "name": "A",
+    "score": 1.0511
+  },
+  {
+    "startSec": 12.75,
+    "endSec": 13.75,
+    "name": "Am",
+    "score": 0.9758
+  },
+  {
+    "startSec": 13.5,
+    "endSec": 14,
+    "name": "B7",
+    "score": 0.871
+  },
+  {
+    "startSec": 13.75,
+    "endSec": 14.25,
+    "name": "B",
+    "score": 0.9842
+  },
+  {
+    "startSec": 14,
+    "endSec": 15,
+    "name": "Bm",
+    "score": 0.9567
+  },
+  {
+    "startSec": 14.75,
+    "endSec": 15.25,
+    "name": "B",
+    "score": 0.9763
+  },
+  {
+    "startSec": 15,
+    "endSec": 15.75,
+    "name": "Bm",
+    "score": 0.9696
+  },
+  {
+    "startSec": 15.5,
+    "endSec": 16.25,
+    "name": "B",
+    "score": 0.9264
+  },
+  {
+    "startSec": 16,
+    "endSec": 17.5,
+    "name": "E",
+    "score": 0.8636
+  },
+  {
+    "startSec": 17.25,
+    "endSec": 18.75,
+    "name": "Am",
+    "score": 1.0627
+  },
+  {
+    "startSec": 18.5,
+    "endSec": 19,
+    "name": "Asus2",
+    "score": 0.7988
+  },
+  {
+    "startSec": 18.75,
+    "endSec": 19.5,
+    "name": "B",
+    "score": 0.8933
+  },
+  {
+    "startSec": 19.25,
+    "endSec": 20,
+    "name": "Bm",
+    "score": 0.9657
+  },
+  {
+    "startSec": 19.75,
+    "endSec": 20.25,
+    "name": "B",
+    "score": 0.9477
+  },
+  {
+    "startSec": 20,
+    "endSec": 21,
+    "name": "Bm",
+    "score": 0.8547
+  },
+  {
+    "startSec": 20.75,
+    "endSec": 21.25,
+    "name": "Dm",
+    "score": 0.6493
+  },
+  {
+    "startSec": 21,
+    "endSec": 21.5,
+    "name": "G7",
+    "score": 0.607
+  },
+  {
+    "startSec": 21.25,
+    "endSec": 22.25,
+    "name": "Fmaj7",
+    "score": 0.6063
+  },
+  {
+    "startSec": 22,
+    "endSec": 22.5,
+    "name": "Dm7",
+    "score": 0.6274
+  },
+  {
+    "startSec": 22.25,
+    "endSec": 23.25,
+    "name": "Dm",
+    "score": 0.6756
+  },
+  {
+    "startSec": 23,
+    "endSec": 23.5,
+    "name": "F",
+    "score": 0.6665
+  },
+  {
+    "startSec": 23.25,
+    "endSec": 24,
+    "name": "Dm",
+    "score": 0.6669
+  },
+  {
+    "startSec": 23.75,
+    "endSec": 24.5,
+    "name": "A#add9",
+    "score": 0.6195
+  },
+  {
+    "startSec": 24.25,
+    "endSec": 25.25,
+    "name": "Dm",
+    "score": 0.562
+  },
+  {
+    "startSec": 25,
+    "endSec": 25.5,
+    "name": "Dm6",
+    "score": 0.5481
+  },
+  {
+    "startSec": 25.25,
+    "endSec": 25.75,
+    "name": "G7",
+    "score": 0.6084
+  },
+  {
+    "startSec": 25.5,
+    "endSec": 26,
+    "name": "Gsus2",
+    "score": 0.6145
+  },
+  {
+    "startSec": 25.75,
+    "endSec": 26.25,
+    "name": "A7",
+    "score": 0.6217
+  },
+  {
+    "startSec": 26,
+    "endSec": 26.5,
+    "name": "G",
+    "score": 0.5664
+  },
+  {
+    "startSec": 26.25,
+    "endSec": 26.75,
+    "name": "Dm6",
+    "score": 0.6449
+  },
+  {
+    "startSec": 26.5,
+    "endSec": 27,
+    "name": "Dm",
+    "score": 0.6693
+  },
+  {
+    "startSec": 26.75,
+    "endSec": 27.25,
+    "name": "Am7",
+    "score": 0.5703
+  },
+  {
+    "startSec": 27,
+    "endSec": 27.75,
+    "name": "Dm",
+    "score": 0.5844
+  },
+  {
+    "startSec": 27.5,
+    "endSec": 28,
+    "name": "Fmaj7",
+    "score": 0.5053
+  },
+  {
+    "startSec": 27.75,
+    "endSec": 28.25,
+    "name": "Dm",
+    "score": 0.7109
+  },
+  {
+    "startSec": 28,
+    "endSec": 28.5,
+    "name": "A",
+    "score": 0.6422
+  },
+  {
+    "startSec": 28.25,
+    "endSec": 28.75,
+    "name": "Fmaj7",
+    "score": 0.6568
+  },
+  {
+    "startSec": 28.5,
+    "endSec": 29.25,
+    "name": "Dm",
+    "score": 0.6507
+  },
+  {
+    "startSec": 29,
+    "endSec": 30,
+    "name": "C7",
+    "score": 0.5455
+  },
+  {
+    "startSec": 29.75,
+    "endSec": 30.25,
+    "name": "Dm",
+    "score": 0.6436
+  },
+  {
+    "startSec": 30,
+    "endSec": 30.5,
+    "name": "G",
+    "score": 0.6593
+  },
+  {
+    "startSec": 30.25,
+    "endSec": 30.75,
+    "name": "Dm6",
+    "score": 0.6107
+  },
+  {
+    "startSec": 30.5,
+    "endSec": 31,
+    "name": "G7",
+    "score": 0.712
+  },
+  {
+    "startSec": 30.75,
+    "endSec": 31.25,
+    "name": "Gm7",
+    "score": 0.6967
+  },
+  {
+    "startSec": 31,
+    "endSec": 31.5,
+    "name": "Dm7",
+    "score": 0.5552
+  },
+  {
+    "startSec": 31.25,
+    "endSec": 32,
+    "name": "Dm",
+    "score": 0.6377
+  },
+  {
+    "startSec": 31.75,
+    "endSec": 32.5,
+    "name": "Fmaj7",
+    "score": 0.572
+  },
+  {
+    "startSec": 32.25,
+    "endSec": 32.75,
+    "name": "Am7",
+    "score": 0.5299
+  },
+  {
+    "startSec": 32.5,
+    "endSec": 33,
+    "name": "Dm7",
+    "score": 0.5823
+  },
+  {
+    "startSec": 32.75,
+    "endSec": 33.25,
+    "name": "Dsus2",
+    "score": 0.5797
+  },
+  {
+    "startSec": 33,
+    "endSec": 33.5,
+    "name": "Dm",
+    "score": 0.666
+  },
+  {
+    "startSec": 33.25,
+    "endSec": 33.75,
+    "name": "Am",
+    "score": 0.6445
+  },
+  {
+    "startSec": 33.5,
+    "endSec": 34.25,
+    "name": "Dm",
+    "score": 0.654
+  },
+  {
+    "startSec": 34,
+    "endSec": 34.75,
+    "name": "A#maj7",
+    "score": 0.6001
+  },
+  {
+    "startSec": 34.5,
+    "endSec": 35,
+    "name": "Bm",
+    "score": 0.5938
+  },
+  {
+    "startSec": 34.75,
+    "endSec": 35.25,
+    "name": "Bm7",
+    "score": 0.5104
+  },
+  {
+    "startSec": 35,
+    "endSec": 35.5,
+    "name": "Dm",
+    "score": 0.5776
+  },
+  {
+    "startSec": 35.25,
+    "endSec": 35.75,
+    "name": "Bm",
+    "score": 0.7693
+  },
+  {
+    "startSec": 35.5,
+    "endSec": 36.25,
+    "name": "G7",
+    "score": 0.6786
+  },
+  {
+    "startSec": 36,
+    "endSec": 36.75,
+    "name": "Gm7",
+    "score": 0.7211
+  },
+  {
+    "startSec": 36.5,
+    "endSec": 37,
+    "name": "Gsus2",
+    "score": 0.6954
+  },
+  {
+    "startSec": 36.75,
+    "endSec": 37.25,
+    "name": "Dm",
+    "score": 0.6454
+  },
+  {
+    "startSec": 37,
+    "endSec": 37.75,
+    "name": "Fmaj7",
+    "score": 0.6061
+  },
+  {
+    "startSec": 37.5,
+    "endSec": 38.25,
+    "name": "Dm7",
+    "score": 0.6102
+  },
+  {
+    "startSec": 38,
+    "endSec": 38.5,
+    "name": "Fmaj7",
+    "score": 0.5693
+  },
+  {
+    "startSec": 38.25,
+    "endSec": 39.25,
+    "name": "Dm",
+    "score": 0.6297
+  },
+  {
+    "startSec": 39,
+    "endSec": 39.75,
+    "name": "A#maj7",
+    "score": 0.601
+  },
+  {
+    "startSec": 39.5,
+    "endSec": 40,
+    "name": "A#add9",
+    "score": 0.6092
+  },
+  {
+    "startSec": 39.75,
+    "endSec": 40.25,
+    "name": "Bmaj7",
+    "score": 0.5425
+  },
+  {
+    "startSec": 40,
+    "endSec": 40.5,
+    "name": "A#maj7",
+    "score": 0.5468
+  },
+  {
+    "startSec": 40.25,
+    "endSec": 40.75,
+    "name": "Dm",
+    "score": 0.58
+  },
+  {
+    "startSec": 40.5,
+    "endSec": 41,
+    "name": "Bm",
+    "score": 0.597
+  },
+  {
+    "startSec": 40.75,
+    "endSec": 41.25,
+    "name": "G7",
+    "score": 0.6155
+  },
+  {
+    "startSec": 41,
+    "endSec": 41.5,
+    "name": "Gm7",
+    "score": 0.7007
+  },
+  {
+    "startSec": 41.25,
+    "endSec": 42,
+    "name": "Dm",
+    "score": 0.7666
+  },
+  {
+    "startSec": 41.75,
+    "endSec": 42.25,
+    "name": "Gm7",
+    "score": 0.6876
+  },
+  {
+    "startSec": 42,
+    "endSec": 42.5,
+    "name": "A#",
+    "score": 0.662
+  },
+  {
+    "startSec": 42.25,
+    "endSec": 43,
+    "name": "Fmaj7",
+    "score": 0.5344
+  },
+  {
+    "startSec": 42.75,
+    "endSec": 43.25,
+    "name": "Am7",
+    "score": 0.5697
+  },
+  {
+    "startSec": 43,
+    "endSec": 43.5,
+    "name": "Dm",
+    "score": 0.6239
+  },
+  {
+    "startSec": 43.25,
+    "endSec": 43.75,
+    "name": "Fmaj7",
+    "score": 0.605
+  },
+  {
+    "startSec": 43.5,
+    "endSec": 44,
+    "name": "Dm",
+    "score": 0.6674
+  },
+  {
+    "startSec": 43.75,
+    "endSec": 44.25,
+    "name": "Fmaj7",
+    "score": 0.7006
+  },
+  {
+    "startSec": 44,
+    "endSec": 44.75,
+    "name": "Dm",
+    "score": 0.6707
+  },
+  {
+    "startSec": 44.5,
+    "endSec": 45,
+    "name": "A#maj7",
+    "score": 0.6923
+  },
+  {
+    "startSec": 44.75,
+    "endSec": 45.25,
+    "name": "C7",
+    "score": 0.6132
+  },
+  {
+    "startSec": 45,
+    "endSec": 45.5,
+    "name": "Bm",
+    "score": 0.5653
+  },
+  {
+    "startSec": 45.25,
+    "endSec": 45.75,
+    "name": "Bm7",
+    "score": 0.5237
+  },
+  {
+    "startSec": 45.5,
+    "endSec": 46,
+    "name": "Dm",
+    "score": 0.6854
+  },
+  {
+    "startSec": 45.75,
+    "endSec": 46.25,
+    "name": "Bm",
+    "score": 0.7127
+  },
+  {
+    "startSec": 46,
+    "endSec": 46.5,
+    "name": "G7",
+    "score": 0.6938
+  },
+  {
+    "startSec": 46.25,
+    "endSec": 46.75,
+    "name": "Gm7",
+    "score": 0.5013
+  },
+  {
+    "startSec": 46.5,
+    "endSec": 47,
+    "name": "C7",
+    "score": 0.5915
+  },
+  {
+    "startSec": 46.75,
+    "endSec": 47.25,
+    "name": "A#",
+    "score": 0.6675
+  },
+  {
+    "startSec": 47,
+    "endSec": 47.5,
+    "name": "Am7",
+    "score": 0.5354
+  },
+  {
+    "startSec": 47.25,
+    "endSec": 47.75,
+    "name": "F",
+    "score": 0.6098
+  },
+  {
+    "startSec": 47.5,
+    "endSec": 48.25,
+    "name": "A#",
+    "score": 0.6026
+  },
+  {
+    "startSec": 48,
+    "endSec": 48.75,
+    "name": "Dm",
+    "score": 0.6423
+  },
+  {
+    "startSec": 48.5,
+    "endSec": 49,
+    "name": "Fmaj7",
+    "score": 0.6455
+  },
+  {
+    "startSec": 48.75,
+    "endSec": 49.25,
+    "name": "Dm",
+    "score": 0.684
+  },
+  {
+    "startSec": 49,
+    "endSec": 49.5,
+    "name": "Fmaj7",
+    "score": 0.6732
+  },
+  {
+    "startSec": 49.25,
+    "endSec": 50,
+    "name": "Dm",
+    "score": 0.6264
+  },
+  {
+    "startSec": 49.75,
+    "endSec": 50.25,
+    "name": "A#maj7",
+    "score": 0.6389
+  },
+  {
+    "startSec": 50,
+    "endSec": 50.5,
+    "name": "A#add9",
+    "score": 0.52
+  },
+  {
+    "startSec": 50.25,
+    "endSec": 51,
+    "name": "Bm",
+    "score": 0.8119
+  },
+  {
+    "startSec": 50.75,
+    "endSec": 51.25,
+    "name": "Dm6",
+    "score": 0.5544
+  },
+  {
+    "startSec": 51,
+    "endSec": 51.75,
+    "name": "G7",
+    "score": 0.652
+  },
+  {
+    "startSec": 51.5,
+    "endSec": 52,
+    "name": "Gm7",
+    "score": 0.6453
+  },
+  {
+    "startSec": 51.75,
+    "endSec": 52.5,
+    "name": "Dm",
+    "score": 0.8111
+  },
+  {
+    "startSec": 52.25,
+    "endSec": 52.75,
+    "name": "Gm7",
+    "score": 0.6314
+  },
+  {
+    "startSec": 52.5,
+    "endSec": 53.5,
+    "name": "A#",
+    "score": 0.5661
+  },
+  {
+    "startSec": 53.25,
+    "endSec": 53.75,
+    "name": "Dm7",
+    "score": 0.5928
+  },
+  {
+    "startSec": 53.5,
+    "endSec": 54,
+    "name": "Dm",
+    "score": 0.57
+  },
+  {
+    "startSec": 53.75,
+    "endSec": 54.25,
+    "name": "Fmaj7",
+    "score": 0.6462
+  },
+  {
+    "startSec": 54,
+    "endSec": 55.25,
+    "name": "Dm",
+    "score": 0.7191
+  },
+  {
+    "startSec": 55,
+    "endSec": 55.5,
+    "name": "A#maj7",
+    "score": 0.6571
+  },
+  {
+    "startSec": 55.25,
+    "endSec": 56.25,
+    "name": "A#add9",
+    "score": 0.6952
+  },
+  {
+    "startSec": 56,
+    "endSec": 56.5,
+    "name": "Gm7",
+    "score": 0.5974
+  },
+  {
+    "startSec": 56.25,
+    "endSec": 56.75,
+    "name": "G7",
+    "score": 0.7691
+  },
+  {
+    "startSec": 56.5,
+    "endSec": 57,
+    "name": "Am7",
+    "score": 0.8096
+  },
+  {
+    "startSec": 56.75,
+    "endSec": 57.25,
+    "name": "Dm",
+    "score": 0.5828
+  },
+  {
+    "startSec": 57,
+    "endSec": 58,
+    "name": "G7",
+    "score": 0.6408
+  },
+  {
+    "startSec": 57.75,
+    "endSec": 58.5,
+    "name": "Dm",
+    "score": 0.6669
+  },
+  {
+    "startSec": 58.25,
+    "endSec": 59,
+    "name": "Am7",
+    "score": 0.5604
+  },
+  {
+    "startSec": 58.75,
+    "endSec": 59.5,
+    "name": "Dm",
+    "score": 0.6683
+  },
+  {
+    "startSec": 59.25,
+    "endSec": 60,
+    "name": "Fmaj7",
+    "score": 0.7046
+  },
+  {
+    "startSec": 59.75,
+    "endSec": 60.5,
+    "name": "Dm",
+    "score": 0.6751
+  },
+  {
+    "startSec": 60.25,
+    "endSec": 60.75,
+    "name": "A#add9",
+    "score": 0.6196
+  },
+  {
+    "startSec": 60.5,
+    "endSec": 61,
+    "name": "Cm7",
+    "score": 0.5722
+  },
+  {
+    "startSec": 60.75,
+    "endSec": 61.25,
+    "name": "Bm",
+    "score": 0.7017
+  },
+  {
+    "startSec": 61,
+    "endSec": 61.75,
+    "name": "Dm",
+    "score": 0.6141
+  },
+  {
+    "startSec": 61.5,
+    "endSec": 62,
+    "name": "A#add9",
+    "score": 0.5125
+  },
+  {
+    "startSec": 61.75,
+    "endSec": 62.25,
+    "name": "C7",
+    "score": 0.8489
+  },
+  {
+    "startSec": 62,
+    "endSec": 62.5,
+    "name": "A#add9",
+    "score": 0.7446
+  },
+  {
+    "startSec": 62.25,
+    "endSec": 63.25,
+    "name": "A#maj7",
+    "score": 0.841
+  },
+  {
+    "startSec": 63,
+    "endSec": 63.5,
+    "name": "Am",
+    "score": 0.7133
+  },
+  {
+    "startSec": 63.25,
+    "endSec": 63.75,
+    "name": "Dm",
+    "score": 0.6787
+  },
+  {
+    "startSec": 63.5,
+    "endSec": 64.5,
+    "name": "Dm7",
+    "score": 0.7017
+  },
+  {
+    "startSec": 64.25,
+    "endSec": 64.75,
+    "name": "Am",
+    "score": 0.7611
+  },
+  {
+    "startSec": 64.5,
+    "endSec": 65.25,
+    "name": "F",
+    "score": 0.6957
+  },
+  {
+    "startSec": 65,
+    "endSec": 65.5,
+    "name": "Fadd9",
+    "score": 0.6876
+  },
+  {
+    "startSec": 65.25,
+    "endSec": 65.75,
+    "name": "Fmaj7",
+    "score": 0.7422
+  },
+  {
+    "startSec": 65.5,
+    "endSec": 66,
+    "name": "A#",
+    "score": 0.6278
+  },
+  {
+    "startSec": 65.75,
+    "endSec": 66.25,
+    "name": "A#add9",
+    "score": 0.5069
+  },
+  {
+    "startSec": 66,
+    "endSec": 66.5,
+    "name": "A#",
+    "score": 0.5061
+  },
+  {
+    "startSec": 66.25,
+    "endSec": 67,
+    "name": "Dm",
+    "score": 0.7409
+  },
+  {
+    "startSec": 66.75,
+    "endSec": 67.75,
+    "name": "G7",
+    "score": 0.5681
+  },
+  {
+    "startSec": 67.5,
+    "endSec": 68,
+    "name": "Fadd9",
+    "score": 0.6043
+  },
+  {
+    "startSec": 67.75,
+    "endSec": 68.25,
+    "name": "Gm7",
+    "score": 0.7212
+  },
+  {
+    "startSec": 68,
+    "endSec": 68.5,
+    "name": "A#maj7",
+    "score": 0.6092
+  },
+  {
+    "startSec": 68.25,
+    "endSec": 69,
+    "name": "Am",
+    "score": 0.7575
+  },
+  {
+    "startSec": 68.75,
+    "endSec": 69.5,
+    "name": "Dm7",
+    "score": 0.7497
+  },
+  {
+    "startSec": 69.25,
+    "endSec": 69.75,
+    "name": "F",
+    "score": 0.65
+  },
+  {
+    "startSec": 69.5,
+    "endSec": 70,
+    "name": "Dm7",
+    "score": 0.6155
+  },
+  {
+    "startSec": 69.75,
+    "endSec": 70.5,
+    "name": "A#",
+    "score": 0.6544
+  },
+  {
+    "startSec": 70.25,
+    "endSec": 70.75,
+    "name": "F",
+    "score": 0.7617
+  },
+  {
+    "startSec": 70.5,
+    "endSec": 71,
+    "name": "Dm",
+    "score": 0.8277
+  },
+  {
+    "startSec": 70.75,
+    "endSec": 71.25,
+    "name": "A#maj7",
+    "score": 0.6039
+  },
+  {
+    "startSec": 71,
+    "endSec": 71.5,
+    "name": "A#add9",
+    "score": 0.5453
+  },
+  {
+    "startSec": 71.25,
+    "endSec": 71.75,
+    "name": "A#",
+    "score": 0.6474
+  },
+  {
+    "startSec": 71.5,
+    "endSec": 72,
+    "name": "Dm",
+    "score": 0.6958
+  },
+  {
+    "startSec": 71.75,
+    "endSec": 72.25,
+    "name": "G7",
+    "score": 0.7728
+  },
+  {
+    "startSec": 72,
+    "endSec": 73,
+    "name": "Gm7",
+    "score": 0.6651
+  },
+  {
+    "startSec": 72.75,
+    "endSec": 73.5,
+    "name": "Dm",
+    "score": 0.8481
+  },
+  {
+    "startSec": 73.25,
+    "endSec": 73.75,
+    "name": "F",
+    "score": 0.6846
+  },
+  {
+    "startSec": 73.5,
+    "endSec": 74,
+    "name": "Fmaj7",
+    "score": 0.8067
+  },
+  {
+    "startSec": 73.75,
+    "endSec": 74.25,
+    "name": "Am",
+    "score": 0.7182
+  },
+  {
+    "startSec": 74,
+    "endSec": 74.5,
+    "name": "A#maj7",
+    "score": 0.5496
+  },
+  {
+    "startSec": 74.25,
+    "endSec": 75.25,
+    "name": "Dm7",
+    "score": 0.6678
+  },
+  {
+    "startSec": 75,
+    "endSec": 76,
+    "name": "Dm",
+    "score": 0.6971
+  },
+  {
+    "startSec": 75.75,
+    "endSec": 76.25,
+    "name": "Fmaj7",
+    "score": 0.7314
+  },
+  {
+    "startSec": 76,
+    "endSec": 76.75,
+    "name": "C7",
+    "score": 0.6243
+  },
+  {
+    "startSec": 76.5,
+    "endSec": 77,
+    "name": "Dm7",
+    "score": 0.6678
+  },
+  {
+    "startSec": 76.75,
+    "endSec": 77.25,
+    "name": "Dm",
+    "score": 0.8445
+  },
+  {
+    "startSec": 77,
+    "endSec": 77.5,
+    "name": "G7",
+    "score": 0.7607
+  },
+  {
+    "startSec": 77.25,
+    "endSec": 77.75,
+    "name": "Fadd9",
+    "score": 0.6949
+  },
+  {
+    "startSec": 77.5,
+    "endSec": 78,
+    "name": "Am7",
+    "score": 0.6903
+  },
+  {
+    "startSec": 77.75,
+    "endSec": 78.5,
+    "name": "A#maj7",
+    "score": 0.6187
+  },
+  {
+    "startSec": 78.25,
+    "endSec": 78.75,
+    "name": "A#add9",
+    "score": 0.51
+  },
+  {
+    "startSec": 78.5,
+    "endSec": 79,
+    "name": "A#maj7",
+    "score": 0.7601
+  },
+  {
+    "startSec": 78.75,
+    "endSec": 79.5,
+    "name": "Am",
+    "score": 0.7983
+  },
+  {
+    "startSec": 79.25,
+    "endSec": 80,
+    "name": "Dm",
+    "score": 0.8463
+  },
+  {
+    "startSec": 79.75,
+    "endSec": 80.25,
+    "name": "Dm7",
+    "score": 0.705
+  },
+  {
+    "startSec": 80,
+    "endSec": 80.5,
+    "name": "Am",
+    "score": 0.7303
+  },
+  {
+    "startSec": 80.25,
+    "endSec": 80.75,
+    "name": "Dm",
+    "score": 0.7232
+  },
+  {
+    "startSec": 80.5,
+    "endSec": 81.25,
+    "name": "Gm7",
+    "score": 0.6949
+  },
+  {
+    "startSec": 81,
+    "endSec": 81.5,
+    "name": "Fmaj7",
+    "score": 0.6571
+  },
+  {
+    "startSec": 81.25,
+    "endSec": 81.75,
+    "name": "A#add9",
+    "score": 0.5887
+  },
+  {
+    "startSec": 81.5,
+    "endSec": 82,
+    "name": "Bmaj7",
+    "score": 0.532
+  },
+  {
+    "startSec": 81.75,
+    "endSec": 82.75,
+    "name": "A#",
+    "score": 0.5469
+  },
+  {
+    "startSec": 82.5,
+    "endSec": 83,
+    "name": "A#add9",
+    "score": 0.7156
+  },
+  {
+    "startSec": 82.75,
+    "endSec": 83.25,
+    "name": "A#maj7",
+    "score": 0.6444
+  },
+  {
+    "startSec": 83,
+    "endSec": 83.5,
+    "name": "Am7",
+    "score": 0.6119
+  },
+  {
+    "startSec": 83.25,
+    "endSec": 84.25,
+    "name": "Dm",
+    "score": 0.6735
+  },
+  {
+    "startSec": 84,
+    "endSec": 84.5,
+    "name": "A#",
+    "score": 0.6924
+  },
+  {
+    "startSec": 84.25,
+    "endSec": 84.75,
+    "name": "A#add9",
+    "score": 0.6357
+  },
+  {
+    "startSec": 84.5,
+    "endSec": 85,
+    "name": "Dm7",
+    "score": 0.5559
+  },
+  {
+    "startSec": 84.75,
+    "endSec": 85.25,
+    "name": "Dm",
+    "score": 0.7241
+  },
+  {
+    "startSec": 85,
+    "endSec": 85.5,
+    "name": "Fmaj7",
+    "score": 0.7486
+  },
+  {
+    "startSec": 85.25,
+    "endSec": 86,
+    "name": "Am",
+    "score": 0.8519
+  },
+  {
+    "startSec": 85.75,
+    "endSec": 86.5,
+    "name": "Dm",
+    "score": 0.5518
+  },
+  {
+    "startSec": 86.25,
+    "endSec": 86.75,
+    "name": "A#maj7",
+    "score": 0.7119
+  },
+  {
+    "startSec": 86.5,
+    "endSec": 87.25,
+    "name": "A#sus2",
+    "score": 0.748
+  },
+  {
+    "startSec": 87,
+    "endSec": 87.5,
+    "name": "A#maj7",
+    "score": 0.582
+  },
+  {
+    "startSec": 87.25,
+    "endSec": 87.75,
+    "name": "Dm",
+    "score": 0.6623
+  },
+  {
+    "startSec": 87.5,
+    "endSec": 88.25,
+    "name": "Bm",
+    "score": 0.8697
+  },
+  {
+    "startSec": 88,
+    "endSec": 88.5,
+    "name": "G7",
+    "score": 0.7815
+  },
+  {
+    "startSec": 88.25,
+    "endSec": 89.25,
+    "name": "Gm7",
+    "score": 0.6427
+  },
+  {
+    "startSec": 89,
+    "endSec": 89.5,
+    "name": "Dm",
+    "score": 0.6338
+  },
+  {
+    "startSec": 89.25,
+    "endSec": 90,
+    "name": "Fmaj7",
+    "score": 0.5573
+  },
+  {
+    "startSec": 89.75,
+    "endSec": 90.5,
+    "name": "Dm",
+    "score": 0.7304
+  },
+  {
+    "startSec": 90.25,
+    "endSec": 90.75,
+    "name": "Fmaj7",
+    "score": 0.704
+  },
+  {
+    "startSec": 90.5,
+    "endSec": 91.25,
+    "name": "Am",
+    "score": 0.8687
+  },
+  {
+    "startSec": 91,
+    "endSec": 91.75,
+    "name": "Dm",
+    "score": 0.6581
+  },
+  {
+    "startSec": 91.5,
+    "endSec": 92,
+    "name": "A#maj7",
+    "score": 0.6334
+  },
+  {
+    "startSec": 91.75,
+    "endSec": 92.25,
+    "name": "A#add9",
+    "score": 0.529
+  },
+  {
+    "startSec": 92,
+    "endSec": 92.5,
+    "name": "Bm",
+    "score": 0.8316
+  },
+  {
+    "startSec": 92.25,
+    "endSec": 93,
+    "name": "Dm",
+    "score": 0.5259
+  },
+  {
+    "startSec": 92.75,
+    "endSec": 93.25,
+    "name": "Bm",
+    "score": 0.6364
+  },
+  {
+    "startSec": 93,
+    "endSec": 93.75,
+    "name": "Gm7",
+    "score": 0.6715
+  },
+  {
+    "startSec": 93.5,
+    "endSec": 94.5,
+    "name": "Dm",
+    "score": 0.7909
+  },
+  {
+    "startSec": 94.25,
+    "endSec": 95.25,
+    "name": "A#",
+    "score": 0.7066
+  },
+  {
+    "startSec": 95,
+    "endSec": 95.75,
+    "name": "Dm",
+    "score": 0.5927
+  },
+  {
+    "startSec": 95.5,
+    "endSec": 96,
+    "name": "F",
+    "score": 0.7069
+  },
+  {
+    "startSec": 95.75,
+    "endSec": 96.5,
+    "name": "Am",
+    "score": 0.6889
+  },
+  {
+    "startSec": 96.25,
+    "endSec": 97,
+    "name": "Dm",
+    "score": 0.6507
+  },
+  {
+    "startSec": 96.75,
+    "endSec": 97.25,
+    "name": "A#maj7",
+    "score": 0.6235
+  },
+  {
+    "startSec": 97,
+    "endSec": 97.5,
+    "name": "A#add9",
+    "score": 0.559
+  },
+  {
+    "startSec": 97.25,
+    "endSec": 98,
+    "name": "Bm",
+    "score": 0.5623
+  },
+  {
+    "startSec": 97.75,
+    "endSec": 98.25,
+    "name": "A7",
+    "score": 0.7355
+  },
+  {
+    "startSec": 98,
+    "endSec": 98.5,
+    "name": "Am7",
+    "score": 0.6345
+  },
+  {
+    "startSec": 98.25,
+    "endSec": 98.75,
+    "name": "Dm7",
+    "score": 0.6828
+  },
+  {
+    "startSec": 98.5,
+    "endSec": 99,
+    "name": "A#",
+    "score": 0.8742
+  },
+  {
+    "startSec": 98.75,
+    "endSec": 99.5,
+    "name": "Dm",
+    "score": 0.6562
+  },
+  {
+    "startSec": 99.25,
+    "endSec": 99.75,
+    "name": "A#",
+    "score": 0.6761
+  },
+  {
+    "startSec": 99.5,
+    "endSec": 100,
+    "name": "Dm",
+    "score": 0.6434
+  },
+  {
+    "startSec": 99.75,
+    "endSec": 100.5,
+    "name": "Am",
+    "score": 0.5733
+  },
+  {
+    "startSec": 100.25,
+    "endSec": 102.25,
+    "name": "Dm",
+    "score": 0.6307
+  },
+  {
+    "startSec": 102,
+    "endSec": 102.75,
+    "name": "A#add9",
+    "score": 0.5754
+  },
+  {
+    "startSec": 102.5,
+    "endSec": 103,
+    "name": "Bm",
+    "score": 0.6237
+  },
+  {
+    "startSec": 102.75,
+    "endSec": 103.25,
+    "name": "Dm",
+    "score": 0.5705
+  },
+  {
+    "startSec": 103,
+    "endSec": 104.25,
+    "name": "Bm",
+    "score": 0.852
+  },
+  {
+    "startSec": 104,
+    "endSec": 104.75,
+    "name": "Am7",
+    "score": 0.5312
+  },
+  {
+    "startSec": 104.5,
+    "endSec": 105,
+    "name": "Dm",
+    "score": 0.6294
+  },
+  {
+    "startSec": 104.75,
+    "endSec": 105.25,
+    "name": "A#",
+    "score": 0.6301
+  },
+  {
+    "startSec": 105,
+    "endSec": 105.5,
+    "name": "C7",
+    "score": 0.7062
+  },
+  {
+    "startSec": 105.25,
+    "endSec": 105.75,
+    "name": "A#add9",
+    "score": 0.5474
+  },
+  {
+    "startSec": 105.5,
+    "endSec": 106,
+    "name": "Dm7",
+    "score": 0.6097
+  },
+  {
+    "startSec": 105.75,
+    "endSec": 106.5,
+    "name": "Dm",
+    "score": 0.6748
+  },
+  {
+    "startSec": 106.25,
+    "endSec": 107,
+    "name": "Am",
+    "score": 0.671
+  },
+  {
+    "startSec": 106.75,
+    "endSec": 107.5,
+    "name": "Dm",
+    "score": 0.6422
+  },
+  {
+    "startSec": 107.25,
+    "endSec": 108,
+    "name": "C7",
+    "score": 0.633
+  },
+  {
+    "startSec": 107.75,
+    "endSec": 108.25,
+    "name": "Bm",
+    "score": 0.5909
+  },
+  {
+    "startSec": 108,
+    "endSec": 108.5,
+    "name": "Dm",
+    "score": 0.6192
+  },
+  {
+    "startSec": 108.25,
+    "endSec": 108.75,
+    "name": "G",
+    "score": 0.596
+  },
+  {
+    "startSec": 108.5,
+    "endSec": 109,
+    "name": "Dm",
+    "score": 0.5701
+  },
+  {
+    "startSec": 108.75,
+    "endSec": 109.5,
+    "name": "Gm7",
+    "score": 0.7386
+  },
+  {
+    "startSec": 109.25,
+    "endSec": 109.75,
+    "name": "F6",
+    "score": 0.5974
+  },
+  {
+    "startSec": 109.5,
+    "endSec": 110,
+    "name": "C7",
+    "score": 0.5012
+  },
+  {
+    "startSec": 109.75,
+    "endSec": 110.75,
+    "name": "A#",
+    "score": 0.5871
+  },
+  {
+    "startSec": 110.5,
+    "endSec": 111.25,
+    "name": "Dm7",
+    "score": 0.5955
+  },
+  {
+    "startSec": 111,
+    "endSec": 111.75,
+    "name": "Dm",
+    "score": 0.6191
+  },
+  {
+    "startSec": 111.5,
+    "endSec": 112,
+    "name": "Am",
+    "score": 0.7107
+  },
+  {
+    "startSec": 111.75,
+    "endSec": 112.25,
+    "name": "A7",
+    "score": 0.6285
+  },
+  {
+    "startSec": 112,
+    "endSec": 112.75,
+    "name": "Dm",
+    "score": 0.5985
+  },
+  {
+    "startSec": 112.5,
+    "endSec": 113,
+    "name": "C7",
+    "score": 0.5797
+  },
+  {
+    "startSec": 112.75,
+    "endSec": 113.25,
+    "name": "Cmaj7",
+    "score": 0.5932
+  },
+  {
+    "startSec": 113,
+    "endSec": 113.5,
+    "name": "Bm7",
+    "score": 0.5728
+  },
+  {
+    "startSec": 113.25,
+    "endSec": 113.75,
+    "name": "Dm",
+    "score": 0.549
+  },
+  {
+    "startSec": 113.5,
+    "endSec": 114,
+    "name": "Bm",
+    "score": 0.6605
+  },
+  {
+    "startSec": 113.75,
+    "endSec": 114.25,
+    "name": "G7",
+    "score": 0.7222
+  },
+  {
+    "startSec": 114,
+    "endSec": 114.5,
+    "name": "Gm7",
+    "score": 0.6277
+  },
+  {
+    "startSec": 114.25,
+    "endSec": 114.75,
+    "name": "A#maj7",
+    "score": 0.6345
+  },
+  {
+    "startSec": 114.5,
+    "endSec": 115.25,
+    "name": "Fadd9",
+    "score": 0.6466
+  },
+  {
+    "startSec": 115,
+    "endSec": 115.5,
+    "name": "Dm",
+    "score": 0.7287
+  },
+  {
+    "startSec": 115.25,
+    "endSec": 116,
+    "name": "A#",
+    "score": 0.5354
+  },
+  {
+    "startSec": 115.75,
+    "endSec": 116.25,
+    "name": "Dm",
+    "score": 0.6515
+  },
+  {
+    "startSec": 116,
+    "endSec": 116.5,
+    "name": "Dm7",
+    "score": 0.5711
+  },
+  {
+    "startSec": 116.25,
+    "endSec": 117,
+    "name": "Fmaj7",
+    "score": 0.6699
+  },
+  {
+    "startSec": 116.75,
+    "endSec": 117.25,
+    "name": "Am",
+    "score": 0.6299
+  },
+  {
+    "startSec": 117,
+    "endSec": 117.75,
+    "name": "Dm",
+    "score": 0.6345
+  },
+  {
+    "startSec": 117.5,
+    "endSec": 118,
+    "name": "F",
+    "score": 0.5687
+  },
+  {
+    "startSec": 117.75,
+    "endSec": 118.25,
+    "name": "A#add9",
+    "score": 0.7128
+  },
+  {
+    "startSec": 118,
+    "endSec": 118.75,
+    "name": "A#sus2",
+    "score": 0.6325
+  },
+  {
+    "startSec": 118.5,
+    "endSec": 119,
+    "name": "Dm7",
+    "score": 0.6445
+  },
+  {
+    "startSec": 118.75,
+    "endSec": 119.25,
+    "name": "G",
+    "score": 0.6316
+  },
+  {
+    "startSec": 119,
+    "endSec": 119.5,
+    "name": "G7",
+    "score": 0.7387
+  },
+  {
+    "startSec": 119.25,
+    "endSec": 119.75,
+    "name": "Gm7",
+    "score": 0.732
+  },
+  {
+    "startSec": 119.5,
+    "endSec": 120.25,
+    "name": "Dm",
+    "score": 0.6954
+  },
+  {
+    "startSec": 120,
+    "endSec": 121,
+    "name": "A#",
+    "score": 0.6207
+  },
+  {
+    "startSec": 120.75,
+    "endSec": 121.25,
+    "name": "C7",
+    "score": 0.5495
+  },
+  {
+    "startSec": 121,
+    "endSec": 121.75,
+    "name": "Dm7",
+    "score": 0.6203
+  },
+  {
+    "startSec": 121.5,
+    "endSec": 122,
+    "name": "Fmaj7",
+    "score": 0.5746
+  },
+  {
+    "startSec": 121.75,
+    "endSec": 122.25,
+    "name": "Dm",
+    "score": 0.6789
+  },
+  {
+    "startSec": 122,
+    "endSec": 122.5,
+    "name": "Am",
+    "score": 0.6212
+  },
+  {
+    "startSec": 122.25,
+    "endSec": 122.75,
+    "name": "Dm",
+    "score": 0.6648
+  },
+  {
+    "startSec": 122.5,
+    "endSec": 123,
+    "name": "F",
+    "score": 0.5794
+  },
+  {
+    "startSec": 122.75,
+    "endSec": 123.25,
+    "name": "A#maj7",
+    "score": 0.6197
+  },
+  {
+    "startSec": 123,
+    "endSec": 123.5,
+    "name": "C7",
+    "score": 0.5381
+  },
+  {
+    "startSec": 123.25,
+    "endSec": 123.75,
+    "name": "Bm",
+    "score": 0.6142
+  },
+  {
+    "startSec": 123.5,
+    "endSec": 124,
+    "name": "Dm7",
+    "score": 0.5543
+  },
+  {
+    "startSec": 123.75,
+    "endSec": 124.5,
+    "name": "Dm",
+    "score": 0.6357
+  },
+  {
+    "startSec": 124.25,
+    "endSec": 124.75,
+    "name": "A#add9",
+    "score": 0.6782
+  },
+  {
+    "startSec": 124.5,
+    "endSec": 125,
+    "name": "A#sus2",
+    "score": 0.7317
+  },
+  {
+    "startSec": 124.75,
+    "endSec": 126,
+    "name": "A#maj7",
+    "score": 0.7386
+  },
+  {
+    "startSec": 125.75,
+    "endSec": 126.25,
+    "name": "Am",
+    "score": 0.7367
+  },
+  {
+    "startSec": 126,
+    "endSec": 126.5,
+    "name": "Dm",
+    "score": 0.6123
+  },
+  {
+    "startSec": 126.25,
+    "endSec": 126.75,
+    "name": "Dm7",
+    "score": 0.7436
+  },
+  {
+    "startSec": 126.5,
+    "endSec": 127,
+    "name": "Dm",
+    "score": 0.82
+  },
+  {
+    "startSec": 126.75,
+    "endSec": 127.5,
+    "name": "Dm7",
+    "score": 0.74
+  },
+  {
+    "startSec": 127.25,
+    "endSec": 127.75,
+    "name": "Fmaj7",
+    "score": 0.7173
+  },
+  {
+    "startSec": 127.5,
+    "endSec": 128.25,
+    "name": "F",
+    "score": 0.6811
+  },
+  {
+    "startSec": 128,
+    "endSec": 129,
+    "name": "A#",
+    "score": 0.5881
+  },
+  {
+    "startSec": 128.75,
+    "endSec": 129.25,
+    "name": "Dm7",
+    "score": 0.6973
+  },
+  {
+    "startSec": 129,
+    "endSec": 129.75,
+    "name": "Gm7",
+    "score": 0.7289
+  },
+  {
+    "startSec": 129.5,
+    "endSec": 130,
+    "name": "Dm",
+    "score": 0.634
+  },
+  {
+    "startSec": 129.75,
+    "endSec": 130.25,
+    "name": "Gm7",
+    "score": 0.6502
+  },
+  {
+    "startSec": 130,
+    "endSec": 130.5,
+    "name": "F",
+    "score": 0.5325
+  },
+  {
+    "startSec": 130.25,
+    "endSec": 130.75,
+    "name": "A#add9",
+    "score": 0.539
+  },
+  {
+    "startSec": 130.5,
+    "endSec": 131.25,
+    "name": "A#",
+    "score": 0.7563
+  },
+  {
+    "startSec": 131,
+    "endSec": 131.5,
+    "name": "Fmaj7",
+    "score": 0.6991
+  },
+  {
+    "startSec": 131.25,
+    "endSec": 131.75,
+    "name": "F",
+    "score": 0.6621
+  },
+  {
+    "startSec": 131.5,
+    "endSec": 132.25,
+    "name": "Dm",
+    "score": 0.8333
+  },
+  {
+    "startSec": 132,
+    "endSec": 132.5,
+    "name": "Am",
+    "score": 0.6861
+  },
+  {
+    "startSec": 132.25,
+    "endSec": 132.75,
+    "name": "Dm7",
+    "score": 0.6362
+  },
+  {
+    "startSec": 132.5,
+    "endSec": 133,
+    "name": "Fmaj7",
+    "score": 0.5957
+  },
+  {
+    "startSec": 132.75,
+    "endSec": 133.25,
+    "name": "Gm7",
+    "score": 0.6194
+  },
+  {
+    "startSec": 133,
+    "endSec": 133.5,
+    "name": "Dm",
+    "score": 0.7371
+  },
+  {
+    "startSec": 133.25,
+    "endSec": 134,
+    "name": "Fmaj7",
+    "score": 0.6398
+  },
+  {
+    "startSec": 133.75,
+    "endSec": 134.25,
+    "name": "A#",
+    "score": 0.6089
+  },
+  {
+    "startSec": 134,
+    "endSec": 134.5,
+    "name": "Dm7",
+    "score": 0.6935
+  },
+  {
+    "startSec": 134.25,
+    "endSec": 134.75,
+    "name": "Dm",
+    "score": 0.8877
+  },
+  {
+    "startSec": 134.5,
+    "endSec": 135.5,
+    "name": "G7",
+    "score": 0.7097
+  },
+  {
+    "startSec": 135.25,
+    "endSec": 136,
+    "name": "Gm7",
+    "score": 0.6425
+  },
+  {
+    "startSec": 135.75,
+    "endSec": 136.5,
+    "name": "Dm",
+    "score": 0.8129
+  },
+  {
+    "startSec": 136.25,
+    "endSec": 136.75,
+    "name": "Am",
+    "score": 0.7959
+  },
+  {
+    "startSec": 136.5,
+    "endSec": 137.5,
+    "name": "Dm",
+    "score": 0.8443
+  },
+  {
+    "startSec": 137.25,
+    "endSec": 138,
+    "name": "Dm7",
+    "score": 0.6529
+  },
+  {
+    "startSec": 137.75,
+    "endSec": 138.25,
+    "name": "Dm",
+    "score": 0.6909
+  },
+  {
+    "startSec": 138,
+    "endSec": 138.5,
+    "name": "Gm7",
+    "score": 0.6723
+  },
+  {
+    "startSec": 138.25,
+    "endSec": 138.75,
+    "name": "Fmaj7",
+    "score": 0.6933
+  },
+  {
+    "startSec": 138.5,
+    "endSec": 139.5,
+    "name": "A#",
+    "score": 0.578
+  },
+  {
+    "startSec": 139.25,
+    "endSec": 140,
+    "name": "Dm",
+    "score": 0.7624
+  },
+  {
+    "startSec": 139.75,
+    "endSec": 140.5,
+    "name": "G7",
+    "score": 0.6455
+  },
+  {
+    "startSec": 140.25,
+    "endSec": 140.75,
+    "name": "Fadd9",
+    "score": 0.5563
+  },
+  {
+    "startSec": 140.5,
+    "endSec": 141,
+    "name": "Am7",
+    "score": 0.5939
+  },
+  {
+    "startSec": 140.75,
+    "endSec": 141.25,
+    "name": "Gm7",
+    "score": 0.684
+  },
+  {
+    "startSec": 141,
+    "endSec": 141.5,
+    "name": "Fadd9",
+    "score": 0.5664
+  },
+  {
+    "startSec": 141.25,
+    "endSec": 141.75,
+    "name": "Dm",
+    "score": 0.7538
+  },
+  {
+    "startSec": 141.5,
+    "endSec": 142,
+    "name": "Am",
+    "score": 0.8599
+  },
+  {
+    "startSec": 141.75,
+    "endSec": 142.5,
+    "name": "Dm",
+    "score": 0.6849
+  },
+  {
+    "startSec": 142.25,
+    "endSec": 142.75,
+    "name": "Fmaj7",
+    "score": 0.6794
+  },
+  {
+    "startSec": 142.5,
+    "endSec": 143,
+    "name": "Am",
+    "score": 0.7747
+  },
+  {
+    "startSec": 142.75,
+    "endSec": 143.75,
+    "name": "Dm",
+    "score": 0.6842
+  },
+  {
+    "startSec": 143.5,
+    "endSec": 144,
+    "name": "Fmaj7",
+    "score": 0.7038
+  },
+  {
+    "startSec": 143.75,
+    "endSec": 144.5,
+    "name": "A#add9",
+    "score": 0.6462
+  },
+  {
+    "startSec": 144.25,
+    "endSec": 144.75,
+    "name": "G7",
+    "score": 0.5044
+  },
+  {
+    "startSec": 144.5,
+    "endSec": 145,
+    "name": "A#maj7",
+    "score": 0.5501
+  },
+  {
+    "startSec": 144.75,
+    "endSec": 145.5,
+    "name": "A#add9",
+    "score": 0.5399
+  },
+  {
+    "startSec": 145.25,
+    "endSec": 145.75,
+    "name": "A#maj7",
+    "score": 0.6226
+  },
+  {
+    "startSec": 145.5,
+    "endSec": 146.25,
+    "name": "Gm7",
+    "score": 0.6948
+  },
+  {
+    "startSec": 146,
+    "endSec": 146.5,
+    "name": "Dm",
+    "score": 0.6381
+  },
+  {
+    "startSec": 146.25,
+    "endSec": 146.75,
+    "name": "Dsus4",
+    "score": 0.6042
+  },
+  {
+    "startSec": 146.5,
+    "endSec": 147,
+    "name": "Am7",
+    "score": 0.6387
+  },
+  {
+    "startSec": 146.75,
+    "endSec": 147.25,
+    "name": "A7",
+    "score": 0.5957
+  },
+  {
+    "startSec": 147,
+    "endSec": 148.25,
+    "name": "Dm",
+    "score": 0.7
+  },
+  {
+    "startSec": 148,
+    "endSec": 148.5,
+    "name": "A7",
+    "score": 0.6129
+  },
+  {
+    "startSec": 148.25,
+    "endSec": 148.75,
+    "name": "Am7",
+    "score": 0.618
+  },
+  {
+    "startSec": 148.5,
+    "endSec": 149.5,
+    "name": "Dm",
+    "score": 0.6603
+  },
+  {
+    "startSec": 149.25,
+    "endSec": 149.75,
+    "name": "A7",
+    "score": 0.6976
+  },
+  {
+    "startSec": 149.5,
+    "endSec": 150,
+    "name": "Am7",
+    "score": 0.6408
+  },
+  {
+    "startSec": 149.75,
+    "endSec": 150.75,
+    "name": "Dm",
+    "score": 0.7864
+  },
+  {
+    "startSec": 150.5,
+    "endSec": 151,
+    "name": "Am7",
+    "score": 0.6306
+  },
+  {
+    "startSec": 150.75,
+    "endSec": 152,
+    "name": "Dm",
+    "score": 0.6995
+  },
+  {
+    "startSec": 151.75,
+    "endSec": 152.25,
+    "name": "Am7",
+    "score": 0.5933
+  },
+  {
+    "startSec": 152,
+    "endSec": 152.5,
+    "name": "A7",
+    "score": 0.5014
+  },
+  {
+    "startSec": 152.25,
+    "endSec": 153,
+    "name": "Dm",
+    "score": 0.6123
+  },
+  {
+    "startSec": 152.75,
+    "endSec": 153.25,
+    "name": "A7",
+    "score": 0.6095
+  },
+  {
+    "startSec": 153,
+    "endSec": 155.25,
+    "name": "Dm",
+    "score": 0.6059
+  },
+  {
+    "startSec": 155,
+    "endSec": 155.5,
+    "name": "A7",
+    "score": 0.5525
+  },
+  {
+    "startSec": 155.25,
+    "endSec": 155.75,
+    "name": "Dmaj7",
+    "score": 0.6066
+  },
+  {
+    "startSec": 155.5,
+    "endSec": 156,
+    "name": "Dm7",
+    "score": 0.6266
+  },
+  {
+    "startSec": 155.75,
+    "endSec": 156.25,
+    "name": "Dm",
+    "score": 0.5196
+  },
+  {
+    "startSec": 156,
+    "endSec": 156.75,
+    "name": "Am7",
+    "score": 0.6224
+  },
+  {
+    "startSec": 156.5,
+    "endSec": 157,
+    "name": "Fadd9",
+    "score": 0.6834
+  },
+  {
+    "startSec": 156.75,
+    "endSec": 157.5,
+    "name": "A#",
+    "score": 0.6876
+  },
+  {
+    "startSec": 157.25,
+    "endSec": 157.75,
+    "name": "A#add9",
+    "score": 0.6632
+  },
+  {
+    "startSec": 157.5,
+    "endSec": 158,
+    "name": "A#",
+    "score": 0.6138
+  },
+  {
+    "startSec": 157.75,
+    "endSec": 159.5,
+    "name": "Dm",
+    "score": 0.637
+  },
+  {
+    "startSec": 159.25,
+    "endSec": 159.75,
+    "name": "Am",
+    "score": 0.6345
+  },
+  {
+    "startSec": 159.5,
+    "endSec": 160.25,
+    "name": "A#add9",
+    "score": 0.6413
+  },
+  {
+    "startSec": 160,
+    "endSec": 160.75,
+    "name": "A7",
+    "score": 0.5891
+  },
+  {
+    "startSec": 160.5,
+    "endSec": 161.25,
+    "name": "Dm6",
+    "score": 0.5804
+  },
+  {
+    "startSec": 161,
+    "endSec": 161.5,
+    "name": "Gadd9",
+    "score": 0.6373
+  },
+  {
+    "startSec": 161.25,
+    "endSec": 162,
+    "name": "Gm7",
+    "score": 0.6433
+  },
+  {
+    "startSec": 161.75,
+    "endSec": 162.25,
+    "name": "G7",
+    "score": 0.6833
+  },
+  {
+    "startSec": 162,
+    "endSec": 162.75,
+    "name": "A#",
+    "score": 0.66
+  },
+  {
+    "startSec": 162.5,
+    "endSec": 163,
+    "name": "A#add9",
+    "score": 0.6559
+  },
+  {
+    "startSec": 162.75,
+    "endSec": 163.25,
+    "name": "Dm7",
+    "score": 0.6005
+  },
+  {
+    "startSec": 163,
+    "endSec": 164,
+    "name": "Dm",
+    "score": 0.7289
+  },
+  {
+    "startSec": 163.75,
+    "endSec": 164.25,
+    "name": "F",
+    "score": 0.6709
+  },
+  {
+    "startSec": 164,
+    "endSec": 164.75,
+    "name": "Dm",
+    "score": 0.6304
+  },
+  {
+    "startSec": 164.5,
+    "endSec": 165,
+    "name": "A#maj7",
+    "score": 0.6544
+  },
+  {
+    "startSec": 164.75,
+    "endSec": 165.25,
+    "name": "A#add9",
+    "score": 0.6732
+  },
+  {
+    "startSec": 165,
+    "endSec": 165.5,
+    "name": "A#maj7",
+    "score": 0.554
+  },
+  {
+    "startSec": 165.25,
+    "endSec": 166,
+    "name": "Dm",
+    "score": 0.588
+  },
+  {
+    "startSec": 165.75,
+    "endSec": 166.25,
+    "name": "G7",
+    "score": 0.6976
+  },
+  {
+    "startSec": 166,
+    "endSec": 166.5,
+    "name": "Gm7",
+    "score": 0.6689
+  },
+  {
+    "startSec": 166.25,
+    "endSec": 167,
+    "name": "A#maj7",
+    "score": 0.6011
+  },
+  {
+    "startSec": 166.75,
+    "endSec": 167.25,
+    "name": "Dm",
+    "score": 0.6132
+  },
+  {
+    "startSec": 167,
+    "endSec": 167.75,
+    "name": "Gm7",
+    "score": 0.6588
+  },
+  {
+    "startSec": 167.5,
+    "endSec": 168,
+    "name": "F",
+    "score": 0.5255
+  },
+  {
+    "startSec": 167.75,
+    "endSec": 168.5,
+    "name": "A#maj7",
+    "score": 0.5814
+  },
+  {
+    "startSec": 168.25,
+    "endSec": 170,
+    "name": "Dm",
+    "score": 0.6039
+  },
+  {
+    "startSec": 169.75,
+    "endSec": 170.25,
+    "name": "A#maj7",
+    "score": 0.646
+  },
+  {
+    "startSec": 170,
+    "endSec": 170.5,
+    "name": "A#add9",
+    "score": 0.5995
+  },
+  {
+    "startSec": 170.25,
+    "endSec": 171,
+    "name": "A#maj7",
+    "score": 0.5553
+  },
+  {
+    "startSec": 170.75,
+    "endSec": 171.5,
+    "name": "Dm",
+    "score": 0.6452
+  },
+  {
+    "startSec": 171.25,
+    "endSec": 171.75,
+    "name": "Gsus2",
+    "score": 0.7555
+  },
+  {
+    "startSec": 171.5,
+    "endSec": 172,
+    "name": "Am7",
+    "score": 0.8819
+  },
+  {
+    "startSec": 171.75,
+    "endSec": 172.5,
+    "name": "Gm7",
+    "score": 0.731
+  },
+  {
+    "startSec": 172.25,
+    "endSec": 172.75,
+    "name": "G7",
+    "score": 0.6932
+  },
+  {
+    "startSec": 172.5,
+    "endSec": 174.25,
+    "name": "Dm",
+    "score": 0.6544
+  },
+  {
+    "startSec": 174,
+    "endSec": 174.5,
+    "name": "A#maj7",
+    "score": 0.635
+  },
+  {
+    "startSec": 174.25,
+    "endSec": 175.25,
+    "name": "Dm",
+    "score": 0.6433
+  },
+  {
+    "startSec": 175,
+    "endSec": 175.5,
+    "name": "A#",
+    "score": 0.66
+  },
+  {
+    "startSec": 175.25,
+    "endSec": 175.75,
+    "name": "A#add9",
+    "score": 0.6491
+  },
+  {
+    "startSec": 175.5,
+    "endSec": 176.25,
+    "name": "A#maj7",
+    "score": 0.5752
+  },
+  {
+    "startSec": 176,
+    "endSec": 176.5,
+    "name": "Dm7",
+    "score": 0.5695
+  },
+  {
+    "startSec": 176.25,
+    "endSec": 176.75,
+    "name": "G7",
+    "score": 0.5609
+  },
+  {
+    "startSec": 176.5,
+    "endSec": 177,
+    "name": "Gm7",
+    "score": 0.734
+  },
+  {
+    "startSec": 176.75,
+    "endSec": 177.25,
+    "name": "Gsus2",
+    "score": 0.5981
+  },
+  {
+    "startSec": 177,
+    "endSec": 178,
+    "name": "Dm",
+    "score": 0.7564
+  },
+  {
+    "startSec": 177.75,
+    "endSec": 178.25,
+    "name": "A#",
+    "score": 0.693
+  },
+  {
+    "startSec": 178,
+    "endSec": 178.5,
+    "name": "A#add9",
+    "score": 0.6445
+  },
+  {
+    "startSec": 178.25,
+    "endSec": 178.75,
+    "name": "A#maj7",
+    "score": 0.5884
+  },
+  {
+    "startSec": 178.5,
+    "endSec": 180.5,
+    "name": "Dm",
+    "score": 0.6677
+  },
+  {
+    "startSec": 180.25,
+    "endSec": 180.75,
+    "name": "A#maj7",
+    "score": 0.6856
+  },
+  {
+    "startSec": 180.5,
+    "endSec": 181,
+    "name": "A#add9",
+    "score": 0.6504
+  },
+  {
+    "startSec": 180.75,
+    "endSec": 181.5,
+    "name": "A#maj7",
+    "score": 0.5488
+  },
+  {
+    "startSec": 181.25,
+    "endSec": 181.75,
+    "name": "Dm",
+    "score": 0.5913
+  },
+  {
+    "startSec": 181.5,
+    "endSec": 182.25,
+    "name": "Dm7",
+    "score": 0.5366
+  },
+  {
+    "startSec": 182,
+    "endSec": 182.5,
+    "name": "A#maj7",
+    "score": 0.5165
+  },
+  {
+    "startSec": 182.25,
+    "endSec": 182.75,
+    "name": "A#add9",
+    "score": 0.5471
+  },
+  {
+    "startSec": 182.5,
+    "endSec": 183,
+    "name": "A#sus2",
+    "score": 0.6836
+  },
+  {
+    "startSec": 182.75,
+    "endSec": 183.25,
+    "name": "A#add9",
+    "score": 0.6572
+  },
+  {
+    "startSec": 183,
+    "endSec": 183.5,
+    "name": "A#",
+    "score": 0.6644
+  },
+  {
+    "startSec": 183.25,
+    "endSec": 183.75,
+    "name": "A#add9",
+    "score": 0.7114
+  },
+  {
+    "startSec": 183.5,
+    "endSec": 184,
+    "name": "A#maj7",
+    "score": 0.5982
+  },
+  {
+    "startSec": 183.75,
+    "endSec": 185.5,
+    "name": "Dm",
+    "score": 0.6811
+  },
+  {
+    "startSec": 185.25,
+    "endSec": 185.75,
+    "name": "F",
+    "score": 0.7056
+  },
+  {
+    "startSec": 185.5,
+    "endSec": 186,
+    "name": "C7",
+    "score": 0.5619
+  },
+  {
+    "startSec": 185.75,
+    "endSec": 186.25,
+    "name": "A#maj7",
+    "score": 0.527
+  },
+  {
+    "startSec": 186,
+    "endSec": 186.5,
+    "name": "Dm",
+    "score": 0.5547
+  },
+  {
+    "startSec": 186.25,
+    "endSec": 186.75,
+    "name": "Am7",
+    "score": 0.5577
+  },
+  {
+    "startSec": 186.5,
+    "endSec": 187.25,
+    "name": "Dm",
+    "score": 0.6057
+  },
+  {
+    "startSec": 187,
+    "endSec": 188,
+    "name": "Am7",
+    "score": 0.568
+  },
+  {
+    "startSec": 187.75,
+    "endSec": 188.25,
+    "name": "Gm7",
+    "score": 0.6441
+  },
+  {
+    "startSec": 188,
+    "endSec": 188.5,
+    "name": "Fmaj7",
+    "score": 0.5699
+  },
+  {
+    "startSec": 188.25,
+    "endSec": 189,
+    "name": "Dm",
+    "score": 0.8346
+  },
+  {
+    "startSec": 188.75,
+    "endSec": 189.5,
+    "name": "Gm7",
+    "score": 0.6507
+  },
+  {
+    "startSec": 189.25,
+    "endSec": 189.75,
+    "name": "Fadd9",
+    "score": 0.5253
+  },
+  {
+    "startSec": 189.5,
+    "endSec": 190.0088888888889,
+    "name": "Dm",
+    "score": 0.6024
+  }
+]

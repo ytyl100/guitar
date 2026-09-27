@@ -188,6 +188,8 @@ model Project {
   sourceType String @default("upload")
   /// 上传时为原始文件名；url 时为原始 URL
   sourceRef  String?
+  /// URL 项目的下载执行方：server（服务器 yt-dlp）| client（本机下载代理回传）
+  downloadDriver String?
   /// 归一化后的本地音频绝对路径（下载完成 / 上传落盘后回填）
   audioPath  String?
   /// 原始文件名或 yt-dlp 视频标题
@@ -329,4 +331,22 @@ model PracticePackage {
 
   @@index([projectId])
   @@index([scoreId])
+}
+
+/// 课程大纲（阶段→课程→章节→课时 的整棵树 + 教学视频库 + 和弦库 + 和弦练习组）
+///
+/// 为什么是「一个 JSON 文档」而不是 Stage/Course/Chapter/Lesson 四张表：
+/// CMS 侧的增删改（`curriculumOps.ts`，892 行 / 57 项回归全过）全部按「整棵树」计算，
+/// 拆表就得把这套逻辑在服务端重写一遍，风险远大于收益，而且必然出现两边算法漂移。
+/// 这与已有的 `PracticePackage.payload` 是同一套做法（整块 JSON 存文档）。
+model CurriculumDoc {
+  /// 单例文档，固定 id = "default"
+  id       String @id @default("default")
+  /// 版本号：每次 PUT 自增；前端带 `baseRevision`，不一致则 409（乐观锁）
+  revision Int    @default(1)
+  /// { stages, videoLibrary, chords, chordGroups }
+  payload  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

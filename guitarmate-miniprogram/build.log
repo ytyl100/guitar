@@ -1,0 +1,177 @@
+
+> guitarmate-miniprogram@1.0.0 build:weapp
+> taro build --type weapp
+
+👽 Taro v4.2.1
+
+Tips:
+1. 建议开启持久化缓存功能，能有效提升二次编译速度，详情请参考: https://docs.taro.zone/docs/config-detail#cache。
+
+
+
+● Webpack █████████████████████████  (0%)  
+ 
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ setup (9%) compilation 
+ AMDPlugin
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (10%) 0/12 entries 12/12 dependen
+cies 0/12 modules 1 active 
+ babel-loader › src\app.config.ts
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (10%) 0/12 entries 12/12 dependen
+cies 0/12 modules 1 active 
+ babel-loader › src\app.config.ts
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (10%) 0/12 entries 12/12 dependen
+cies 1/12 modules 11 active 
+ ...l-loader › node_modules\@tarojs\webpack5-runner\dist\template\custom-wrapp
+er.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 30/92 dependen
+cies 3/22 modules 18 active 
+ babel-loader › node_modules\@tarojs\plugin-platform-weapp\dist\runtime.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 74/127 depende
+ncies 3/35 modules 32 active 
+ babel-loader › node_modules\@tarojs\react\dist\react.esm.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 95/127 depende
+ncies 3/43 modules 33 active 
+ ...tarmate-miniprogram\node_modules\@babel\runtime\helpers\esm\asyncToGenerat
+or.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 98/148 depende
+ncies 4/46 modules 40 active 
+ babel-loader › node_modules\@tarojs\runtime\dist\perf.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%)  
+ import loader .\node_modules\postcss-loader\dist\cjs.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%)  
+ import loader .\node_modules\sass-loader\dist\cjs.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 164/176 depend
+encies 7/85 modules 73 active 
+ ...itar\guitarmate-miniprogram\node_modules\@babel\runtime\helpers\esm\inheri
+ts.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 175/194 depend
+encies 9/85 modules 76 active 
+ babel-loader › src\utils\pitchDetect.ts
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 315/364 depend
+encies 13/93 modules 73 active 
+ babel-loader › node_modules\@tarojs\shared\dist\index.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 377/410 depend
+encies 19/119 modules 89 active 
+ ...armate-miniprogram\node_modules\@babel\runtime\helpers\esm\regeneratorDefi
+ne.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 398/436 depend
+encies 27/120 modules 93 active 
+ ...iniprogram\node_modules\@babel\runtime\helpers\esm\possibleConstructorRetu
+rn.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 421/443 depend
+encies 31/124 modules 90 active 
+ babel-loader › node_modules\@tarojs\runtime\dist\dom\anchor-element.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 440/473 depend
+encies 51/132 modules 81 active 
+ ...r\guitarmate-miniprogram\node_modules\@babel\runtime\helpers\esm\toPrimiti
+ve.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 465/483 depend
+encies 55/144 modules 78 active 
+ node_modules\react-reconciler\constants.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 483/498 depend
+encies 73/146 modules 73 active 
+ ...cript\esm|d:\djc\guitar\guitarmate-miniprogram\node_modules\tslib\tslib.es
+6.mjs
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (23%) 3/12 entries 507/510 depend
+encies 104/147 modules 43 active 
+ babel-loader › node_modules\@tarojs\api\dist\index.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (32%) 5/12 entries 510/515 depend
+encies 121/149 modules 28 active 
+ node_modules\react-reconciler\cjs\react-reconciler.production.min.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (32%) 5/12 entries 523/524 depend
+encies 125/154 modules 29 active 
+ babel-loader › node_modules\@tarojs\api\dist\interceptor\chain.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (32%) 5/12 entries 526/527 depend
+encies 126/154 modules 28 active 
+ babel-loader › node_modules\@tarojs\api\dist\interceptor\index.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (60%) 11/12 entries 527/527 depen
+dencies 145/155 modules 10 active 
+ node_modules\scheduler\index.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (60%) 11/12 entries 532/532 depen
+dencies 150/158 modules 7 active 
+ node_modules\css-loader\dist\runtime\noSourceMaps.js
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (60%) 11/12 entries 534/534 depen
+dencies 152/158 modules 6 active 
+ ...ss
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ building (60%) 11/12 entries 537/537 depen
+dencies 156/159 modules 3 active 
+ css-loader › postcss-loader › src\tailwind.css
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ sealing (71%)  
+ dependencies optimization
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ sealing (78%)  
+ chunk modules optimization
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ sealing (88%)  
+ runtime requirements
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ sealing (92%) asset processing 
+ CssMinimizerPlugin
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+● Webpack █████████████████████████ sealing (92%) asset processing 
+ RealContentHashPlugin
+
+[2K[1A[2K[1A[2K[1A[2K[1A[2K[G
+✔ Webpack
+  Compiled successfully in 18.58s
+

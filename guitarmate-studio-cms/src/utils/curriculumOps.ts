@@ -103,6 +103,8 @@ export function createCourse(title?: string, coverColor = 'from-indigo-600 to-vi
     title: title || '新专栏课程',
     subtitle: '待填写：课程卖点 / 适用人群',
     coverColor,
+    /** 空串 = 还没上传封面图，C 端回退到 `coverColor` 渐变 */
+    coverImage: '',
     targetLevel: '待填写：适用水平',
     chapters: [],
   };
@@ -314,6 +316,12 @@ export function flattenLessons(stages: Stage[]): FlatLesson[] {
  * 改任意层级节点的字段（浅合并）。
  * 四个层级共用一套「stage → course → chapter → lesson」不可变重建，
  * 不会因为漏了某一层而丢数据。
+ *
+ * ⚠️⚠️ **曾经的隐形 bug（2026-09-26 实测抓到）**：course / chapter 两层**根本没用上 `patch`**
+ * —— 重建对象时只写了 `{ ...c, chapters: … }`，patch 被静默丢掉，
+ * 于是「课程/章节行内重命名」点了没反应，而 stage / lesson 正常。
+ * 回归脚本当时只覆盖了 stage 与 lesson 两层的 patch，所以 57 项全绿也没拦住它。
+ * 现在三层都显式合并，并在 `verify-curriculum-ops.ts` 里补上断言。
  */
 export function updateNode(
   stages: Stage[],
@@ -336,22 +344,28 @@ export function updateNode(
           courses: s.courses.map((c) =>
             c.id !== loc.courseId
               ? c
-              : {
-                  ...c,
-                  chapters: c.chapters.map((ch) =>
-                    ch.id !== loc.chapterId
-                      ? ch
-                      : {
-                          ...ch,
-                          lessons:
-                            loc.lessonIndex === undefined
-                              ? ch.lessons
-                              : ch.lessons.map((l, i) =>
-                                  i === loc.lessonIndex ? ({ ...l, ...patch } as LessonStep) : l,
-                                ),
-                        },
-                  ),
-                },
+              : level === 'course'
+                ? /** 本层就是课程 → 直接合并 patch */
+                  ({ ...c, ...patch } as Course)
+                : {
+                    ...c,
+                    chapters: c.chapters.map((ch) =>
+                      ch.id !== loc.chapterId
+                        ? ch
+                        : level === 'chapter'
+                          ? /** 本层是章节 → 直接合并 patch */
+                            ({ ...ch, ...patch } as Chapter)
+                          : {
+                              ...ch,
+                              lessons:
+                                loc.lessonIndex === undefined
+                                  ? ch.lessons
+                                  : ch.lessons.map((l, i) =>
+                                      i === loc.lessonIndex ? ({ ...l, ...patch } as LessonStep) : l,
+                                    ),
+                            },
+                    ),
+                  },
           ),
         },
   );

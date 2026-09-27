@@ -1,0 +1,4227 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "Macaroon 5 (YouTube Audio Library)",
+    "artist": null,
+    "bpm": 103,
+    "timeSignature": "4/4",
+    "instrument": "guitar",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "guitar-1",
+      "name": "吉他轨",
+      "instrument": "guitar",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "第 1 小节",
+          "startTime": 0,
+          "endTime": 2.3211,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m0_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.9853,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            },
+            {
+              "id": "guitar_m0_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.1605,
+              "beat": 1.9999,
+              "durationSec": 1.0094,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 2
+            },
+            {
+              "id": "guitar_m0_n2",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.7217,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            }
+          ],
+          "chords": [
+            {
+              "name": "Cm",
+              "offsetSec": 1.25,
+              "beat": 2.0833,
+              "durationSec": 1.0711
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 1,
+          "label": "第 2 小节",
+          "startTime": 2.3211,
+          "endTime": 4.6422,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m1_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.5803,
+              "beat": 1.0001,
+              "durationSec": 1.4059,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m1_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 2.0309,
+              "beat": 3.4999,
+              "durationSec": 0.1197,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m1_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.6008,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0.4289,
+              "beat": 0.7148,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 2,
+          "label": "第 3 小节",
+          "startTime": 4.6422,
+          "endTime": 6.9632,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m2_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.1182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m2_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.321,
+              "beat": 3.9999,
+              "durationSec": 1.0094,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 3,
+          "label": "第 4 小节",
+          "startTime": 6.9632,
+          "endTime": 9.2843,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m3_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.0094,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m3_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.1606,
+              "beat": 2.0001,
+              "durationSec": 0.4086,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m3_n2",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.5958,
+              "beat": 2.7501,
+              "durationSec": 0.3844,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m3_n3",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 2.031,
+              "beat": 3.5001,
+              "durationSec": 0.3844,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Csus2",
+              "offsetSec": 0.2868,
+              "beat": 0.478,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 4,
+          "label": "第 5 小节",
+          "startTime": 9.2843,
+          "endTime": 11.6054,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m4_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 0.2902,
+              "beat": 0.5001,
+              "durationSec": 0.7689,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m4_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.1606,
+              "beat": 2.0001,
+              "durationSec": 0.8051,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m4_n2",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.5162,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm7",
+              "offsetSec": 0.2157,
+              "beat": 0.3595,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 5,
+          "label": "第 6 小节",
+          "startTime": 11.6054,
+          "endTime": 13.9265,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m5_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.1606,
+              "beat": 2.0001,
+              "durationSec": 0.4558,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m5_n1",
+              "string": 1,
+              "fret": 3,
+              "midi": 67,
+              "offsetSec": 1.7408,
+              "beat": 3,
+              "durationSec": 0.3494,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 72,
+              "confidence": 0.5669,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m5_n2",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2.031,
+              "beat": 3.5001,
+              "durationSec": 0.625,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Csus2",
+              "offsetSec": 0.1446,
+              "beat": 0.241,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 6,
+          "label": "第 7 小节",
+          "startTime": 13.9265,
+          "endTime": 16.2476,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m6_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.1605,
+              "beat": 1.9999,
+              "durationSec": 0.8051,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 14
+            },
+            {
+              "id": "guitar_m6_n1",
+              "string": 1,
+              "fret": 17,
+              "midi": 81,
+              "offsetSec": 2.0309,
+              "beat": 3.4999,
+              "durationSec": 0.1318,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 64,
+              "confidence": 0.5039,
+              "chordName": null,
+              "finger": 4,
+              "position": 14
+            },
+            {
+              "id": "guitar_m6_n2",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.7338,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm",
+              "offsetSec": 0.0735,
+              "beat": 0.1225,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 7,
+          "label": "第 8 小节",
+          "startTime": 16.2476,
+          "endTime": 18.5687,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m7_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.5803,
+              "beat": 1.0001,
+              "durationSec": 1.3939,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m7_n1",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 1.3455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm",
+              "offsetSec": 1.0024,
+              "beat": 1.6707,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 8,
+          "label": "第 9 小节",
+          "startTime": 18.5687,
+          "endTime": 20.8897,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m8_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.1605,
+              "beat": 1.9999,
+              "durationSec": 0.9973,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m8_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 2.321,
+              "beat": 3.9999,
+              "durationSec": 0.5041,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 126,
+              "confidence": 0.9921,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 9,
+          "label": "第 10 小节",
+          "startTime": 20.8897,
+          "endTime": 23.2108,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m9_n0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.5041,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 126,
+              "confidence": 0.9921,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m9_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.3057,
+              "beat": 2.2502,
+              "durationSec": 0.793,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m9_n2",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 2.1761,
+              "beat": 3.7501,
+              "durationSec": 0.2877,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 66,
+              "confidence": 0.5197,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Csus2",
+              "offsetSec": 0.3603,
+              "beat": 0.6005,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 10,
+          "label": "第 11 小节",
+          "startTime": 23.2108,
+          "endTime": 25.5319,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m10_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.8172,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m10_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.3056,
+              "beat": 2.25,
+              "durationSec": 0.8172,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m10_n2",
+              "string": 1,
+              "fret": 4,
+              "midi": 68,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.1076,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 55,
+              "confidence": 0.4331,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Cm",
+              "offsetSec": 1.2892,
+              "beat": 2.1487,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 11,
+          "label": "第 12 小节",
+          "startTime": 25.5319,
+          "endTime": 27.853,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m11_n0",
+              "string": 1,
+              "fret": 4,
+              "midi": 68,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1076,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 55,
+              "confidence": 0.4331,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m11_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.5525,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m11_n2",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.7254,
+              "beat": 1.2501,
+              "durationSec": 0.457,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m11_n3",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.3056,
+              "beat": 2.25,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m11_n4",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.2889,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 1.4681,
+              "beat": 2.4468,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 12,
+          "label": "第 13 小节",
+          "startTime": 27.853,
+          "endTime": 30.1741,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m12_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.9611,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m12_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.3056,
+              "beat": 2.25,
+              "durationSec": 6.0566,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.897,
+              "beat": 1.495,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 13,
+          "label": "第 14 小节",
+          "startTime": 30.1741,
+          "endTime": 32.4952,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.0759,
+              "beat": 0.1265,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 14,
+          "label": "第 15 小节",
+          "startTime": 32.4952,
+          "endTime": 34.8162,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.0048,
+              "beat": 0.008,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 15,
+          "label": "第 16 小节",
+          "startTime": 34.8162,
+          "endTime": 37.1373,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m15_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.4353,
+              "beat": 0.7502,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.1838,
+              "beat": 0.3063,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 16,
+          "label": "第 17 小节",
+          "startTime": 37.1373,
+          "endTime": 39.4584,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m16_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 2.3078,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.1127,
+              "beat": 0.1878,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 17,
+          "label": "第 18 小节",
+          "startTime": 39.4584,
+          "endTime": 41.7795,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m17_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 2.2836,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.0416,
+              "beat": 1.736,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 18,
+          "label": "第 19 小节",
+          "startTime": 41.7795,
+          "endTime": 44.1006,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m18_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 1.3225,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m18_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.8859,
+              "beat": 3.25,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C7",
+              "offsetSec": 0.7205,
+              "beat": 1.2008,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 19,
+          "label": "第 20 小节",
+          "startTime": 44.1006,
+          "endTime": 46.4217,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m19_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 2.3187,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.3994,
+              "beat": 0.6657,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 20,
+          "label": "第 21 小节",
+          "startTime": 46.4217,
+          "endTime": 48.7427,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m20_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 1.4543,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m20_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 1.8858,
+              "beat": 3.2499,
+              "durationSec": 0.8656,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.3283,
+              "beat": 0.5472,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 21,
+          "label": "第 22 小节",
+          "startTime": 48.7427,
+          "endTime": 51.0638,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m21_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 0.2164,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m21_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.7254,
+              "beat": 1.2501,
+              "durationSec": 0.2635,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m21_n2",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 0.2889,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m21_n3",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 1.3057,
+              "beat": 2.2502,
+              "durationSec": 1.3092,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.0073,
+              "beat": 1.6788,
+              "durationSec": 1.3138
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 22,
+          "label": "第 23 小节",
+          "startTime": 51.0638,
+          "endTime": 53.3849,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m22_n0",
+              "string": 4,
+              "fret": 1,
+              "midi": 51,
+              "offsetSec": 0.2902,
+              "beat": 0.5001,
+              "durationSec": 0.1451,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m22_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 1.7178,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m22_n2",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.5766,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 23,
+          "label": "第 24 小节",
+          "startTime": 53.3849,
+          "endTime": 55.706,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m23_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 1.4301,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m23_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.8859,
+              "beat": 3.25,
+              "durationSec": 0.8656,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.3651,
+              "beat": 0.6085,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 24,
+          "label": "第 25 小节",
+          "startTime": 55.706,
+          "endTime": 58.0271,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m24_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 2.3078,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 1.294,
+              "beat": 2.1567,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 25,
+          "label": "第 26 小节",
+          "startTime": 58.0271,
+          "endTime": 60.3482,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m25_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.5803,
+              "beat": 1.0001,
+              "durationSec": 1.4422,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m25_n1",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 2.0309,
+              "beat": 3.4999,
+              "durationSec": 0.5887,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.4729,
+              "beat": 2.4548,
+              "durationSec": 0.8482
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 26,
+          "label": "第 27 小节",
+          "startTime": 60.3482,
+          "endTime": 62.6692,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m26_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 0.1439,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 62,
+              "confidence": 0.4882,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m26_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.5802,
+              "beat": 0.9999,
+              "durationSec": 1.2379,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Csus2",
+              "offsetSec": 1.4018,
+              "beat": 2.3363,
+              "durationSec": 0.9192
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 27,
+          "label": "第 28 小节",
+          "startTime": 62.6692,
+          "endTime": 64.9903,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m27_n0",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.5162,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m27_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 0.8051,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m27_n2",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Csus2",
+              "offsetSec": 0.3308,
+              "beat": 0.5513,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 28,
+          "label": "第 29 小节",
+          "startTime": 64.9903,
+          "endTime": 67.3114,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m28_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m28_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 1.0215,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Em7",
+              "offsetSec": 0.5097,
+              "beat": 0.8495,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 29,
+          "label": "第 30 小节",
+          "startTime": 67.3114,
+          "endTime": 69.6325,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m29_n0",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.6613,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m29_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.3818,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m29_n2",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 1.3334,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Cm",
+              "offsetSec": 0.1886,
+              "beat": 0.3143,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 30,
+          "label": "第 31 小节",
+          "startTime": 69.6325,
+          "endTime": 71.9536,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m30_n0",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.3334,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m30_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 0.8402,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m30_n2",
+              "string": 4,
+              "fret": 1,
+              "midi": 51,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.2768,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.8675,
+              "beat": 1.4458,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 31,
+          "label": "第 32 小节",
+          "startTime": 71.9536,
+          "endTime": 74.2747,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m31_n0",
+              "string": 4,
+              "fret": 1,
+              "midi": 51,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.2768,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m31_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0.2901,
+              "beat": 0.4999,
+              "durationSec": 0.4811,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m31_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 0.8172,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m31_n3",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.8897,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 1.5464,
+              "beat": 2.5773,
+              "durationSec": 0.7747
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 32,
+          "label": "第 33 小节",
+          "startTime": 74.2747,
+          "endTime": 76.5957,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m32_n0",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.8897,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m32_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 1.4506,
+              "beat": 2.4999,
+              "durationSec": 0.4449,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m32_n2",
+              "string": 4,
+              "fret": 1,
+              "midi": 51,
+              "offsetSec": 1.8858,
+              "beat": 3.2499,
+              "durationSec": 0.3723,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 71,
+              "confidence": 0.5591,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m32_n3",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.321,
+              "beat": 3.9999,
+              "durationSec": 0.2285,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 74,
+              "confidence": 0.5827,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.7253,
+              "beat": 1.2088,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 33,
+          "label": "第 34 小节",
+          "startTime": 76.5957,
+          "endTime": 78.9168,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m33_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.2285,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 74,
+              "confidence": 0.5827,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m33_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0.2902,
+              "beat": 0.5001,
+              "durationSec": 0.5766,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m33_n2",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8705,
+              "beat": 1.5002,
+              "durationSec": 0.4207,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m33_n3",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 0.8535,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.9043,
+              "beat": 1.5072,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 34,
+          "label": "第 35 小节",
+          "startTime": 78.9168,
+          "endTime": 81.2379,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m34_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.2902,
+              "beat": 0.5001,
+              "durationSec": 0.7689,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m34_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 6.1049,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 1.0832,
+              "beat": 1.8053,
+              "durationSec": 1.2379
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 35,
+          "label": "第 36 小节",
+          "startTime": 81.2379,
+          "endTime": 83.559,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.2621,
+              "beat": 0.4368,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 36,
+          "label": "第 37 小节",
+          "startTime": 83.559,
+          "endTime": 85.8801,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.191,
+              "beat": 0.3183,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 37,
+          "label": "第 38 小节",
+          "startTime": 85.8801,
+          "endTime": 88.2012,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m37_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.5802,
+              "beat": 0.9999,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.3699,
+              "beat": 0.6165,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 38,
+          "label": "第 39 小节",
+          "startTime": 88.2012,
+          "endTime": 90.5222,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m38_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.5802,
+              "beat": 0.9999,
+              "durationSec": 2.2353,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.0488,
+              "beat": 0.0813,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 39,
+          "label": "第 40 小节",
+          "startTime": 90.5222,
+          "endTime": 92.8433,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m39_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.5803,
+              "beat": 1.0001,
+              "durationSec": 2.3308,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.2278,
+              "beat": 2.0463,
+              "durationSec": 1.0933
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 40,
+          "label": "第 41 小节",
+          "startTime": 92.8433,
+          "endTime": 95.1644,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m40_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 2.031,
+              "beat": 3.5001,
+              "durationSec": 0.05,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#sus2",
+              "offsetSec": 0.6567,
+              "beat": 1.0945,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 41,
+          "label": "第 42 小节",
+          "startTime": 95.1644,
+          "endTime": 97.4855,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m41_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 2.2957,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.5856,
+              "beat": 0.976,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 42,
+          "label": "第 43 小节",
+          "startTime": 97.4855,
+          "endTime": 99.8066,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m42_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 1.4422,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m42_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.8535,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0.5145,
+              "beat": 0.8575,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 43,
+          "label": "第 44 小节",
+          "startTime": 99.8066,
+          "endTime": 102.1277,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m43_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 0.2164,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m43_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 0.2515,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m43_n2",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.3056,
+              "beat": 2.25,
+              "durationSec": 0.2406,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m43_n3",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 1.5957,
+              "beat": 2.7499,
+              "durationSec": 0.5646,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m43_n4",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.8777,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.1934,
+              "beat": 1.989,
+              "durationSec": 1.1277
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 44,
+          "label": "第 45 小节",
+          "startTime": 102.1277,
+          "endTime": 104.4487,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m44_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 1.6937,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.1223,
+              "beat": 0.2038,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 45,
+          "label": "第 46 小节",
+          "startTime": 104.4487,
+          "endTime": 106.7698,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m45_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.5537,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m45_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.7254,
+              "beat": 1.2501,
+              "durationSec": 1.4301,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m45_n2",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 2.1761,
+              "beat": 3.7501,
+              "durationSec": 0.8777,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 1.3013,
+              "beat": 2.1688,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 46,
+          "label": "第 47 小节",
+          "startTime": 106.7698,
+          "endTime": 109.0909,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m46_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.7254,
+              "beat": 1.2501,
+              "durationSec": 2.332,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 1.4802,
+              "beat": 2.467,
+              "durationSec": 0.8409
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 47,
+          "label": "第 48 小节",
+          "startTime": 109.0909,
+          "endTime": 111.412,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m47_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 1.4422,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m47_n1",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.8765,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.4091,
+              "beat": 0.6818,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 48,
+          "label": "第 49 小节",
+          "startTime": 111.412,
+          "endTime": 113.7331,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m48_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.7253,
+              "beat": 1.2499,
+              "durationSec": 3.1613,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.088,
+              "beat": 0.1467,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 49,
+          "label": "第 50 小节",
+          "startTime": 113.7331,
+          "endTime": 116.0542,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m49_n0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 1.5957,
+              "beat": 2.7499,
+              "durationSec": 4.5551,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 50,
+          "label": "第 51 小节",
+          "startTime": 116.0542,
+          "endTime": 118.3752,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.6958,
+              "beat": 1.1597,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 51,
+          "label": "第 52 小节",
+          "startTime": 118.3752,
+          "endTime": 120.6963,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m51_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.5958,
+              "beat": 2.7501,
+              "durationSec": 1.2863,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.3211
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 52,
+          "label": "第 53 小节",
+          "startTime": 120.6963,
+          "endTime": 123.0174,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m52_n0",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 2.8965,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 53,
+          "label": "第 54 小节",
+          "startTime": 123.0174,
+          "endTime": 125.3385,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m53_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.5958,
+              "beat": 2.7501,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.5
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 54,
+          "label": "第 55 小节",
+          "startTime": 125.3385,
+          "endTime": 127.6596,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m54_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.5957,
+              "beat": 2.7499,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.6615,
+              "beat": 1.1025,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 55,
+          "label": "第 56 小节",
+          "startTime": 127.6596,
+          "endTime": 129.9807,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m55_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.5957,
+              "beat": 2.7499,
+              "durationSec": 2.8252,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 56,
+          "label": "第 57 小节",
+          "startTime": 129.9807,
+          "endTime": 132.3017,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.321
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 57,
+          "label": "第 58 小节",
+          "startTime": 132.3017,
+          "endTime": 134.6228,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m57_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.5646,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 64,
+              "confidence": 0.5039,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m57_n1",
+              "string": 1,
+              "fret": 3,
+              "midi": 67,
+              "offsetSec": 2.1761,
+              "beat": 3.7501,
+              "durationSec": 0.3482,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 60,
+              "confidence": 0.4724,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 58,
+          "label": "第 59 小节",
+          "startTime": 134.6228,
+          "endTime": 136.9439,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m58_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 0.1801,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 54,
+              "confidence": 0.4252,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m58_n1",
+              "string": 1,
+              "fret": 17,
+              "midi": 81,
+              "offsetSec": 1.5958,
+              "beat": 2.7501,
+              "durationSec": 0.8293,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 57,
+              "confidence": 0.4488,
+              "chordName": null,
+              "finger": 4,
+              "position": 14
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm7",
+              "offsetSec": 0.3772,
+              "beat": 0.6287,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 59,
+          "label": "第 60 小节",
+          "startTime": 136.9439,
+          "endTime": 139.265,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m59_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.2901,
+              "beat": 0.4999,
+              "durationSec": 1.1303,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 0,
+              "position": 14
+            }
+          ],
+          "chords": [
+            {
+              "name": "Cm7",
+              "offsetSec": 0.3061,
+              "beat": 0.5102,
+              "durationSec": 1
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 60,
+          "label": "第 61 小节",
+          "startTime": 139.265,
+          "endTime": 141.5861,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0.235,
+              "beat": 0.3917,
+              "durationSec": 1
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 61,
+          "label": "第 62 小节",
+          "startTime": 141.5861,
+          "endTime": 143.9072,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m61_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.176,
+              "beat": 3.75,
+              "durationSec": 0.4328,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 0,
+              "position": 14
+            }
+          ],
+          "chords": [
+            {
+              "name": "C7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 62,
+          "label": "第 63 小节",
+          "startTime": 143.9072,
+          "endTime": 146.2282,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 1.0928,
+              "beat": 1.8213,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 63,
+          "label": "第 64 小节",
+          "startTime": 146.2282,
+          "endTime": 148.5493,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 0.0218,
+              "beat": 0.0363,
+              "durationSec": 1
+            }
+          ],
+          "position": 14
+        },
+        {
+          "index": 64,
+          "label": "第 65 小节",
+          "startTime": 148.5493,
+          "endTime": 150.8704,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m64_n0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 1.7408,
+              "beat": 3,
+              "durationSec": 1.4543,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0.2007,
+              "beat": 0.3345,
+              "durationSec": 1.5
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 65,
+          "label": "第 66 小节",
+          "startTime": 150.8704,
+          "endTime": 153.1915,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m65_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 2.2957,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.6296,
+              "beat": 1.0493,
+              "durationSec": 1
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 66,
+          "label": "第 67 小节",
+          "startTime": 153.1915,
+          "endTime": 155.5126,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m66_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 2.3078,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 2
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.3085,
+              "beat": 0.5142,
+              "durationSec": 1
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 67,
+          "label": "第 68 小节",
+          "startTime": 155.5126,
+          "endTime": 157.8337,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m67_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 2
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.7374,
+              "beat": 1.229,
+              "durationSec": 1
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 68,
+          "label": "第 69 小节",
+          "startTime": 157.8337,
+          "endTime": 160.1547,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m68_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.4543,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m68_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.321,
+              "beat": 3.9999,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gm7",
+              "offsetSec": 0.1663,
+              "beat": 0.2772,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 69,
+          "label": "第 70 小节",
+          "startTime": 160.1547,
+          "endTime": 162.4758,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m69_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.8414,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m69_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 2.3187,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.5953,
+              "beat": 0.9922,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 70,
+          "label": "第 71 小节",
+          "startTime": 162.4758,
+          "endTime": 164.7969,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m70_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.4543,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m70_n1",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.8777,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.2742,
+              "beat": 0.457,
+              "durationSec": 1.5
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 71,
+          "label": "第 72 小节",
+          "startTime": 164.7969,
+          "endTime": 167.118,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m71_n0",
+              "string": 5,
+              "fret": 2,
+              "midi": 47,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.8777,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m71_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 0.2164,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m71_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.1605,
+              "beat": 1.9999,
+              "durationSec": 0.2273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m71_n3",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.4507,
+              "beat": 2.5,
+              "durationSec": 0.2406,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m71_n4",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.7408,
+              "beat": 3,
+              "durationSec": 1.4422,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 1.4531,
+              "beat": 2.4218,
+              "durationSec": 0.868
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 72,
+          "label": "第 73 小节",
+          "startTime": 167.118,
+          "endTime": 169.4391,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m72_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.742,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.382,
+              "beat": 0.6367,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 73,
+          "label": "第 74 小节",
+          "startTime": 169.4391,
+          "endTime": 171.7602,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m73_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.2901,
+              "beat": 0.4999,
+              "durationSec": 0.5646,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m73_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 1.4059,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "guitar_m73_n2",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 2.3211,
+              "beat": 4,
+              "durationSec": 0.8656,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.8109,
+              "beat": 1.3515,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 74,
+          "label": "第 75 小节",
+          "startTime": 171.7602,
+          "endTime": 174.0812,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m74_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.8656,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m74_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.8704,
+              "beat": 1.5,
+              "durationSec": 2.3441,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 1.7398,
+              "beat": 2.8997,
+              "durationSec": 0.5812
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 75,
+          "label": "第 76 小节",
+          "startTime": 174.0812,
+          "endTime": 176.4023,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m75_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.418,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 1.4188,
+              "beat": 2.3647,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 76,
+          "label": "第 77 小节",
+          "startTime": 176.4023,
+          "endTime": 178.7234,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m76_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.8765,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m76_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.8477,
+              "beat": 1.4128,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 77,
+          "label": "第 78 小节",
+          "startTime": 178.7234,
+          "endTime": 181.0445,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m77_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 2.2957,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.7766,
+              "beat": 1.2943,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 78,
+          "label": "第 79 小节",
+          "startTime": 181.0445,
+          "endTime": 183.3656,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m78_n0",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 2.3187,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 79,
+          "label": "第 80 小节",
+          "startTime": 183.3656,
+          "endTime": 185.6867,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m79_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.0154,
+              "beat": 1.7499,
+              "durationSec": 2.3199,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.8844,
+              "beat": 1.474,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 80,
+          "label": "第 81 小节",
+          "startTime": 185.6867,
+          "endTime": 188.0077,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m80_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.0154,
+              "beat": 1.7499,
+              "durationSec": 1.3939,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 0.5633,
+              "beat": 0.9388,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 81,
+          "label": "第 82 小节",
+          "startTime": 188.0077,
+          "endTime": 190.3288,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m81_n0",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.4301,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am7",
+              "offsetSec": 0.7423,
+              "beat": 1.2372,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 82,
+          "label": "第 83 小节",
+          "startTime": 190.3288,
+          "endTime": 192.6499,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m82_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.8535,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m82_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.4422,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.4212,
+              "beat": 0.702,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 83,
+          "label": "第 84 小节",
+          "startTime": 192.6499,
+          "endTime": 194.971,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m83_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.7096,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m83_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 0.2164,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            },
+            {
+              "id": "guitar_m83_n2",
+              "string": 6,
+              "fret": 2,
+              "midi": 42,
+              "offsetSec": 1.3056,
+              "beat": 2.25,
+              "durationSec": 0.2889,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "guitar_m83_n3",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.5957,
+              "beat": 2.7499,
+              "durationSec": 0.2768,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.3501,
+              "beat": 0.5835,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 84,
+          "label": "第 85 小节",
+          "startTime": 194.971,
+          "endTime": 197.2921,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m84_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.1451,
+              "beat": 0.2501,
+              "durationSec": 0.8644,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m84_n1",
+              "string": 5,
+              "fret": 1,
+              "midi": 46,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.707,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.529,
+              "beat": 0.8817,
+              "durationSec": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 85,
+          "label": "第 86 小节",
+          "startTime": 197.2921,
+          "endTime": 199.6132,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m85_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 0.4352,
+              "beat": 0.75,
+              "durationSec": 0.5646,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "guitar_m85_n1",
+              "string": 6,
+              "fret": 4,
+              "midi": 44,
+              "offsetSec": 1.0154,
+              "beat": 1.7499,
+              "durationSec": 1.4301,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 4,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 1.7079,
+              "beat": 2.8465,
+              "durationSec": 0.6132
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 86,
+          "label": "第 87 小节",
+          "startTime": 199.6132,
+          "endTime": 201.9342,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m86_n0",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 0.145,
+              "beat": 0.2499,
+              "durationSec": 0.8656,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "guitar_m86_n1",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.0154,
+              "beat": 1.7499,
+              "durationSec": 2.1627,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#maj7",
+              "offsetSec": 0.3868,
+              "beat": 0.6447,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 87,
+          "label": "第 88 小节",
+          "startTime": 201.9342,
+          "endTime": 204.2553,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m87_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.4301,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "A#",
+              "offsetSec": 1.5658,
+              "beat": 2.6097,
+              "durationSec": 0.7553
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 88,
+          "label": "第 89 小节",
+          "startTime": 204.2553,
+          "endTime": 206.3649,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m88_n0",
+              "string": 6,
+              "fret": 0,
+              "midi": 40,
+              "offsetSec": 1.0155,
+              "beat": 1.75,
+              "durationSec": 1.0941,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 127,
+              "confidence": 1,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0.9947,
+              "beat": 1.6578,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 1
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "solo-trace",
+    "fileName": null,
+    "site": "GuitarMate 转录流水线",
+    "rights": "user-submission",
+    "rightsNote": "basic-pitch MIDI → 内置 Tayuya 兼容转换器（网格 1/16，capo 0）",
+    "parsedAt": "2026-09-25T04:47:47.305402+00:00",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [
+    {
+      "level": "info",
+      "code": "rhythm-quantized",
+      "message": "音符起点已量化到 1/16 网格（可用 --no-quantize 关闭）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-derived",
+      "message": "已按「最低把位优先 + 同帧整体出手型」推定 120 个音符的左手手指（0=空弦 / 1=食指 / 2=中指 / 3=无名指 / 4=小指），并为 89 个小节标注把位。自动指法只是建议值，可在复核工作台逐音符修改。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1, 2, 7, 8, 65, 69 需要换把（已按最近的可覆盖手位标注）。"
+    }
+  ],
+  "stats": {
+    "measureCount": 89,
+    "noteCount": 160,
+    "chordCount": 0,
+    "barreCount": 0,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 206.3649
+  }
+}

@@ -200,6 +200,48 @@ check(
   updateNode(base, 'lesson', 'missing-id', { title: 'x' }) === base,
 );
 
+/**
+ * ⚠️ 新增（2026-09-26）：course / chapter 两层的 patch 曾经**被静默丢弃**
+ * —— 上面的 stage / lesson 断言都过了，但「课程行内重命名」「章节行内重命名」
+ * 实际上点了没反应。这里把四个层级都钉住，顺便覆盖本次新增的 `coverImage`。
+ */
+const patchedCourse = updateNode(base, 'course', targetCourseId, {
+  title: '改名后的课程',
+  coverImage: '/uploads/curriculum/covers/cover_ab12cd34ef56.jpg',
+});
+check(
+  '改 Course 标题生效',
+  patchedCourse[0].courses.find((c) => c.id === targetCourseId)?.title === '改名后的课程',
+);
+check(
+  '改 Course 的 coverImage 生效（本次新增字段就走这条路径）',
+  patchedCourse[0].courses.find((c) => c.id === targetCourseId)?.coverImage ===
+    '/uploads/curriculum/covers/cover_ab12cd34ef56.jpg',
+);
+check(
+  '改 Course 不影响其 chapters 内容',
+  snapshot(patchedCourse[0].courses.find((c) => c.id === targetCourseId)?.chapters) ===
+    snapshot(base[0].courses.find((c) => c.id === targetCourseId)?.chapters),
+);
+check(
+  '改 Course 不影响同阶段的其它课程',
+  snapshot(patchedCourse[0].courses.filter((c) => c.id !== targetCourseId)) ===
+    snapshot(base[0].courses.filter((c) => c.id !== targetCourseId)),
+);
+
+const patchedChapter = updateNode(base, 'chapter', targetChapterId, { title: '改名后的章节' });
+check(
+  '改 Chapter 标题生效',
+  patchedChapter[0].courses[0].chapters.find((ch) => ch.id === targetChapterId)?.title ===
+    '改名后的章节',
+);
+check(
+  '改 Chapter 不影响其 lessons 内容',
+  snapshot(
+    patchedChapter[0].courses[0].chapters.find((ch) => ch.id === targetChapterId)?.lessons,
+  ) === snapshot(base[0].courses[0].chapters.find((ch) => ch.id === targetChapterId)?.lessons),
+);
+
 // ── 5. 删除（级联 + 影响范围）──────────────
 console.log('\n\u001b[1m[5] 删除节点\u001b[0m');
 check(

@@ -11,6 +11,7 @@ import {
   Clock,
   Copy,
   GitFork,
+  Image as ImageIcon,
   Info,
   Layers,
   Link2,
@@ -24,10 +25,12 @@ import {
   Trash2,
   Tv,
   Unlock,
+  Upload,
   X,
   Zap,
 } from 'lucide-react';
 import { Chapter, ChordGroup, Course, LessonStep, Stage, TeachingVideo, TimeModule } from '../../types';
+import { API_BASE_URL, api } from '../../services/api';
 import {
   addNode,
   balanceAllocation,
@@ -282,6 +285,170 @@ const Dialog: React.FC<{
   </div>
 );
 
+/** 把课程树里存的封面路径翻成浏览器能直接用的地址（外链/内联原样返回） */
+const assetUrl = (value?: string) => {
+  const raw = (value || '').trim();
+  if (!raw) return '';
+  if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+  return `${API_BASE_URL}${raw.startsWith('/') ? '' : '/'}${raw}`;
+};
+
+/** 读本地文件为 base64（含 `data:` 前缀，后端能识别并剥掉） */
+const readFileAsBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('读取本地文件失败，请重试。'));
+    reader.readAsDataURL(file);
+  });
+
+/**
+ * 课程封面图上传弹窗
+ *
+ * ⚠️ 图**不进课程树**：上传到后端 `uploads/curriculum/covers/`，课程树里只存相对路径
+ * （`/uploads/curriculum/covers/cover_<内容指纹>.png`）。原因见 `types.ts#Course.coverImage`。 */
+const CourseCoverDialog: React.FC<{
+  course: Course;
+  darkMode: boolean;
+  onClose: () => void;
+  onSave: (coverImage: string) => void;
+}> = ({ course, darkMode, onClose, onSave }) => {
+  const [value, setValue] = useState(course.coverImage || '');
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const pickFile = async (file: File) => {
+    setError('');
+    if (file.size > 4 * 1024 * 1024) {
+      setError(`图片 ${(file.size / 1024 / 1024).toFixed(1)}MB 超过 4MB 上限，请先压到 1600px 宽以内。`);
+      return;
+    }
+    setUploading(true);
+    try {
+      const base64 = await readFileAsBase64(file);
+      const stored = await api.uploadCurriculumCover(base64, file.name);
+      setValue(stored.path);
+    } catch (err) {
+      setError((err as Error)?.message || String(err));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const fieldClass = cn(
+    'w-full px-2.5 py-1.5 rounded-lg border text-xs outline-none focus:ring-1 focus:ring-amber-500/60',
+    darkMode ? 'bg-slate-950 border-slate-700 text-slate-200' : 'bg-white border-slate-300 text-slate-800',
+  );
+
+  return (
+    <Dialog
+      title="课程封面图"
+      subtitle={`${course.title} · 上传后存到后端 /uploads/curriculum/covers/`}
+      icon={<ImageIcon className="w-4 h-4" />}
+      darkMode={darkMode}
+      onClose={onClose}
+      footer={
+        <>
+          {value && (
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-xl text-xs font-medium text-rose-400 hover:bg-rose-500/10 mr-auto"
+              onClick={() => {
+                setValue('');
+                setError('');
+              }}
+            >
+              清除封面（回退渐变底色）
+            </button>
+          )}
+          <button
+            type="button"
+            className={cn(
+              'px-3 py-1.5 rounded-xl text-xs font-medium border',
+              darkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-300 text-slate-700 hover:bg-slate-100',
+            )}
+            onClick={onClose}
+          >
+            取消
+          </button>
+          <button
+            type="button"
+            disabled={uploading}
+            className="px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white"
+            onClick={() => onSave(value.trim())}
+          >
+            保存
+          </button>
+        </>
+      }
+    >
+      <div className="space-y-3">
+        {/* 预览：有图显示图，没图就显示 C 端会用到的渐变底色（所见即所得） */}
+        <div className="relative w-full h-36 rounded-xl overflow-hidden border border-slate-700">
+          {value ? (
+            <img src={assetUrl(value)} alt="课程封面" className="w-full h-full object-cover" />
+          ) : (
+            <div className={cn('w-full h-full bg-gradient-to-br flex items-center justify-center', course.coverColor)}>
+              <span className="text-[11px] text-white/90 font-medium">
+                未上传封面 —— C 端显示这块渐变底色
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) void pickFile(file);
+              e.target.value = '';
+            }}
+          />
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={() => fileRef.current?.click()}
+            className="px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white flex items-center gap-1.5"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            {uploading ? '上传中…' : '选择本地图片上传'}
+          </button>
+          <span className="text-[10px] text-slate-500">PNG / JPG / WEBP / GIF · ≤ 4MB</span>
+        </div>
+
+        <div>
+          <label className="text-[11px] text-slate-400 block mb-1">
+            或直接填图片地址（相对路径 / 外链都行）
+          </label>
+          <input
+            className={fieldClass}
+            value={value}
+            placeholder="/uploads/curriculum/covers/cover_xxx.png 或 https://…"
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </div>
+
+        {error && (
+          <div className="px-3 py-2 rounded-lg bg-rose-500/10 border border-rose-500/40 text-[11px] text-rose-300 flex items-start gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <p className="text-[10px] text-slate-500 leading-relaxed">
+          图存在后端（不是浏览器本地）：换电脑/换浏览器打开后台都还在，C 端（小程序 / Web）也读得到。
+          同内容重复上传会得到同一个文件名，不会堆垃圾。
+        </p>
+      </div>
+    </Dialog>
+  );
+};
+
 // ─────────────────────────────────────────────
 // 主组件
 // ─────────────────────────────────────────────
@@ -361,6 +528,8 @@ export const CurriculumOutlineStudio: React.FC<CurriculumOutlineStudioProps> = (
   const [editing, setEditing] = useState<EditTarget | null>(null);
   const [editingValue, setEditingValue] = useState('');
   const [newCustomModule, setNewCustomModule] = useState<{ name: string; minutes: number } | null>(null);
+  /** 正在编辑封面图的课程 */
+  const [coverTarget, setCoverTarget] = useState<Course | null>(null);
 
   // ── 查找辅助 ───────────────────────────────
   const findCourse = (id: string | null): Course | undefined =>
@@ -823,6 +992,37 @@ export const CurriculumOutlineStudio: React.FC<CurriculumOutlineStudioProps> = (
                                   <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                 )}
                                 <BookOpen className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                <button
+                                  type="button"
+                                  title={course.coverImage ? '更换 / 清除封面图' : '上传封面图'}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCoverTarget(course);
+                                  }}
+                                  className={cn(
+                                    'shrink-0 w-5 h-5 rounded-md overflow-hidden border transition-colors',
+                                    course.coverImage
+                                      ? 'border-emerald-500/60'
+                                      : 'border-slate-500/60 hover:border-amber-500/70',
+                                  )}
+                                >
+                                  {course.coverImage ? (
+                                    <img
+                                      src={assetUrl(course.coverImage)}
+                                      alt="课程封面"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  ) : (
+                                    <span
+                                      className={cn(
+                                        'w-full h-full flex items-center justify-center bg-gradient-to-br',
+                                        course.coverColor,
+                                      )}
+                                    >
+                                      <ImageIcon className="w-3 h-3 text-white/85" />
+                                    </span>
+                                  )}
+                                </button>
                                 {renamingCourse ? (
                                   <InlineTitleInput
                                     value={editingValue}
@@ -1657,6 +1857,18 @@ export const CurriculumOutlineStudio: React.FC<CurriculumOutlineStudioProps> = (
       </div>
 
       {/* ── 弹窗：新增节点 ───────────────────── */}
+      {coverTarget && (
+        <CourseCoverDialog
+          course={coverTarget}
+          darkMode={darkMode}
+          onClose={() => setCoverTarget(null)}
+          onSave={(coverImage) => {
+            patchNode('course', coverTarget.id, { coverImage });
+            setCoverTarget(null);
+          }}
+        />
+      )}
+
       {addForm && (
         <Dialog
           title={`新增${CHILD_TITLE_PREFIX[addForm.level]}`}

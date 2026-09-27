@@ -9,3 +9,9 @@ uploads
 package-lock.json.bak
 .env
 .env.local
+
+# ⚠️ 等同账号凭证（YouTube 登录态）——绝不能进镜像层
+cookies.txt
+cookies*.txt
+cookies*.bak
+cookies*.backup.txt

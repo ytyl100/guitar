@@ -848,11 +848,24 @@ export const CourseTab: React.FC<CourseTabProps> = ({
             >
               {/* Snapshot Banner */}
               <div className="h-44 w-full relative">
-                <img
-                  src={course.coverImage}
-                  alt={course.title}
-                  className="w-full h-full object-cover brightness-85 group-hover:scale-105 transition duration-500"
-                />
+                {course.coverImage ? (
+                  <img
+                    src={course.coverImage}
+                    alt={course.title}
+                    className="w-full h-full object-cover brightness-85 group-hover:scale-105 transition duration-500"
+                  />
+                ) : (
+                  /**
+                   * 没有课封图（课程大纲由后端提供，后端目前没有封面字段）→
+                   * 用 CMS 里课的 `coverColor`（Tailwind 渐变 token）渲染一块主题色渐变。
+                   * 不要塞占位照片：那是编造内容。
+                   */
+                  <div
+                    className={`w-full h-full bg-gradient-to-br ${
+                      course.coverColor || 'from-emerald-600 to-teal-800'
+                    }`}
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
                 {/* Level badge */}

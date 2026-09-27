@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+# 浏览器导出的 cookies 等同于账号凭证，绝不入库
+cookies.txt
+*.cookies.txt
+**/cookies.txt

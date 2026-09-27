@@ -51,6 +51,15 @@ export interface PublishOptions {
    * 未指定时依次回退到 `Project.scoreId`、新建。
    */
   mirrorScoreId?: string;
+  /**
+   * 镜像后是否把 Score 置为 `published`（默认 **true**）。
+   *
+   * ⚠️ 为什么默认要置成已发布：C 端列表 `GET /api/published/scores` **只返回
+   * `status='published'`** 的曲目 —— 镜像完留在 `draft` 就会出现
+   * 「界面说已发布到小程序、C 端却查不到」这个反复踩的坑。
+   * 只想拿镜像做草稿预览时显式传 `false`。
+   */
+  publishMirroredScore?: boolean;
   /** 每小节最大切片数（防止超长曲目把 ffmpeg 打满），0 = 不限制 */
   maxMeasures?: number;
 }
@@ -70,7 +79,15 @@ export interface PublishResult {
     degradedAudioCount: number;
     metronomeFallbackCount: number;
   };
-  mirrored: { enabled: boolean; scoreId?: string; trackId?: string; measureCount?: number; error?: string };
+  mirrored: {
+    enabled: boolean;
+    scoreId?: string;
+    trackId?: string;
+    measureCount?: number;
+    /** 镜像后 Score 的状态（`published` / `draft`）—— 调用方据此判断 C 端能否看到 */
+    scoreStatus?: string;
+    error?: string;
+  };
   warnings: string[];
   package: PracticePackage;
 }
@@ -159,6 +176,48 @@ export class PublishService {
       warnings.push('项目没有音频文件，将只发布谱面 + 节拍器（C 端仍可练习与高亮）。');
     }
 
+    /**
+     * 练习声道 / 原声（Original）各自的音源
+     * ------------------------------------
+     * - **练习声道**：优先用 demucs 分离出的 stem（吉他轨），没有才回退源混音；
+     * - **原声**：**恒为源混音**（`project.audioPath`）—— 这才是 C 端 Original 要听的全轨。
+     *
+     * ⚠️ 早期实现把 `MeasureTrackData.originalAudioUrl` 直接写成 `audioUrl`（同一个文件），
+     * 于是在「音轨分离没有真正执行」的曲目上（本机没装 demucs → `separate.py` 是空操作，
+     * `TranscribeTrack.stemPath` 为空），练习声道就是源混音本身，两个声道**必然一模一样**，
+     * 用户切换 Simplified / Original 听不出区别（实测 3 首曲目的 originalAudioUrl 与
+     * audioUrl 连文件名和 SHA-1 都相同），会误以为是客户端没切换。
+     *
+     * 现在的规则：
+     * - 两个音源解析后是同一个文件 → 复用 `audioUrl`（省一次 ffmpeg），但**记一条 warning** 如实告知；
+     * - 确实不同 → 真的切一份原声到 `<sliceDir>/original/`。
+     */
+    const originalSourcePath = resolvedAudioPath;
+    let practiceSourcePath = resolvedAudioPath;
+    const stemCandidate =
+      project.tracks.find((t) => t.instrument === channel)?.stemPath ||
+      project.tracks.find((t) => !!t.stemPath)?.stemPath ||
+      '';
+    if (stemCandidate) {
+      const stemAccess = await this.audio.checkSourceAccessible(stemCandidate);
+      if (stemAccess.ok) {
+        practiceSourcePath = stemAccess.resolved || stemCandidate;
+      } else {
+        warnings.push(`分离出的音轨不可达，练习声道回退到源混音：${stemAccess.reason}`);
+      }
+    }
+    const normalizePath = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
+    const originalIsSameAsChannel =
+      !practiceSourcePath ||
+      !originalSourcePath ||
+      normalizePath(practiceSourcePath) === normalizePath(originalSourcePath);
+    if (originalIsSameAsChannel && resolvedAudioPath) {
+      warnings.push(
+        '本曲目没有独立原声轨（音轨分离未产出 stem，练习声道即源混音）—— C 端 Simplified 与 Original 会是同一段音频。' +
+          '如需区别：安装 demucs 后重新分离并发布。',
+      );
+    }
+
     // ── ① 小节窗口 + 音符（复用 tab-import 的换算，保证与人工导入完全一致）──
     //
     // 节奏元信息的优先级：**Project 行（ReviewPage 人工可改）> TabProject.meta**。
@@ -221,6 +280,22 @@ export class PublishService {
     const instrument: InstrumentType = toInstrumentType(channel);
     const trackIdForMeasure = project.tracks[0]?.id || `tr_${channel}`;
 
+    /**
+     * 镜像发布时**先把目标曲目解析出来**，这样小节切片可以存到 `measures/<scoreId>/`
+     * （Score 维度 = 与旧链路同一约定，**项目删了也不会死链**）。
+     */
+    const mirrorTarget = options.mirrorToScorePipeline
+      ? await this.resolveMirrorTarget(project, options.mirrorScoreId)
+      : null;
+    /**
+     * 切片上传目录：
+     * - 镜像发布 → `measures/<scoreId>`（跟随 Score 生命周期，C 端长期可用）；
+     * - 仅发布契约 → `transcriptions/<projectId>/measures`（跟随项目生命周期）。
+     */
+    const sliceDir = mirrorTarget
+      ? `measures/${mirrorTarget.scoreId}`
+      : `transcriptions/${projectId}/measures`;
+
     let slicedAudioCount = 0;
     let degradedAudioCount = 0;
     let metronomeFallbackCount = 0;
@@ -231,12 +306,12 @@ export class PublishService {
       const measureDuration =
         duration > 0 ? duration : measureDurationSec(bpm, timeSignature, beatsPerMeasure);
 
-      // ② -1 切音频 + 上传
+      // ② -1 切音频 + 上传（练习声道：优先 stem，其次源混音）
       let audioUrl: string | null = null;
-      if (resolvedAudioPath) {
+      if (practiceSourcePath) {
         try {
-          const localSlice = await this.audio.sliceAudio(resolvedAudioPath, pm.startTime, pm.endTime);
-          audioUrl = await this.oss.upload(localSlice, `transcriptions/${projectId}/measures`);
+          const localSlice = await this.audio.sliceAudio(practiceSourcePath, pm.startTime, pm.endTime);
+          audioUrl = await this.oss.upload(localSlice, sliceDir);
           slicedAudioCount += 1;
         } catch (err: any) {
           this.logger.warn(`小节 ${pm.index} 切片失败：${err?.message || err}`);
@@ -247,8 +322,8 @@ export class PublishService {
             degradedAudioCount += 1;
             try {
               audioUrl = await this.oss.exposeOriginalAudio(
-                resolvedAudioPath,
-                `transcriptions/${projectId}/measures`,
+                practiceSourcePath,
+                sliceDir,
                 pm.startTime,
                 pm.endTime,
               );
@@ -262,6 +337,26 @@ export class PublishService {
         }
       } else {
         metronomeFallbackCount += 1;
+      }
+
+      /**
+       * ② -1b 原声（Original）切片：**只有两个音源确实不同才切**。
+       * 相同时复用练习声道（同一文件）—— 这也保证「没有独立原声」时不会静音。
+       */
+      let originalAudioUrl: string | null = audioUrl;
+      if (!originalIsSameAsChannel && originalSourcePath && audioUrl) {
+        try {
+          const localOriginal = await this.audio.sliceAudio(
+            originalSourcePath,
+            pm.startTime,
+            pm.endTime,
+          );
+          originalAudioUrl = await this.oss.upload(localOriginal, `${sliceDir}/original`);
+        } catch (err: any) {
+          this.logger.warn(`小节 ${pm.index} 原声切片失败：${err?.message || err}`);
+          warnings.push(`第 ${pm.index} 小节原声切片失败，Original 回退到练习声道。`);
+          originalAudioUrl = audioUrl;
+        }
       }
 
       // ② -2 音符：relativeTime + 归一化坐标
@@ -330,7 +425,7 @@ export class PublishService {
         trackId: trackIdForMeasure,
         instrument,
         audioUrl,
-        originalAudioUrl: audioUrl,
+        originalAudioUrl,
         metronome,
         tabImageUrl: '',
         imageWidth: 1200,
@@ -388,7 +483,8 @@ export class PublishService {
     const row = await this.prisma.practicePackage.create({
       data: {
         projectId,
-        scoreId: project.scoreId || null,
+        /** 镜像发布时就是刚解析出的曲目；未镜像时回退到项目已绑定的 scoreId */
+        scoreId: mirrorTarget?.scoreId || project.scoreId || null,
         schemaVersion: '1.0',
         revision,
         payload: JSON.stringify(packageJson),
@@ -413,15 +509,18 @@ export class PublishService {
     });
 
     // ── ⑤ 可选：镜像进既有 Score/Track/Measure 链路 ──
-    const mirrored = options.mirrorToScorePipeline
-      ? await this.mirrorToScorePipeline(project, tabProject, measures, {
-          channel,
-          bpm,
-          timeSignature,
-          publishMeasures,
-          reuseScoreId: options.mirrorScoreId,
-        })
-      : { enabled: false };
+    const mirrored =
+      options.mirrorToScorePipeline && mirrorTarget
+        ? await this.mirrorToScorePipeline(project, tabProject, measures, {
+            channel,
+            bpm,
+            timeSignature,
+            publishMeasures,
+            scoreId: mirrorTarget.scoreId,
+            trackId: mirrorTarget.trackId,
+            publishMirroredScore: options.publishMirroredScore !== false,
+          })
+        : { enabled: false };
 
     if (mirrored.error) warnings.push(`镜像到旧发布链路失败：${mirrored.error}`);
 
@@ -738,6 +837,49 @@ export class PublishService {
    * 意料之外的重复小节。因此这里必须由调用方显式开启（`mirrorToScorePipeline: true`），
    * 并且全部失败都只降级为 warning，不影响新的 PracticePackage 发布结果。
    */
+  /**
+   * 预先解析镜像目标（Score + Track），**必须在切音频之前调用**。
+   *
+   * 为什么：小节切片要存到 `measures/<scoreId>/`（Score 维度，与旧链路
+   * `/api/measures/publish` 同一约定）。若存到 `transcriptions/<projectId>/measures/`，
+   * **项目一删、切片文件就没了**，而 Score 会继续留在 C 端列表里 → 学员点开就是
+   * 「音频加载失败」。实测就撞上过这个：`Canon in D`（Score 维度）200 正常，
+   * 而 `A 小调练习曲`（Project 维度）404。
+   */
+  private async resolveMirrorTarget(
+    project: any,
+    reuseScoreId?: string,
+  ): Promise<{ scoreId: string; trackId: string; channel: string }> {
+    const channel = 'guitar';
+    let scoreId = reuseScoreId || project.scoreId;
+    if (!scoreId) {
+      const score = await this.prisma.score.create({
+        data: {
+          title: project.title,
+          artist: project.artist || null,
+          originalAudio: project.audioPath ? this.upload.toPublicUrl(project.audioPath) : '',
+          /** 先建为 draft，由 `mirrorToScorePipeline` 在写入小节后置为 published */
+          status: 'draft',
+        },
+      });
+      scoreId = score.id;
+    }
+    await this.prisma.project.update({ where: { id: project.id }, data: { scoreId } });
+
+    const existingTrack = await this.prisma.track.findFirst({
+      where: { scoreId, instrument: channel },
+    });
+    const trackId =
+      existingTrack?.id ||
+      (
+        await this.prisma.track.create({
+          data: { scoreId, instrument: channel, audioUrl: '' },
+        })
+      ).id;
+
+    return { scoreId, trackId, channel };
+  }
+
   private async mirrorToScorePipeline(
     project: any,
     tabProject: any,
@@ -747,49 +889,54 @@ export class PublishService {
       bpm: number;
       timeSignature: string;
       publishMeasures: PublishReadyMeasure[];
-      /** 指定复用的曲目 id（重复演示时避免新建同名曲目） */
-      reuseScoreId?: string;
+      /** 已**预先解析**好的目标曲目 / 分轨（见 `resolveMirrorTarget`） */
+      scoreId: string;
+      trackId: string;
+      /** 镜像完成后是否把 Score 置为 published（默认 true，见 PublishOptions 注释） */
+      publishMirroredScore?: boolean;
     },
-  ): Promise<{ enabled: boolean; scoreId?: string; trackId?: string; measureCount?: number; error?: string }> {
+  ): Promise<{
+    enabled: boolean;
+    scoreId?: string;
+    trackId?: string;
+    measureCount?: number;
+    scoreStatus?: string;
+    error?: string;
+  }> {
     try {
+      const scoreId = ctx.scoreId;
+      const trackId = ctx.trackId;
       const audioUrl = project.audioPath ? this.upload.toPublicUrl(project.audioPath) : '';
 
-      let scoreId = ctx.reuseScoreId || project.scoreId;
-      if (!scoreId) {
-        const score = await this.prisma.score.create({
-          data: {
-            title: project.title,
-            artist: project.artist || null,
-            bpm: ctx.bpm,
-            timeSignature: ctx.timeSignature,
-            originalAudio: audioUrl,
-            status: 'draft',
-            songKey: tabProject?.meta?.key || null,
-            capo: project.capo ?? 0,
-            tuning: project.tuning || null,
-            license: project.license || 'user_uploaded',
-          },
-        });
-        scoreId = score.id;
-        await this.prisma.project.update({ where: { id: project.id }, data: { scoreId } });
-      }
-
-      const existingTrack = await this.prisma.track.findFirst({
-        where: { scoreId, instrument: ctx.channel },
+      /**
+       * 刷新 Score 元信息（新建与复用都走这里）。
+       *
+       * ⚠️ 复用已有曲目时**必须也刷** —— 早期实现只在新建时写元信息，于是把项目挂到
+       * 已有曲目后 `originalAudio` 仍指着上一个项目，那个项目的文件被删后，
+       * C 端 Original 模式直接加载失败。
+       */
+      await this.prisma.score.update({
+        where: { id: scoreId },
+        data: {
+          title: project.title || undefined,
+          artist: project.artist || null,
+          bpm: ctx.bpm,
+          timeSignature: ctx.timeSignature,
+          originalAudio: audioUrl || undefined,
+          songKey: tabProject?.meta?.key || null,
+          capo: project.capo ?? 0,
+          tuning: project.tuning || null,
+          license: project.license || 'user_uploaded',
+        },
       });
-      const tabJsonPath = project.tracks?.[0]?.tabPath || null;
-      const trackId =
-        existingTrack?.id ||
-        (
-          await this.prisma.track.create({
-            data: {
-              scoreId,
-              instrument: ctx.channel,
-              audioUrl,
-              jsonUrl: tabJsonPath,
-            },
-          })
-        ).id;
+
+      await this.prisma.track.update({
+        where: { id: trackId },
+        data: {
+          audioUrl,
+          jsonUrl: project.tracks?.[0]?.tabPath || null,
+        },
+      });
 
       // 重新发布前清空旧小节（既有链路是 append-only，必须先删）
       const deleted = await this.measures.deleteByScore(scoreId);
@@ -824,7 +971,26 @@ export class PublishService {
       this.logger.log(
         `已镜像到既有发布链路：scoreId=${scoreId} trackId=${trackId}（清理旧小节 ${deleted} 个，写入 ${ctx.publishMeasures.length} 个）`,
       );
-      return { enabled: true, scoreId, trackId, measureCount: ctx.publishMeasures.length };
+
+      /**
+       * 置为已发布 —— 否则 C 端 `GET /api/published/scores`（只查 published）看不到，
+       * 表现为「发布成功了但小程序/音乐库里没有」。
+       */
+      let scoreStatus: string | undefined;
+      if (ctx.publishMirroredScore !== false) {
+        const updated = await this.prisma.score.update({
+          where: { id: scoreId },
+          data: { status: 'published' },
+          select: { status: true },
+        });
+        scoreStatus = updated.status;
+        this.logger.log(`镜像曲目已置为 published：scoreId=${scoreId}`);
+      } else {
+        const current = await this.prisma.score.findUnique({ where: { id: scoreId }, select: { status: true } });
+        scoreStatus = current?.status;
+      }
+
+      return { enabled: true, scoreId, trackId, measureCount: ctx.publishMeasures.length, scoreStatus };
     } catch (err: any) {
       this.logger.warn(`镜像到既有发布链路失败（不影响新契约）：${err?.message || err}`);
       return { enabled: true, error: err?.message || String(err) };

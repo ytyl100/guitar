@@ -1,0 +1,200 @@
+[
+  {
+    "startSec": 0,
+    "endSec": 1,
+    "name": "Am",
+    "score": 1.0723
+  },
+  {
+    "startSec": 0.75,
+    "endSec": 1.75,
+    "name": "C",
+    "score": 1.0968
+  },
+  {
+    "startSec": 1.5,
+    "endSec": 3,
+    "name": "Am",
+    "score": 1.094
+  },
+  {
+    "startSec": 2.75,
+    "endSec": 4,
+    "name": "F",
+    "score": 0.9551
+  },
+  {
+    "startSec": 3.75,
+    "endSec": 4.25,
+    "name": "Am",
+    "score": 1.1047
+  },
+  {
+    "startSec": 4,
+    "endSec": 4.5,
+    "name": "C",
+    "score": 0.9855
+  },
+  {
+    "startSec": 4.25,
+    "endSec": 5,
+    "name": "Am",
+    "score": 1.0501
+  },
+  {
+    "startSec": 4.75,
+    "endSec": 6.25,
+    "name": "F",
+    "score": 0.8757
+  },
+  {
+    "startSec": 6,
+    "endSec": 8.25,
+    "name": "C",
+    "score": 0.9652
+  },
+  {
+    "startSec": 8,
+    "endSec": 8.75,
+    "name": "G",
+    "score": 0.9458
+  },
+  {
+    "startSec": 8.5,
+    "endSec": 9.75,
+    "name": "Gm",
+    "score": 0.9742
+  },
+  {
+    "startSec": 9.5,
+    "endSec": 10,
+    "name": "G",
+    "score": 0.8476
+  },
+  {
+    "startSec": 9.75,
+    "endSec": 11,
+    "name": "Bm",
+    "score": 0.9379
+  },
+  {
+    "startSec": 10.75,
+    "endSec": 11.75,
+    "name": "G",
+    "score": 0.9461
+  },
+  {
+    "startSec": 11.5,
+    "endSec": 12,
+    "name": "Gm",
+    "score": 0.9482
+  },
+  {
+    "startSec": 11.75,
+    "endSec": 12.25,
+    "name": "Am7",
+    "score": 0.8231
+  },
+  {
+    "startSec": 12,
+    "endSec": 13,
+    "name": "Am",
+    "score": 1.0767
+  },
+  {
+    "startSec": 12.75,
+    "endSec": 14,
+    "name": "C",
+    "score": 1.0478
+  },
+  {
+    "startSec": 13.75,
+    "endSec": 15,
+    "name": "Am",
+    "score": 1.1163
+  },
+  {
+    "startSec": 14.75,
+    "endSec": 16,
+    "name": "F",
+    "score": 0.9495
+  },
+  {
+    "startSec": 15.75,
+    "endSec": 16.25,
+    "name": "Am",
+    "score": 1.1036
+  },
+  {
+    "startSec": 16,
+    "endSec": 16.5,
+    "name": "F",
+    "score": 0.9706
+  },
+  {
+    "startSec": 16.25,
+    "endSec": 17,
+    "name": "Am",
+    "score": 1.0358
+  },
+  {
+    "startSec": 16.75,
+    "endSec": 18.25,
+    "name": "F",
+    "score": 0.8478
+  },
+  {
+    "startSec": 18,
+    "endSec": 18.75,
+    "name": "C",
+    "score": 0.898
+  },
+  {
+    "startSec": 18.5,
+    "endSec": 19,
+    "name": "Cm",
+    "score": 1.0379
+  },
+  {
+    "startSec": 18.75,
+    "endSec": 20,
+    "name": "C",
+    "score": 1.0862
+  },
+  {
+    "startSec": 19.75,
+    "endSec": 20.75,
+    "name": "G",
+    "score": 0.9188
+  },
+  {
+    "startSec": 20.5,
+    "endSec": 21.5,
+    "name": "Gm",
+    "score": 0.9631
+  },
+  {
+    "startSec": 21.25,
+    "endSec": 22,
+    "name": "G",
+    "score": 0.9738
+  },
+  {
+    "startSec": 21.75,
+    "endSec": 23,
+    "name": "Bm",
+    "score": 0.9553
+  },
+  {
+    "startSec": 22.75,
+    "endSec": 24.5,
+    "name": "G",
+    "score": 0.9543
+  },
+  {
+    "startSec": 24.25,
+    "endSec": 25.001315192743764,
+    "name": "Gm",
+    "score": 0.8565
+  }
+]

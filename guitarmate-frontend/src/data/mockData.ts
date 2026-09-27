@@ -104,6 +104,14 @@ export const CHORD_DATABASE: Record<string, ChordDefinition> = {
   },
 };
 
+/**
+ * ⚠️ **不再注入曲库**（仅供数据类型 / 文案参考，保留以免误删）。
+ *
+ * Songs 曲库现在是**后端已发布内容的唯一映射**（`GET /api/published/library`）：
+ * 这些硬编码示例曲目在 guitarmate-studio-cms 里根本不存在，一旦注入就会出现
+ * 「小程序能看到、CMS 里找不到」的假曲目，而且后端删掉的曲目在前端删不掉。
+ * 需要示例数据时请在 CMS 里真正发布一首（两条链路都行）。
+ */
 export const INITIAL_SONGS: SongItem[] = [
   {
     id: 'hotel-california',

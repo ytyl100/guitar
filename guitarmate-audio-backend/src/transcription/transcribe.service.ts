@@ -5,7 +5,7 @@ import {
   NotFoundException,
   OnModuleInit,
 } from '@nestjs/common';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { PrismaService } from '../prisma/prisma.service';
 import { PythonRunnerService } from './python-runner.service';
@@ -94,6 +94,13 @@ export class TranscribeService implements OnModuleInit {
     fileName?: string;
     base64?: string;
     url?: string;
+    /**
+     * URL 项目的下载执行方：
+     * - `server`（默认）：服务器跑 yt-dlp（适合海外/能直连 YouTube 的部署）；
+     * - `client`：服务器不下载，等项目状态变成 `awaiting_audio` 后由**本机下载代理**回传音频
+     *   （国内或服务器访问不了 YouTube 时用）。
+     */
+    downloadDriver?: 'server' | 'client';
     bpm?: number;
     timeSignature?: string;
     capo?: number;
@@ -101,6 +108,14 @@ export class TranscribeService implements OnModuleInit {
     license?: string;
   }) {
     const sourceType = input.sourceType === 'url' ? 'url' : 'upload';
+    /**
+     * 下载执行方优先级：请求参数 > `YTDLP_DRIVER` 环境变量 > server。
+     * 这样「国内部署」只需在 .env 里写 `YTDLP_DRIVER=client`，不用改任何调用方。
+     */
+    const envDriver = (process.env.YTDLP_DRIVER || '').trim().toLowerCase();
+    const requestedDriver = input.downloadDriver || (envDriver === 'client' ? 'client' : 'server');
+    const downloadDriver =
+      sourceType === 'url' ? (requestedDriver === 'client' ? 'client' : 'server') : null;
     if (sourceType === 'url' && !(input.url || '').trim()) {
       throw new BadRequestException('sourceType=url 时必须提供 `url`。');
     }
@@ -116,6 +131,7 @@ export class TranscribeService implements OnModuleInit {
         status: sourceType === 'url' ? 'pending' : 'pending',
         sourceType,
         sourceRef: sourceType === 'url' ? input.url!.trim() : input.fileName || null,
+        downloadDriver,
         /**
          * 留空而不是写死 100 —— `Project.bpm` 是「人工可覆写」的节奏基准：
          * null 表示还没人指定，发布时回退到转录产物（Basic Pitch / 模拟器）给出的 BPM。
@@ -127,7 +143,9 @@ export class TranscribeService implements OnModuleInit {
         license: input.license || 'user_uploaded',
         stageNote:
           sourceType === 'url'
-            ? '已创建项目，等待 URL 下载（yt-dlp）'
+            ? downloadDriver === 'client'
+              ? '已创建项目，等待**本机下载代理**回传音频（npm run agent）'
+              : '已创建项目，等待 URL 下载（yt-dlp）'
             : '已创建项目，等待音频写入',
       },
     });
@@ -177,6 +195,21 @@ export class TranscribeService implements OnModuleInit {
 
     await this.applyOverrides(projectId, overrides);
 
+    /**
+     * `downloadDriver='client'`：服务器**不**下载 —— 直接把项目停在「等待本机代理回传音频」。
+     * 这样国内部署 / 服务器访问不了 YouTube 时，主通路依然可用（本机取音频 → 上传 → 服务器跑重活）。
+     */
+    if (needsDownload && project.downloadDriver === 'client') {
+      await this.parkAwaitingAudio(projectId);
+      return {
+        success: true,
+        projectId,
+        stage: 'awaiting_audio' as const,
+        driver: 'client',
+        hint: '请在**本机**运行 npm run agent（脚本会取音频并回传）',
+      };
+    }
+
     if (!caps.simulate && needsDownload && !caps.ytDlp.available) {
       throw new BadRequestException(
         `需要先下载音频，但 yt-dlp 不可用且已禁用模拟模式：${caps.ytDlp.reason}`,
@@ -205,13 +238,20 @@ export class TranscribeService implements OnModuleInit {
     };
   }
 
-  /** 重试：把项目从 failed 拉回，并从「第一个未完成的阶段」重新开始 */
-  async retryProject(projectId: string) {
+  /**
+   * 重试：把项目从 failed 拉回，并从「第一个未完成的阶段」重新开始。
+   *
+   * `from` 可显式指定起点阶段 —— 用途：**用新版识别算法重新转录已有项目**
+   * （否则已 transcribed 的项目只会从 convert 开始，拿不到新的音符）。
+   */
+  async retryProject(projectId: string, from?: StageJobPayload['stage']) {
     const project = await this.getProjectRow(projectId);
     const tracks = await this.prisma.transcribeTrack.findMany({ where: { projectId } });
 
     let stage: StageJobPayload['stage'] = 'separate';
-    if (!project.audioPath) {
+    if (from) {
+      stage = from;
+    } else if (!project.audioPath) {
       stage = 'download';
     } else if (tracks.some((t) => t.status === 'transcribed')) {
       stage = 'convert';
@@ -219,12 +259,249 @@ export class TranscribeService implements OnModuleInit {
       stage = 'transcribe';
     }
 
+    /**
+     * 显式重跑 transcribe 时，必须把分轨状态退回 `separated` ——
+     * 否则 `handleTranscribe` 看到的仍是旧的 transcribed 状态与旧音符。
+     */
+    if (from === 'transcribe' || from === 'separate' || from === 'download') {
+      await this.prisma.transcribeTrack.updateMany({
+        where: { projectId },
+        data: { status: 'pending', meta: null, error: null },
+      });
+    }
+
+    /**
+     * ⚠️ **`transcribe` / `convert` 是「按分轨」的阶段：一次任务只能处理一条轨**
+     * （`handleTranscribe` 从 `payload.instrument` 取轨，**缺省值是 `guitar`**；处理完
+     * 该轨后自己再 enqueue 自己的 `convert`）。所以重试这两个阶段**必须按分轨扇出**。
+     *
+     * 早期实现只 enqueue 一个**不带 instrument** 的任务：
+     *   separate      → N 条 transcribe（每条自链自己的 convert）✓
+     *   retry transcribe → 1 条 transcribe（被默认成 guitar）✗
+     * 结果：只有 guitar 跑完，bass/other/piano 永远停在 `pending` → `remaining` 永远 > 0
+     * → 项目卡死在 `converting` 75%，且**日志里没有任何报错**
+     * （实测 Macaroon 5：10:56 卡到 11:15，无 Python 进程、无输出）。
+     */
+    const fanout: StemInstrument[] =
+      stage === 'transcribe'
+        ? tracks
+            .filter((t) => !!t.stemPath && existsSync(t.stemPath))
+            .map((t) => t.instrument as StemInstrument)
+        : stage === 'convert'
+          ? tracks
+              .filter((t) => !!t.midiPath && existsSync(t.midiPath))
+              .map((t) => t.instrument as StemInstrument)
+          : [];
+
+    if (fanout.length > 0) {
+      let first: { jobId: string; driver: string } | null = null;
+      for (const instrument of fanout) {
+        const enqueued = await this.enqueueStage(projectId, stage, instrument);
+        if (!first) first = enqueued;
+      }
+      await this.prisma.project.update({
+        where: { id: projectId },
+        data: {
+          status: STAGE_TO_PROJECT_STATUS[stage],
+          error: null,
+          stageNote: `手动重试「${stage}」：已按分轨派发 ${fanout.length} 条任务（${fanout.join(' / ')}）`,
+        },
+      });
+      return {
+        success: true,
+        projectId,
+        stage,
+        ...(first as { jobId: string; driver: string }),
+        jobs: fanout.length,
+        instruments: fanout,
+      };
+    }
+
     await this.prisma.project.update({
       where: { id: projectId },
-      data: { status: 'failed', error: null, stageNote: `手动重试，从「${stage}」阶段恢复` },
+      data: {
+        /**
+         * ⚠️ 这里**不要**再用 `'failed'` 当"准备中"标记：
+         * ① 界面上会闪一下「失败」，用户以为重试把项目弄坏了；
+         * ② 自动化/轮询把它当**终态**（`failed` 的语义就是结束），
+         *    会在流水线还没跑完时就去做清理/断言 —— 实测就是这个坑。
+         * 直接写该阶段的**目标状态**（与 `enqueueStage` 的语义一致）。
+         */
+        status: STAGE_TO_PROJECT_STATUS[stage],
+        error: null,
+        stageNote: `手动重试，从「${stage}」阶段恢复`,
+      },
     });
     const enqueued = await this.enqueueStage(projectId, stage);
     return { success: true, projectId, stage, ...enqueued };
+  }
+
+  /**
+   * 把项目挂到「等待本机下载代理回传音频」（幂等）。
+   *
+   * 为什么不报错：`downloadDriver='client'` 时服务器本来就不该下载 ——
+   * 这是设计上的正常中间状态，而不是失败。
+   */
+  private async parkAwaitingAudio(projectId: string, jobRowId?: string) {
+    if (jobRowId) {
+      await this.completeStage(jobRowId, {
+        awaitingAudio: true,
+        driver: 'client',
+        hint: '等待本机下载代理上传音频（npm run agent）',
+      });
+    }
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        status: 'awaiting_audio',
+        progress: 5,
+        error: null,
+        stageNote: '等待本机下载代理回传音频 —— 请在本机运行 npm run agent',
+      },
+    });
+  }
+
+  /**
+   * 本机下载代理回传音频（方案 A 的主通路）
+   * =====================================
+   *
+   * 流程：代理在本机用 yt-dlp 取音频（那里有受信任的浏览器会话 + 住宅 IP）→
+   * base64 回传到本接口 → 服务器落盘并**从 separate 阶段继续**原有流水线。
+   *
+   * 与 `/projects/upload` 的区别：那个是「新建 + 上传」，这个是把音频**接到已有 URL 项目**上，
+   * 因此 URL / 标题 / 版权等元信息都保留。
+   */
+  async attachAudio(
+    projectId: string,
+    input: { base64: string; fileName?: string; title?: string; durationSec?: number },
+  ) {
+    const project = await this.getProjectRow(projectId);
+    if (project.audioPath && existsSync(project.audioPath)) {
+      throw new BadRequestException('该项目已经有音频了；如需替换请先删除或新建项目。');
+    }
+    if (!(input.base64 || '').trim()) {
+      throw new BadRequestException('缺少 base64 音频内容（字段名 `base64`）。');
+    }
+
+    const stored = await this.upload.saveUpload({
+      projectId,
+      fileName: input.fileName || 'agent-audio.mp3',
+      base64: input.base64,
+    });
+    const probe = await this.upload.probeAudio(stored.absolutePath);
+
+    /**
+     * ⚠️ **先验证、再落库**。
+     *
+     * `saveUpload()` 只按扩展名写文件（文件头不一致仅 warn），所以早期实现
+     * 会把一段乱码 base64 直接写进 `Project.audioPath` 并推进流水线 —— 项目被污染成
+     * `separating`，要等 separate / transcribe 才爆，错误离现场很远（而且此时音频
+     * 已经被“认下”了，再回传真音频会被 400 拒绝）。
+     *
+     * 因此这里做两道闸：文件头（魔数）+ ffmpeg 能否读出时长；任一不过 → 删掉文件、400 返回。
+     */
+    const rejectAndDiscard = (message: string) => {
+      try {
+        rmSync(stored.absolutePath, { force: true });
+      } catch {
+        /* 删不掉也不影响拒绝结果 */
+      }
+      throw new BadRequestException(message);
+    };
+    if (!stored.magicVerified) {
+      this.logger.warn(`代理回传内容非可识别音频（magic 校验失败）：${stored.ext}`);
+      rejectAndDiscard(
+        `回传内容不是可识别的音频（${stored.ext} 文件头校验失败）。` +
+          '请确认本机代理上传的是 yt-dlp 取到的音频（推荐 mp3），而不是 HTML 错误页或空内容。',
+      );
+    }
+    if (!probe.durationSec && !(Number(input.durationSec) > 0)) {
+      rejectAndDiscard(
+        '回传的音频无法解码（ffmpeg 读不到时长）。文件可能已损坏或不完整 —— 请在本机重新取一次音频后回传。',
+      );
+    }
+
+    // 代理拿得到视频标题时，用它给「未命名转录项目」命名（与服务器下载的行为一致）
+    const nextTitle =
+      input.title && isPlaceholderTitle(project.title, project.sourceRef)
+        ? input.title.slice(0, 120)
+        : undefined;
+
+    await this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        title: nextTitle,
+        audioPath: stored.absolutePath,
+        originalName: input.title || project.originalName || stored.fileName,
+        durationSec: probe.durationSec ?? input.durationSec ?? null,
+        sampleRate: probe.sampleRate ?? null,
+        channels: probe.channels ?? null,
+        format: stored.ext.replace('.', ''),
+        status: STAGE_TO_PROJECT_STATUS.separate,
+        progress: Math.max(1, STAGE_PROGRESS.separate - 2),
+        error: null,
+        stageNote: `本机代理已回传音频（${(stored.sizeBytes / 1024 / 1024).toFixed(1)}MB，时长 ${
+          probe.durationSec ? `${probe.durationSec.toFixed(1)}s` : '未知'
+        }）→ 开始分离/转录`,
+      },
+    });
+
+    const enqueued = await this.enqueueStage(projectId, 'separate');
+    return {
+      success: true,
+      projectId,
+      stored: {
+        relativePath: stored.relativePath,
+        url: stored.url,
+        sizeBytes: stored.sizeBytes,
+        ext: stored.ext,
+        magicVerified: stored.magicVerified,
+      },
+      probe,
+      ...enqueued,
+    };
+  }
+
+  /**
+   * 供本机下载代理轮询：列出「等着回传音频」的项目。
+   * 同时带上 `failedDownload` 清单（服务器下载失败的项目）—— 代理可选用 `--rescue` 接管。
+   */
+  async listDownloadTasks() {
+    const projects = await this.prisma.project.findMany({
+      where: { sourceType: 'url' },
+      orderBy: { createdAt: 'asc' },
+      include: { jobs: { orderBy: { createdAt: 'desc' }, take: 1 } },
+    });
+
+    const awaiting = projects
+      .filter((p) => p.status === 'awaiting_audio' && !p.audioPath)
+      .map((p) => ({
+        id: p.id,
+        title: p.title,
+        url: p.sourceRef,
+        status: p.status,
+        downloadDriver: p.downloadDriver || 'server',
+        createdAt: p.createdAt,
+      }));
+
+    const failedDownload = projects
+      .filter(
+        (p) =>
+          !p.audioPath &&
+          p.status === 'failed' &&
+          p.jobs[0]?.stage === 'download' &&
+          p.jobs[0]?.status === 'failed',
+      )
+      .map((p) => ({
+        id: p.id,
+        title: p.title,
+        url: p.sourceRef,
+        status: p.status,
+        lastError: p.jobs[0]?.error ? String(p.jobs[0].error).split('\n')[0] : null,
+        createdAt: p.createdAt,
+      }));
+
+    return { awaitingAudio: awaiting, failedDownload };
   }
 
   async listProjects(limit = 50) {
@@ -310,9 +587,40 @@ export class TranscribeService implements OnModuleInit {
   }
 
   async deleteProject(projectId: string) {
-    await this.getProjectRow(projectId);
+    const project = await this.getProjectRow(projectId);
     await this.prisma.project.delete({ where: { id: projectId } });
-    return { success: true, projectId, message: '项目及其任务/分轨/发布快照已删除（级联）' };
+
+    /**
+     * 连同 `uploads/transcriptions/<projectId>/` 一起删掉。
+     *
+     * ⚠️ 两个前提，否则会误删 C 端在用的音频：
+     * ① 该项目的 PracticePackage / TranscribeTrack 都是 `onDelete: Cascade`，
+     *    库里的引用已经随项目一起没了；
+     * ② **镜像发布**的小节切片现在存在 `uploads/measures/<scoreId>/`（Score 维度），
+     *    不在项目目录下 —— 所以删项目不会再让已发布曲目变成死链。
+     * （早期只有项目维度的切片，删项目 = C 端 404，实测撞到过。）
+     */
+    const projectDir = join(process.cwd(), 'uploads', 'transcriptions', projectId);
+    let filesRemoved = false;
+    try {
+      if (existsSync(projectDir)) {
+        rmSync(projectDir, { recursive: true, force: true });
+        filesRemoved = true;
+      }
+    } catch (err: any) {
+      this.logger.warn(`删除项目目录失败（不影响数据库删除）：${err?.message || err}`);
+    }
+
+    return {
+      success: true,
+      projectId,
+      mirroredScoreId: project.scoreId || null,
+      filesRemoved,
+      message:
+        '项目及其任务/分轨/发布快照已删除（级联）' +
+        (filesRemoved ? '，项目上传目录已清理' : '') +
+        (project.scoreId ? `；镜像出的曲目 ${project.scoreId} 保留在 C 端（切片为 Score 维度）` : ''),
+    };
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -324,6 +632,15 @@ export class TranscribeService implements OnModuleInit {
     const { projectId } = payload;
     const project = await this.getProjectRow(projectId);
     const jobRowId = await this.beginStage(projectId, 'download', job.id, { url: project.sourceRef });
+
+    /**
+     * 下载交给本机代理时，服务器这一步只负责「挂起等待」，不能报错 ——
+     * 否则重试 / 重复入队会把项目误标为 failed。
+     */
+    if (project.downloadDriver === 'client' && !project.audioPath) {
+      await this.parkAwaitingAudio(projectId, jobRowId);
+      return;
+    }
 
     try {
       if (project.audioPath && existsSync(project.audioPath)) {
@@ -341,6 +658,11 @@ export class TranscribeService implements OnModuleInit {
         await this.prisma.project.update({
           where: { id: projectId },
           data: {
+            // 用户没填名字时用**视频真实标题**命名（否则列表里全是「未命名转录项目」，无法分辨）
+            title:
+              isPlaceholderTitle(project.title, project.sourceRef) && downloaded.title
+                ? String(downloaded.title).slice(0, 120)
+                : undefined,
             audioPath: downloaded.absolutePath,
             originalName: downloaded.title || downloaded.fileName,
             durationSec: probe.durationSec ?? downloaded.durationSec ?? null,
@@ -499,7 +821,16 @@ export class TranscribeService implements OnModuleInit {
     let analysisSummary: Record<string, unknown> | null = null;
     if (caps.basicPitch.available) {
       const onsetThreshold = process.env.BASIC_PITCH_ONSET ?? '0.5';
-      const frameThreshold = process.env.BASIC_PITCH_FRAME ?? '0.3';
+      /**
+       * 默认帧阈值从 0.3 提到 0.45 + 最短音符 58ms 提到 100ms：
+       * 实测（Macaroon 5 吉他分轨 20s 片段）
+       *   onset0.5/frame0.3/minlen58  → 165 音符，平均置信度 0.535，低置信（<0.5）68 个（41%）
+       *   onset0.5/frame0.45/minlen100 → 95 音符，平均置信度 0.626，低置信 10 个（11%）
+       * 前者会把大量泛音/串音写进六线谱（C 端表现为莫名其妙的音符），
+       * 后者更接近 basic-pitch 上游默认（上游 minimum_note_length 默认 127.8ms）。
+       */
+      const frameThreshold = process.env.BASIC_PITCH_FRAME ?? '0.45';
+      const minNoteMs = process.env.BASIC_PITCH_MIN_NOTE_MS ?? '100';
       const outcome = await this.python.runWorker<TranscribeWorkerResult>('transcribe.py', [
         '--input',
         stemPath,
@@ -511,6 +842,8 @@ export class TranscribeService implements OnModuleInit {
         onsetThreshold,
         '--frame-threshold',
         frameThreshold,
+        '--min-note-length-ms',
+        minNoteMs,
         '--bpm',
         String(bpm),
       ]);
@@ -589,6 +922,8 @@ export class TranscribeService implements OnModuleInit {
       confidenceAvg: result.confidenceAvg,
       engine: engineName,
       midiPath: this.upload.toRelativePath(result.midiPath || midiPath),
+      // 诊断：为什么谱面节点比听到的少（起音数 / 浊音率 / 生效门限）
+      analysis: analysisSummary,
     });
 
     await this.enqueueStage(projectId, 'convert', instrument, payload.overrides);
@@ -644,11 +979,25 @@ export class TranscribeService implements OnModuleInit {
         '--capo',
         String(capo),
         /**
-         * 量化网格：Basic Pitch 给的 MIDI 时间戳比较粗，用 1/8 就够；
-         * 内置 YIN 的起音精度是毫秒级（实测平均误差 ~37ms），用 1/16 才能保住它的节奏细节。
+         * 量化网格。
+         *
+         * ⚠️ 这里原来写的是「Basic Pitch 给的 MIDI 时间戳比较粗，用 1/8 就够」—— **这句是错的**，
+         * 而且代价很大。Basic Pitch 是帧级输出（hop ≈ 11.6ms），时间戳一点都不粗；
+         * 真正的误差来源恰恰是 `midi_to_tab.py` 把起点**吸附到 1/8 网格**（4/4 @100BPM = 300ms）。
+         *
+         * 用 `scripts/verify-transcription-alignment.py` 拿音频**真实起音点**当基准实测
+         * （Macaroon 5 / 206s，中位偏差 / ±50ms 命中率，`attack(晚)` 口径）：
+         *   guitar  1/8 → 68ms / 36.1%    1/16 → 51ms / 48.7%    1/32 → 38ms / 60.0%
+         *   bass    1/8 → 102ms / 30.3%   1/16 → 60ms / 44.2%    1/32 → 53ms / 47.7%
+         * 反向覆盖率（音频起音点被谱面覆盖）也从 75.9% ⇒ 入谱后只剩 45.8%（容差 ±80ms）。
+         *
+         * 默认取 **1/16**：标准记谱分辨率（十六分音符），误差比 1/8 砍掉约一半，
+         * 又不至于让谱面出现大量非标准的 32 分位置。想要最大保真可用
+         * `TAB_QUANTIZE_GRID=1/32`（实测 guitar 中位 38ms / ±50ms 60%）。
+         * 内置 YIN 的起音本来就是毫秒级，同样给 1/16。
          */
         '--grid',
-        meta.engine === 'node-yin' ? '1/16' : '1/8',
+        process.env.TAB_QUANTIZE_GRID ?? '1/16',
         '--tuning',
         tuning.join(','),
         '--title',
@@ -756,6 +1105,33 @@ export class TranscribeService implements OnModuleInit {
       where: { projectId, status: { in: ['pending', 'separated', 'transcribed'] } },
     });
 
+    /**
+     * ⚠️ 进度文案必须汇报**整个项目**的规模，而不是「最后一条分轨」的。
+     *
+     * 早期实现直接用循环里的 `measureCount` / `noteCount`（= 刚处理完的那条轨），
+     * 多分轨项目于是显示成最后一条轨的数字 —— 实测 Macaroon 5 明明转录出
+     * guitar 227 / bass 145 / other 81 / piano 7 音符，却显示
+     * 「转录完成（46 小节 / 7 音符）」（= piano 那条），
+     * 让人误以为分离/转录把结果搞坏了。这里改成汇总所有分轨。
+     */
+    const finishedTracks = await this.prisma.transcribeTrack.findMany({
+      where: { projectId },
+      select: { instrument: true, noteCount: true, confidenceAvg: true },
+      orderBy: { instrument: 'asc' },
+    });
+    const totalNotes = finishedTracks.reduce((sum, t) => sum + (t.noteCount || 0), 0);
+    const perTrack = finishedTracks
+      .filter((t) => (t.noteCount || 0) > 0)
+      .map((t) => `${t.instrument} ${t.noteCount}`)
+      .join(' / ');
+    /** 全曲小节数 = 各分轨里最长的那条（合并后的时间轴长度） */
+    const mergedMeasures = (merged as any)?.tracks?.length
+      ? Math.max(
+          ...(merged as any).tracks.map((t: any) => t?.measures?.length || 0),
+          measureCount,
+        )
+      : measureCount;
+
     await this.prisma.project.update({
       where: { id: projectId },
       data: {
@@ -764,7 +1140,7 @@ export class TranscribeService implements OnModuleInit {
         status: remaining === 0 ? 'review' : STAGE_TO_PROJECT_STATUS.convert,
         stageNote:
           remaining === 0
-            ? `转录完成（${measureCount} 小节 / ${noteCount} 音符），等待人工复核`
+            ? `转录完成（${mergedMeasures} 小节 / 共 ${totalNotes} 音符：${perTrack || '无'}），等待人工复核`
             : `已完成 ${instrument} 转谱，剩余 ${remaining} 条分轨处理中`,
       },
     });
@@ -954,6 +1330,8 @@ export class TranscribeService implements OnModuleInit {
       stageNote: project.stageNote,
       error: project.error,
       scoreId: project.scoreId,
+      /** URL 项目的下载执行方（server | client）—— CMS 用来解释「为什么在等」 */
+      downloadDriver: project.downloadDriver || null,
       hasTabProject: !!project.tabProject,
       counts: project._count
         ? {
@@ -1097,6 +1475,18 @@ function countNotes(track: any): number {
     (sum: number, m: any) => sum + (m?.notes?.length || 0),
     0,
   );
+}
+
+/**
+ * 判断项目标题是否还是「占位」状态（空 / 未命名… / 直接就是 URL）。
+ * 用于下载完成后自动用视频标题命名，避免列表里一堆「未命名转录项目」。
+ */
+export function isPlaceholderTitle(title?: string | null, sourceRef?: string | null): boolean {
+  const t = (title || '').trim();
+  if (!t) return true;
+  if (/^未命名/.test(t)) return true;
+  if (sourceRef && t === sourceRef.trim()) return true;
+  return false;
 }
 
 /**

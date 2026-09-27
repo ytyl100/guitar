@@ -201,7 +201,15 @@ export interface Course {
   id: string;
   title: string;
   subtitle: string;
+  /** 封面兜底色（Tailwind 渐变 token，如 `from-amber-600 to-orange-700`）；没上传封面图时用 */
   coverColor: string;
+  /**
+   * 课程封面图（后端上传返回的**相对路径**，如 `/uploads/curriculum/covers/cover_ab12cd34ef56.png`）。
+   *
+   * ⚠️ 存相对路径而不是绝对 URL：换域名/换机器时不用把整棵课程树重编一遍。
+   * C 端（`/api/curriculum/learn`）会自动拼成绝对地址给 `<img>` / `<Image>` 用。
+   */
+  coverImage?: string;
   targetLevel: string;
   chapters: Chapter[];
 }
@@ -226,6 +234,12 @@ export interface TeachingVideo {
   instructor: string;
   /** 视频源地址（CDN / OSS）；管理员上传后由后端转码写入 */
   videoUrl: string;
+  /**
+   * 转码产物（后端 `POST /api/curriculum/assets/transcode` 的结果，由后台点「转码」写回）。
+   * `url` 存的是**相对路径**（`/uploads/curriculum/videos/transcoded/x_720p.mp4`），
+   * C 端投影时拼成绝对地址 —— 与 `videoUrl` 同一套约定。
+   */
+  variants?: Array<{ label: string; url: string }>;
   coverUrl?: string;
   durationSec: number;
   resolution: '1080P' | '4K' | '720P';
@@ -237,6 +251,154 @@ export interface TeachingVideo {
   sourceLessonId?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * 「谁在引用这个资产文件」里的一条引用。
+ * `video` = 视频库记录；`lesson` = 课时里的内联副本；`course` = 课程封面。
+ */
+export interface CurriculumAssetRef {
+  kind: 'video' | 'lesson' | 'course';
+  id: string;
+  title: string;
+}
+
+/** 资产库统计（视频 / 封面共用） */
+export interface CurriculumAssetBucket<T> {
+  total: number;
+  totalBytes: number;
+  referencedCount: number;
+  orphanCount: number;
+  /** 这一桶里的孤儿文件共占多少字节（一键清理能省的数字） */
+  orphanBytes: number;
+  items: T[];
+}
+
+/**
+ * 统一视频资产库里的一个**视频文件**（`GET /api/curriculum/assets` → `videos.items`）。
+ *
+ * ⚠️ 别和 `TeachingVideo` 搞混：那是课程文档里的**记录**，这是磁盘上的**字节**。
+ * 记录可以指向某个文件，也可以谁都不指（那就是 `referencedBy: []` 的孤儿）。
+ */
+export interface CurriculumVideoAsset {
+  fileName: string;
+  /** 相对路径（与 `TeachingVideo.videoUrl` 同一套写法，可直接写回去） */
+  relativePath: string;
+  /** 绝对 URL（浏览器里直接点开预览/下载） */
+  url: string;
+  /** `source` = CMS 直传的源文件；`transcoded` = ffmpeg 产物 */
+  folder: 'source' | 'transcoded';
+  sizeBytes: number;
+  mtimeMs: number;
+  /** ffprobe 探到的真实时长（读不到就是 null —— 损坏文件 / 非视频） */
+  durationSec: number | null;
+  resolution: { width: number; height: number } | null;
+  /** 这次是否真的探测过（超出后端单次探测上限的文件会是 false，下次刷新轮到） */
+  probed: boolean;
+  referencedBy: CurriculumAssetRef[];
+}
+
+/**
+ * 统一资产库里的一个**封面图文件**。
+ *
+ * 封面和视频一样会变孤儿：换一张封面只是改课程文档里的字段，旧图会留在磁盘上。
+ */
+export interface CurriculumCoverAsset {
+  fileName: string;
+  relativePath: string;
+  url: string;
+  sizeBytes: number;
+  mtimeMs: number;
+  referencedBy: CurriculumAssetRef[];
+}
+
+/**
+ * 统一资产库的一次完整响应（`GET /api/curriculum/assets`）。
+ *
+ * 把「文件」与「引用」两个方向一次说完：
+ * - `videos` / `covers`：**磁盘上的文件** → 被谁引用（`referencedBy` 空 = 孤儿）；
+ * - `dangling`：**反过来** —— 被引用但文件不在（C 端会点出假播放按钮 / 封面裂图）；
+ * - `orphanBytes`：一键清理能省多少空间。
+ */
+export interface CurriculumAssetLibrary {
+  videos: CurriculumAssetBucket<CurriculumVideoAsset> & { probeLimit: number };
+  covers: CurriculumAssetBucket<CurriculumCoverAsset>;
+  dangling: Array<{ kind: 'video' | 'cover'; path: string; referencedBy: CurriculumAssetRef[] }>;
+  orphanBytes: number;
+}
+
+/**
+ * 后端**课程以外**目录的体检结果（`GET /api/storage/health`）。
+ *
+ * 与课程资产是同一套思路的第二个实现：`uploads/` 下这些目录各自属于不同的表，
+ * 归属口径不同（`transcriptions/<projectId>`、`measures/<scoreId>`、`tab-projects/<scoreId>`、`demo/` 缓存）。
+ */
+export interface StorageDomainReport {
+  domain: string;
+  dir: string;
+  label: string;
+  files: number;
+  bytes: number;
+  /** 没有归属的文件（可清理） */
+  orphanFiles: number;
+  orphanBytes: number;
+  /** 库里指了路径、但文件不在（悬空引用） */
+  missingRefs: number;
+  orphanSample: Array<{ rel: string; bytes: number; reason: string }>;
+  missingSample: Array<{ rel: string; owner: string; field: string }>;
+  /** 结构性缺失（记录在、内容缺） */
+  dataGaps: string[];
+  /** 是否允许一键清理孤儿 */
+  cleanable: boolean;
+  note: string;
+}
+
+export interface StorageHealth {
+  checkedAt: string;
+  totals: {
+    files: number;
+    bytes: number;
+    orphanFiles: number;
+    orphanBytes: number;
+    missingRefs: number;
+    dataGaps: number;
+  };
+  domains: StorageDomainReport[];
+}
+
+/** 一次清理的结果（`DELETE /api/storage/orphans`） */
+export interface StorageCleanupResult {
+  domain: string;
+  dryRun: boolean;
+  removedFiles: number;
+  freedBytes: number;
+  removedDirs: string[];
+  sample: string[];
+  skipped: string[];
+}
+
+/** 数据体检报告（`GET /api/curriculum/health`） */
+export interface CurriculumHealth {
+  revision: number;
+  checkedAt: string;
+  counts: { error: number; warn: number; info: number };
+  /** 没有 error/warn（info 只是提示） */
+  healthy: boolean;
+  issues: Array<{
+    level: 'error' | 'warn' | 'info';
+    code: string;
+    target: string;
+    message: string;
+    fixHint: string;
+  }>;
+  summary: {
+    videos: number;
+    covers: number;
+    orphanVideos: number;
+    orphanCovers: number;
+    orphanBytes: number;
+    lessons: number;
+  };
 }
 
 /** 和弦练习组：一组和弦 + 一组练习阶段，可被多个课时复用 */

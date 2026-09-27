@@ -1,0 +1,698 @@
+{
+  "stages": [
+    {
+      "id": "stage-l1",
+      "stageCode": "L1",
+      "name": "入门筑基阶段 (Zero to Basic Strumming)",
+      "focus": "琴体工学握持、琴头精准调音、三大开放和弦 (C/G/Am) 与初级四分音符下扫律动",
+      "courses": [
+        {
+          "id": "course-c101",
+          "title": "《民谣吉他核心手型与黄金20分钟实战营》",
+          "subtitle": "建立无痛按弦记忆与节拍器肌肉记忆",
+          "coverColor": "from-amber-600 to-orange-700",
+          "targetLevel": "吉他小白零基础 ~ 练习时长 15 小时内",
+          "chapters": [
+            {
+              "id": "chap-101-1",
+              "title": "第1章：琴弦发声机理与立指工学",
+              "description": "消除指肚蹭弦哑音，建立指尖第1关节垂直触弦规范",
+              "order": 1,
+              "lessons": [
+                {
+                  "id": "lesson-step-001",
+                  "title": "第01课：黄金立指工学与 C 和弦纯净按压",
+                  "type": "chord_quiz",
+                  "prerequisite": {
+                    "linearUnlocked": true,
+                    "minAiScore": 80,
+                    "minVideoWatchRate": 95
+                  },
+                  "timeAllocation": {
+                    "tuningMin": 3,
+                    "videoMin": 6,
+                    "quizMin": 4,
+                    "drillMin": 4,
+                    "songMin": 3
+                  },
+                  "videoData": {
+                    "videoId": "vid-gt-001",
+                    "title": "【名师精讲】指尖第1关节立指与虎口离空核心要领",
+                    "durationSec": 360,
+                    "instructor": "陈亮风格高级教研组 · 齐老师",
+                    "resolution": "4K",
+                    "transcodeStatus": "READY",
+                    "keyPoints": [
+                      {
+                        "id": "kp-1",
+                        "timestampSec": 45,
+                        "title": "虎口悬空：拇指后置定位",
+                        "description": "虎口不可直接死贴琴颈下沿，拇指指腹顶于琴颈背面中轴线偏上位置。",
+                        "category": "hand_posture",
+                        "linkedChordName": "C"
+                      },
+                      {
+                        "id": "kp-2",
+                        "timestampSec": 138,
+                        "title": "2弦1品食指防哑音重点",
+                        "description": "食指极易向下塌陷蹭到1弦空弦，必须使指甲盖正对上方，垂直按压在品丝正后方2毫米处。",
+                        "category": "anti_buzz",
+                        "linkedChordName": "C"
+                      },
+                      {
+                        "id": "kp-3",
+                        "timestampSec": 280,
+                        "title": "4弦2品中指力矩支撑点",
+                        "description": "中指作为拱桥中心，第2关节向外顶出，为无名指跨弦提供空间。",
+                        "category": "chord_switch",
+                        "linkedChordName": "C"
+                      }
+                    ]
+                  },
+                  "trainerData": {
+                    "chordPairs": [
+                      {
+                        "id": "pair-c-am",
+                        "fromChord": "C",
+                        "toChord": "Am",
+                        "startBpm": 40,
+                        "targetBpm": 80,
+                        "stepBpm": 5,
+                        "passBars": 8,
+                        "toleranceCents": 15
+                      }
+                    ],
+                    "toleranceCents": 15,
+                    "initialBpm": 40,
+                    "targetBpm": 80,
+                    "noiseGateDb": -42
+                  },
+                  "songBinding": {
+                    "songId": "song-c-01",
+                    "songName": "《晴天》前奏简化版分解",
+                    "difficulty": "入门",
+                    "tabSyncId": "audio-gt-2026-001",
+                    "originalArtist": "周杰伦"
+                  }
+                },
+                {
+                  "id": "lesson-step-002",
+                  "title": "第02课：从 C 到 Am 的不动指“轴心转换”技巧",
+                  "type": "pair_drill",
+                  "prerequisite": {
+                    "linearUnlocked": true,
+                    "minAiScore": 85,
+                    "minVideoWatchRate": 90
+                  },
+                  "timeAllocation": {
+                    "tuningMin": 3,
+                    "videoMin": 6,
+                    "quizMin": 4,
+                    "drillMin": 4,
+                    "songMin": 3
+                  },
+                  "videoData": {
+                    "videoId": "vid-gt-002",
+                    "title": "保留指魔法：食指与中指完全不离弦实现0延迟换把",
+                    "durationSec": 360,
+                    "instructor": "董运昌指弹学派教研席 · 林老师",
+                    "resolution": "1080P",
+                    "transcodeStatus": "READY",
+                    "keyPoints": [
+                      {
+                        "id": "kp-4",
+                        "timestampSec": 62,
+                        "title": "无名指单兵调动",
+                        "description": "观察手型，C和弦转Am仅需将5弦3品无名指轻轻移至3弦2品，其余两指焊死在品位上。",
+                        "category": "chord_switch",
+                        "linkedChordName": "Am"
+                      }
+                    ]
+                  },
+                  "trainerData": {
+                    "chordPairs": [
+                      {
+                        "id": "pair-am-c",
+                        "fromChord": "Am",
+                        "toChord": "C",
+                        "startBpm": 50,
+                        "targetBpm": 85,
+                        "stepBpm": 5,
+                        "passBars": 8,
+                        "toleranceCents": 15
+                      }
+                    ],
+                    "toleranceCents": 15,
+                    "initialBpm": 50,
+                    "targetBpm": 85,
+                    "noiseGateDb": -40
+                  },
+                  "songBinding": {
+                    "songId": "song-am-01",
+                    "songName": "《痛仰 - 再见杰克》副歌扫弦对齐",
+                    "difficulty": "入门",
+                    "tabSyncId": "audio-gt-2026-001",
+                    "originalArtist": "痛仰乐队"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "chap-101-2",
+              "title": "第2章：G和弦三指型与大横按 F 和弦破冰",
+              "description": "攻克初学者第一道大门槛，利用手腕下沉与杠杆力攻克横按",
+              "order": 2,
+              "lessons": [
+                {
+                  "id": "lesson-step-003",
+                  "title": "第03课：大横按 F 和弦侧刃发力与琴颈杠杆力",
+                  "type": "pair_drill",
+                  "prerequisite": {
+                    "linearUnlocked": true,
+                    "minAiScore": 75,
+                    "minVideoWatchRate": 95
+                  },
+                  "timeAllocation": {
+                    "tuningMin": 3,
+                    "videoMin": 6,
+                    "quizMin": 4,
+                    "drillMin": 4,
+                    "songMin": 3
+                  },
+                  "videoData": {
+                    "videoId": "vid-gt-003",
+                    "title": "拒绝手掌死捏！大横按的身体重力学与食指外侧骨骼发力",
+                    "durationSec": 420,
+                    "instructor": "陈亮风格高级教研组 · 齐老师",
+                    "resolution": "4K",
+                    "transcodeStatus": "READY",
+                    "keyPoints": [
+                      {
+                        "id": "kp-5",
+                        "timestampSec": 90,
+                        "title": "食指微转30度用骨质侧面",
+                        "description": "食指正面肉质柔软易吃进琴弦导致闷音，必须微向琴头侧旋，用坚硬的侧骨下压。",
+                        "category": "anti_buzz",
+                        "linkedChordName": "F"
+                      },
+                      {
+                        "id": "kp-6",
+                        "timestampSec": 210,
+                        "title": "右手右肘向后带力平衡",
+                        "description": "右手小臂向后扣压吉他共鸣箱，形成杠杆原理将指板推向左手，无需虎口拼命捏挤。",
+                        "category": "hand_posture",
+                        "linkedChordName": "F"
+                      }
+                    ]
+                  },
+                  "trainerData": {
+                    "chordPairs": [
+                      {
+                        "id": "pair-c-f",
+                        "fromChord": "C",
+                        "toChord": "F",
+                        "startBpm": 40,
+                        "targetBpm": 75,
+                        "stepBpm": 5,
+                        "passBars": 8,
+                        "toleranceCents": 15
+                      }
+                    ],
+                    "toleranceCents": 15,
+                    "initialBpm": 40,
+                    "targetBpm": 75,
+                    "noiseGateDb": -42
+                  },
+                  "songBinding": {
+                    "songId": "song-f-01",
+                    "songName": "《加州旅馆》慢速和弦进行",
+                    "difficulty": "进阶",
+                    "tabSyncId": "audio-gt-2026-001",
+                    "originalArtist": "Eagles"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stage-l2",
+      "stageCode": "L2",
+      "name": "基础进阶阶段 (Intermediate Rhythm & Chords)",
+      "focus": "切音扫弦、低音跑动 (Bass Walk)、挂留和弦与十六分音符复杂重音移位",
+      "courses": [
+        {
+          "id": "course-c201",
+          "title": "《律动吉他手：扫弦切音与七和弦色彩应用》",
+          "subtitle": "掌根切音、哑音扫弦与复合拍子实战",
+          "coverColor": "from-emerald-600 to-teal-800",
+          "targetLevel": "掌握基础开放和弦，练习时长 40+ 小时",
+          "chapters": []
+        }
+      ]
+    },
+    {
+      "id": "stage-l3",
+      "stageCode": "L3",
+      "name": "指弹独奏阶段 (Fingerstyle Solo Master)",
+      "focus": "拍弦 (Slap)、点弦 (Tap)、泛音调谐与多声部独立线条对齐编配",
+      "courses": []
+    }
+  ],
+  "videoLibrary": [
+    {
+      "id": "vid-gt-001",
+      "title": "【名师精讲】指尖第1关节立指与虎口离空核心要领",
+      "instructor": "陈亮风格高级教研组 · 齐老师",
+      "videoUrl": "https://cdn.guitarmate.dev/videos/vid-gt-001.mp4",
+      "durationSec": 360,
+      "resolution": "4K",
+      "transcodeStatus": "READY",
+      "status": "ready",
+      "tags": [
+        "L1",
+        "chord_quiz"
+      ],
+      "keyPoints": [
+        {
+          "id": "kp-1",
+          "timestampSec": 45,
+          "title": "虎口悬空：拇指后置定位",
+          "description": "虎口不可直接死贴琴颈下沿，拇指指腹顶于琴颈背面中轴线偏上位置。",
+          "category": "hand_posture",
+          "linkedChordName": "C"
+        },
+        {
+          "id": "kp-2",
+          "timestampSec": 138,
+          "title": "2弦1品食指防哑音重点",
+          "description": "食指极易向下塌陷蹭到1弦空弦，必须使指甲盖正对上方，垂直按压在品丝正后方2毫米处。",
+          "category": "anti_buzz",
+          "linkedChordName": "C"
+        },
+        {
+          "id": "kp-3",
+          "timestampSec": 280,
+          "title": "4弦2品中指力矩支撑点",
+          "description": "中指作为拱桥中心，第2关节向外顶出，为无名指跨弦提供空间。",
+          "category": "chord_switch",
+          "linkedChordName": "C"
+        }
+      ],
+      "sourceLessonId": "lesson-step-001",
+      "createdAt": "2026-09-26T08:42:58.899Z",
+      "updatedAt": "2026-09-26T08:42:58.899Z"
+    },
+    {
+      "id": "vid-gt-002",
+      "title": "保留指魔法：食指与中指完全不离弦实现0延迟换把",
+      "instructor": "董运昌指弹学派教研席 · 林老师",
+      "videoUrl": "https://cdn.guitarmate.dev/videos/vid-gt-002.mp4",
+      "durationSec": 360,
+      "resolution": "1080P",
+      "transcodeStatus": "READY",
+      "status": "ready",
+      "tags": [
+        "L1",
+        "pair_drill"
+      ],
+      "keyPoints": [
+        {
+          "id": "kp-4",
+          "timestampSec": 62,
+          "title": "无名指单兵调动",
+          "description": "观察手型，C和弦转Am仅需将5弦3品无名指轻轻移至3弦2品，其余两指焊死在品位上。",
+          "category": "chord_switch",
+          "linkedChordName": "Am"
+        }
+      ],
+      "sourceLessonId": "lesson-step-002",
+      "createdAt": "2026-09-26T08:42:58.899Z",
+      "updatedAt": "2026-09-26T08:42:58.899Z"
+    },
+    {
+      "id": "vid-gt-003",
+      "title": "拒绝手掌死捏！大横按的身体重力学与食指外侧骨骼发力",
+      "instructor": "陈亮风格高级教研组 · 齐老师",
+      "videoUrl": "https://cdn.guitarmate.dev/videos/vid-gt-003.mp4",
+      "durationSec": 420,
+      "resolution": "4K",
+      "transcodeStatus": "READY",
+      "status": "ready",
+      "tags": [
+        "L1",
+        "pair_drill"
+      ],
+      "keyPoints": [
+        {
+          "id": "kp-5",
+          "timestampSec": 90,
+          "title": "食指微转30度用骨质侧面",
+          "description": "食指正面肉质柔软易吃进琴弦导致闷音，必须微向琴头侧旋，用坚硬的侧骨下压。",
+          "category": "anti_buzz",
+          "linkedChordName": "F"
+        },
+        {
+          "id": "kp-6",
+          "timestampSec": 210,
+          "title": "右手右肘向后带力平衡",
+          "description": "右手小臂向后扣压吉他共鸣箱，形成杠杆原理将指板推向左手，无需虎口拼命捏挤。",
+          "category": "hand_posture",
+          "linkedChordName": "F"
+        }
+      ],
+      "sourceLessonId": "lesson-step-003",
+      "createdAt": "2026-09-26T08:42:58.899Z",
+      "updatedAt": "2026-09-26T08:42:58.899Z"
+    }
+  ],
+  "chords": {
+    "C": {
+      "id": "chord-c",
+      "name": "C",
+      "rootNote": "C",
+      "bassString": 5,
+      "frets": [
+        "x",
+        3,
+        2,
+        0,
+        1,
+        0
+      ],
+      "fingers": [
+        null,
+        3,
+        2,
+        null,
+        1,
+        null
+      ],
+      "pitfalls": [
+        "食指指腹极易塌下贴到1弦空弦，导致1弦高音E闷音或哑音",
+        "无名指按5弦3品时未靠近品丝，导致低音发虚有打品杂音",
+        "拇指不自觉绕过琴颈掐死指板，限制了手指张角"
+      ],
+      "tips": "【防哑音要点】食指指甲朝上垂直立起；中指拱成弧桥给无名指让位；右手弹奏时务必避开6弦低音或用无名指指尖轻触6弦轻微消音。"
+    },
+    "Am": {
+      "id": "chord-am",
+      "name": "Am",
+      "rootNote": "A",
+      "bassString": 5,
+      "frets": [
+        "x",
+        0,
+        2,
+        2,
+        1,
+        0
+      ],
+      "fingers": [
+        null,
+        null,
+        2,
+        3,
+        1,
+        null
+      ],
+      "pitfalls": [
+        "中指(4弦2品)与无名指(3弦2品)挤在一起时容易歪斜蹭到2弦",
+        "手腕过于上拱导致小鱼际肌肉酸痛"
+      ],
+      "tips": "【防哑音要点】与C和弦手型几乎一致，食指中指保持不动，将无名指缩到中指正下方3弦2品即可。"
+    },
+    "G": {
+      "id": "chord-g",
+      "name": "G",
+      "rootNote": "G",
+      "bassString": 6,
+      "frets": [
+        3,
+        2,
+        0,
+        0,
+        0,
+        3
+      ],
+      "fingers": [
+        3,
+        2,
+        null,
+        null,
+        null,
+        4
+      ],
+      "pitfalls": [
+        "用小指按1弦3品力度不足，导致1弦产生嗡鸣打品",
+        "中指(6弦3品)肉肚不小心闷死5弦2品"
+      ],
+      "tips": "【防哑音要点】中指一定要立起来，手腕略微向琴头方向下沉，小指提前寻找1弦3品支撑点。"
+    },
+    "Em": {
+      "id": "chord-em",
+      "name": "Em",
+      "rootNote": "E",
+      "bassString": 6,
+      "frets": [
+        0,
+        2,
+        2,
+        0,
+        0,
+        0
+      ],
+      "fingers": [
+        null,
+        2,
+        3,
+        null,
+        null,
+        null
+      ],
+      "pitfalls": [
+        "中指和无名指并拢时压到3弦",
+        "用力过猛导致手指关节僵硬无法快速切换"
+      ],
+      "tips": "【防哑音要点】最简单双指和弦，6根弦均可同时发声，两指分别立在5弦与4弦靠近品丝处。"
+    },
+    "F": {
+      "id": "chord-f",
+      "name": "F (大横按)",
+      "rootNote": "F",
+      "bassString": 6,
+      "frets": [
+        1,
+        3,
+        3,
+        2,
+        1,
+        1
+      ],
+      "fingers": [
+        1,
+        3,
+        4,
+        2,
+        1,
+        1
+      ],
+      "barreFret": 1,
+      "pitfalls": [
+        "用食指正面肉最软处横按，导致2弦和1弦完全闷死发哑",
+        "左手虎口死命发力捏琴颈，5分钟即虎口抽筋酸痛",
+        "食指过高导致掌关节悬空失去支撑"
+      ],
+      "tips": "【防哑音要点】食指微向琴头转动20-30度，以坚硬侧面触弦；中指无名指小指先按好345弦，食指最后带入；利用右手手臂向后压琴体的力矩，把琴颈自然贴向食指。"
+    },
+    "Dm": {
+      "id": "chord-dm",
+      "name": "Dm",
+      "rootNote": "D",
+      "bassString": 4,
+      "frets": [
+        "x",
+        "x",
+        0,
+        2,
+        3,
+        1
+      ],
+      "fingers": [
+        null,
+        null,
+        null,
+        2,
+        3,
+        1
+      ],
+      "pitfalls": [
+        "无名指按2弦3品时容易碰触1弦",
+        "右手扫弦误扫了6弦与5弦粗弦，产生严重浑浊低音"
+      ],
+      "tips": "【防哑音要点】右手必须从4弦开始发音；无名指单点立指，拇指从上方可探出轻触6弦防蹭。"
+    },
+    "Bm": {
+      "id": "chord-bm",
+      "name": "Bm (2品横按)",
+      "rootNote": "B",
+      "bassString": 5,
+      "frets": [
+        "x",
+        2,
+        4,
+        4,
+        3,
+        2
+      ],
+      "fingers": [
+        null,
+        1,
+        3,
+        4,
+        2,
+        1
+      ],
+      "barreFret": 2,
+      "pitfalls": [
+        "食指尖误按到了6弦导致发出刺耳的F#低音",
+        "无名指小指叠压导致4弦或3弦发哑"
+      ],
+      "tips": "【防哑音要点】食指指尖顶在6弦下腹消音；食指第2品横按5弦至1弦，掌根微微内收保持手型紧凑。"
+    }
+  },
+  "chordGroups": [
+    {
+      "id": "group-open-4",
+      "name": "万能和弦 C-G-Am-F",
+      "description": "流行歌最常出现的四和弦循环，配套三阶段 BPM 阶梯（40→60→80）。",
+      "chordKeys": [
+        "C",
+        "G",
+        "Am",
+        "F"
+      ],
+      "difficulty": "入门",
+      "stages": [
+        {
+          "id": "stage-C-G-1",
+          "name": "阶段 1 · 找准按弦",
+          "fromChord": "C",
+          "toChord": "G",
+          "startBpm": 40,
+          "targetBpm": 50,
+          "stepBpm": 5,
+          "passBars": 4,
+          "toleranceCents": 15,
+          "order": 1
+        },
+        {
+          "id": "stage-C-G-2",
+          "name": "阶段 2 · 提速换把",
+          "fromChord": "C",
+          "toChord": "G",
+          "startBpm": 50,
+          "targetBpm": 60,
+          "stepBpm": 5,
+          "passBars": 8,
+          "toleranceCents": 15,
+          "order": 2
+        },
+        {
+          "id": "stage-C-G-3",
+          "name": "阶段 3 · 达标跟拍",
+          "fromChord": "C",
+          "toChord": "G",
+          "startBpm": 60,
+          "targetBpm": 80,
+          "stepBpm": 5,
+          "passBars": 8,
+          "toleranceCents": 12,
+          "order": 3
+        }
+      ],
+      "createdAt": "2026-09-26T08:42:58.898Z",
+      "updatedAt": "2026-09-26T08:42:58.899Z"
+    },
+    {
+      "id": "group-barre",
+      "name": "横按突破 F-Bm",
+      "description": "大横按专项：先解决发声纯净度，再谈速度；容差从 20 音分逐步收紧到 15。",
+      "chordKeys": [
+        "F",
+        "Bm"
+      ],
+      "difficulty": "挑战",
+      "stages": [
+        {
+          "id": "stage-F-Bm-1",
+          "name": "阶段 1 · 单次发声达标",
+          "fromChord": "F",
+          "toChord": "Bm",
+          "startBpm": 30,
+          "targetBpm": 40,
+          "stepBpm": 5,
+          "passBars": 2,
+          "toleranceCents": 20,
+          "order": 1
+        },
+        {
+          "id": "stage-F-Bm-2",
+          "name": "阶段 2 · 连续四小节",
+          "fromChord": "F",
+          "toChord": "Bm",
+          "startBpm": 40,
+          "targetBpm": 55,
+          "stepBpm": 5,
+          "passBars": 4,
+          "toleranceCents": 18,
+          "order": 2
+        },
+        {
+          "id": "stage-F-Bm-3",
+          "name": "阶段 3 · 与原曲同速",
+          "fromChord": "F",
+          "toChord": "Bm",
+          "startBpm": 55,
+          "targetBpm": 75,
+          "stepBpm": 5,
+          "passBars": 8,
+          "toleranceCents": 15,
+          "order": 3
+        }
+      ],
+      "pairStages": {
+        "Bm|F": [
+          {
+            "id": "stage-Bm-F-1",
+            "name": "阶段 1 · 反向换把降速",
+            "fromChord": "Bm",
+            "toChord": "F",
+            "startBpm": 25,
+            "targetBpm": 35,
+            "stepBpm": 5,
+            "passBars": 2,
+            "toleranceCents": 22,
+            "order": 1
+          },
+          {
+            "id": "stage-Bm-F-2",
+            "name": "阶段 2 · 反向提速",
+            "fromChord": "Bm",
+            "toChord": "F",
+            "startBpm": 35,
+            "targetBpm": 50,
+            "stepBpm": 5,
+            "passBars": 4,
+            "toleranceCents": 20,
+            "order": 2
+          }
+        ]
+      },
+      "createdAt": "2026-09-26T08:42:58.899Z",
+      "updatedAt": "2026-09-26T08:42:58.899Z"
+    }
+  ]
+}

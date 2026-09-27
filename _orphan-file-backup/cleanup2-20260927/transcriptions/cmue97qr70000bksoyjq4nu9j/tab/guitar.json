@@ -1,0 +1,1064 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "A 小调练习曲（solo + 和弦）",
+    "artist": "GuitarMate 内置样品",
+    "bpm": 96.8,
+    "timeSignature": "4/4",
+    "instrument": "guitar",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "guitar-1",
+      "name": "吉他轨",
+      "instrument": "guitar",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "第 1 小节",
+          "startTime": 0,
+          "endTime": 2.4793,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m0_n0",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.2644,
+              "beat": 0.4266,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8787,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n1",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.5889,
+              "beat": 0.9501,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.927,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n2",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.9014,
+              "beat": 1.4543,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9188,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n3",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 1.2138,
+              "beat": 1.9583,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8149,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n4",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.5263,
+              "beat": 2.4624,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8951,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n5",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.8268,
+              "beat": 2.9472,
+              "durationSec": 0.3244,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8763,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m0_n6",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 2.1512,
+              "beat": 3.4706,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8868,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m0_n7",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 2.4517,
+              "beat": 3.9554,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.7895,
+              "finger": 4
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4793
+            }
+          ],
+          "position": 5
+        },
+        {
+          "index": 1,
+          "label": "第 2 小节",
+          "startTime": 2.4793,
+          "endTime": 4.9587,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m1_n0",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.2849,
+              "beat": 0.4596,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8325,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m1_n1",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 0.6094,
+              "beat": 0.9832,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9139,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m1_n2",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 0.9218,
+              "beat": 1.4872,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8895,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m1_n3",
+              "string": 1,
+              "fret": 17,
+              "midi": 81,
+              "offsetSec": 1.2343,
+              "beat": 1.9913,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8267,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m1_n4",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 1.5468,
+              "beat": 2.4955,
+              "durationSec": 0.3004,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8646,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m1_n5",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 1.8472,
+              "beat": 2.9801,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8541,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m1_n6",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 2.1717,
+              "beat": 3.5037,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.925,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m1_n7",
+              "string": 1,
+              "fret": 13,
+              "midi": 77,
+              "offsetSec": 2.4722,
+              "beat": 3.9885,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8141,
+              "finger": 4
+            }
+          ],
+          "chords": [
+            {
+              "name": "Am",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4794
+            }
+          ],
+          "position": 10
+        },
+        {
+          "index": 2,
+          "label": "第 3 小节",
+          "startTime": 4.9587,
+          "endTime": 7.438,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m2_n0",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.3052,
+              "beat": 0.4924,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8802,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m2_n1",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.6297,
+              "beat": 1.0159,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8972,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m2_n2",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 0.9422,
+              "beat": 1.5201,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8692,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m2_n3",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.2547,
+              "beat": 2.0242,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8437,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m2_n4",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.5792,
+              "beat": 2.5478,
+              "durationSec": 0.2884,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9212,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m2_n5",
+              "string": 1,
+              "fret": 13,
+              "midi": 77,
+              "offsetSec": 1.8676,
+              "beat": 3.0131,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8599,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m2_n6",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 2.1921,
+              "beat": 3.5366,
+              "durationSec": 0.3004,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9081,
+              "finger": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "F",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.75
+            }
+          ],
+          "position": 10
+        },
+        {
+          "index": 3,
+          "label": "第 4 小节",
+          "startTime": 7.438,
+          "endTime": 9.9174,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m3_n0",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 0.0132,
+              "beat": 0.0213,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.842,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m3_n1",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.3377,
+              "beat": 0.5448,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9194,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m3_n2",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.6502,
+              "beat": 1.049,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9188,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m3_n3",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.9627,
+              "beat": 1.5532,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.909,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m3_n4",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 1.2752,
+              "beat": 2.0573,
+              "durationSec": 0.3244,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8555,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m3_n5",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 1.5996,
+              "beat": 2.5807,
+              "durationSec": 0.2885,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.901,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m3_n6",
+              "string": 1,
+              "fret": 13,
+              "midi": 77,
+              "offsetSec": 1.8881,
+              "beat": 3.0461,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.86,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m3_n7",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 2.2126,
+              "beat": 3.5697,
+              "durationSec": 0.3004,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9255,
+              "finger": 3
+            }
+          ],
+          "chords": [
+            {
+              "name": "F",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4794
+            }
+          ],
+          "position": 8
+        },
+        {
+          "index": 4,
+          "label": "第 5 小节",
+          "startTime": 9.9174,
+          "endTime": 12.3967,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m4_n0",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.0336,
+              "beat": 0.0542,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.823,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n1",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 0.3581,
+              "beat": 0.5777,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8711,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n2",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 0.6706,
+              "beat": 1.0819,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8602,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n3",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 0.9831,
+              "beat": 1.5861,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8603,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n4",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.2955,
+              "beat": 2.0901,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.7833,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n5",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.62,
+              "beat": 2.6136,
+              "durationSec": 0.2885,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n6",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.9085,
+              "beat": 3.079,
+              "durationSec": 0.3244,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.7871,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m4_n7",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 2.2329,
+              "beat": 3.6024,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8965,
+              "finger": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 1.0826,
+              "beat": 1.8043,
+              "durationSec": 1.25
+            }
+          ],
+          "position": 5
+        },
+        {
+          "index": 5,
+          "label": "第 6 小节",
+          "startTime": 12.3967,
+          "endTime": 14.876,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m5_n0",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.0541,
+              "beat": 0.0873,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8108,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m5_n1",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 0.3786,
+              "beat": 0.6108,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8848,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m5_n2",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 0.6911,
+              "beat": 1.115,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8339,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m5_n3",
+              "string": 1,
+              "fret": 17,
+              "midi": 81,
+              "offsetSec": 1.0035,
+              "beat": 1.619,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8427,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m5_n4",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 1.316,
+              "beat": 2.1231,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8412,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m5_n5",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 1.6405,
+              "beat": 2.6467,
+              "durationSec": 0.2884,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9176,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m5_n6",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.9289,
+              "beat": 3.112,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8297,
+              "finger": 3
+            },
+            {
+              "id": "guitar_m5_n7",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 2.2534,
+              "beat": 3.6355,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8876,
+              "finger": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "C",
+              "offsetSec": 0.3533,
+              "beat": 0.5888,
+              "durationSec": 2.126
+            }
+          ],
+          "position": 8
+        },
+        {
+          "index": 6,
+          "label": "第 7 小节",
+          "startTime": 14.876,
+          "endTime": 17.3554,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m6_n0",
+              "string": 1,
+              "fret": 7,
+              "midi": 71,
+              "offsetSec": 0.0746,
+              "beat": 0.1204,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8443,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m6_n1",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.3991,
+              "beat": 0.6439,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8854,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m6_n2",
+              "string": 1,
+              "fret": 15,
+              "midi": 79,
+              "offsetSec": 0.7115,
+              "beat": 1.1479,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8614,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m6_n3",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.024,
+              "beat": 1.6521,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8734,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m6_n4",
+              "string": 1,
+              "fret": 7,
+              "midi": 71,
+              "offsetSec": 1.3365,
+              "beat": 2.1562,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8369,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m6_n5",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 1.661,
+              "beat": 2.6797,
+              "durationSec": 0.2884,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9105,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m6_n6",
+              "string": 1,
+              "fret": 12,
+              "midi": 76,
+              "offsetSec": 1.9494,
+              "beat": 3.145,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8323,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m6_n7",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 2.2739,
+              "beat": 3.6686,
+              "durationSec": 0.3004,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.938,
+              "finger": 4
+            }
+          ],
+          "chords": [
+            {
+              "name": "G",
+              "offsetSec": 0.374,
+              "beat": 0.6233,
+              "durationSec": 2.1054
+            }
+          ],
+          "position": 7
+        },
+        {
+          "index": 7,
+          "label": "第 8 小节",
+          "startTime": 17.3554,
+          "endTime": 19.8347,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "guitar_m7_n0",
+              "string": 1,
+              "fret": 10,
+              "midi": 74,
+              "offsetSec": 0.0949,
+              "beat": 0.1531,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8636,
+              "finger": 4
+            },
+            {
+              "id": "guitar_m7_n1",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 0.4194,
+              "beat": 0.6766,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8849,
+              "finger": 2
+            },
+            {
+              "id": "guitar_m7_n2",
+              "string": 1,
+              "fret": 7,
+              "midi": 71,
+              "offsetSec": 0.7319,
+              "beat": 1.1808,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.9273,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m7_n3",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 1.0444,
+              "beat": 1.685,
+              "durationSec": 0.3124,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.7959,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m7_n4",
+              "string": 1,
+              "fret": 3,
+              "midi": 67,
+              "offsetSec": 1.3568,
+              "beat": 2.189,
+              "durationSec": 0.3245,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8163,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m7_n5",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 1.6813,
+              "beat": 2.7125,
+              "durationSec": 0.3005,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.811,
+              "finger": 1
+            },
+            {
+              "id": "guitar_m7_n6",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.9818,
+              "beat": 3.1973,
+              "durationSec": 0.3125,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8997,
+              "finger": 2
+            },
+            {
+              "id": "guitar_m7_n7",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 2.2943,
+              "beat": 3.7015,
+              "durationSec": 0.5888,
+              "technique": "normal",
+              "velocity": 90,
+              "confidence": 0.8805,
+              "finger": 1
+            }
+          ],
+          "chords": [
+            {
+              "name": "Gadd9",
+              "offsetSec": 0.8946,
+              "beat": 1.491,
+              "durationSec": 0.75
+            }
+          ],
+          "position": 7
+        },
+        {
+          "index": 8,
+          "label": "第 9 小节",
+          "startTime": 19.8347,
+          "endTime": 20.2385,
+          "beats": 4,
+          "notes": [],
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.4038
+            }
+          ],
+          "position": 7
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "solo-trace",
+    "fileName": "simulated-transcription.json",
+    "site": "GuitarMate 模拟转录",
+    "rights": "user-submission",
+    "rightsNote": "模拟数据，仅用于链路联调；不可作为教学内容发布。",
+    "parsedAt": "2026-09-23T15:24:47.216Z",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [
+    {
+      "level": "warn",
+      "code": "simulated-transcription",
+      "message": "midi_to_tab.py 执行失败，已用内置装配器从建值输出 TabProject。"
+    },
+    {
+      "level": "warn",
+      "code": "tuning-assumed",
+      "message": "调弦按标准调弦处理：E4 B3 G3 D3 A2 E2（索引 0 = 一弦）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-derived",
+      "message": "已按「最低把位优先 + 同帧整体出手型」推定 63 个音符的左手手指（0=空弦 / 1=食指 / 2=中指 / 3=无名指 / 4=小指），并为 9 个小节标注把位。自动指法只是建议值，可在复核工作台逐音符修改。"
+    },
+    {
+      "level": "warn",
+      "code": "fingering-clamped",
+      "message": "28 个音符的音域超过了单手 4 品跨度，已强行夹到可用手指（可能出现换把不自然），建议人工确认换把位置。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1, 2, 4, 5, 6, 7 需要换把（已按最近的可覆盖手位标注）。"
+    }
+  ],
+  "stats": {
+    "measureCount": 9,
+    "noteCount": 63,
+    "chordCount": 0,
+    "barreCount": 0,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 20.24
+  }
+}

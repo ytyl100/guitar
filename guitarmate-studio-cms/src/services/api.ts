@@ -6,6 +6,13 @@
  * 可通过 .env 中的 VITE_API_BASE_URL 覆盖默认地址。
  */
 
+import type {
+  CurriculumAssetLibrary,
+  CurriculumHealth,
+  StorageCleanupResult,
+  StorageHealth,
+} from '../types';
+
 export const API_BASE_URL: string =
   (import.meta.env?.VITE_API_BASE_URL as string) || 'http://localhost:3000';
 
@@ -427,7 +434,9 @@ export type TranscriptionProjectStatus =
   | 'converting'
   | 'review'
   | 'published'
-  | 'failed';
+  | 'failed'
+  /** URL 项目选了本机代理下载：服务器已就位，等你在本机跑 `npm run agent` 回传音频 */
+  | 'awaiting_audio';
 
 export type TranscriptionStage = 'download' | 'separate' | 'transcribe' | 'convert' | 'slice' | 'publish';
 
@@ -447,7 +456,41 @@ export interface ApiTranscriptionCapabilitiesResponse {
   success: boolean;
   capabilities: ApiTranscriptionCapabilities;
   installHints: string[];
+  /** 下载策略（方案 A：下载留在本机、服务器只做重活） */
+  download?: ApiDownloadStrategy;
   pipeline: { stages: string[]; progressBaseline: Record<string, number>; projectStatuses: string[] };
+}
+
+/** 下载执行策略：服务器自己下 yt-dlp，还是等本机代理回传音频 */
+export interface ApiDownloadStrategy {
+  /** 不显式指定时，新建 URL 项目用哪个执行方（由服务器 `YTDLP_DRIVER` 决定） */
+  driverDefault: 'server' | 'client';
+  /** 服务器自身能不能下载：要有 yt-dlp + **健康**的登录态 cookies */
+  serverCanDownload: boolean;
+  cookies?: { mode: string; usable: boolean; strongAuth: boolean; hasLoginInfo: boolean; count: number };
+  /** 本机代理启动命令 */
+  agentCommand: string;
+}
+
+/** 本机下载代理的任务清单 */
+export interface ApiDownloadTasksResponse {
+  success: boolean;
+  awaitingAudio: Array<{
+    id: string;
+    title: string;
+    url: string;
+    status: TranscriptionProjectStatus;
+    downloadDriver?: 'server' | 'client' | null;
+    createdAt: string;
+  }>;
+  failedDownload: Array<{
+    id: string;
+    title: string;
+    url: string;
+    status: TranscriptionProjectStatus;
+    lastError?: string | null;
+    createdAt: string;
+  }>;
 }
 
 export interface ApiTranscriptionQueue {
@@ -475,6 +518,8 @@ export interface ApiTranscriptionProjectSummary {
   progress: number;
   stageNote?: string | null;
   error?: string | null;
+  /** URL 项目的下载执行方：server（服务器 yt-dlp）| client（本机代理回传） */
+  downloadDriver?: 'server' | 'client' | null;
   scoreId?: string | null;
   hasTabProject: boolean;
   counts?: { tracks: number; jobs: number; packages: number };
@@ -508,6 +553,8 @@ export interface ApiTranscriptionTrack {
   lowConfidenceCount: number;
   /** true = 走的是内置模拟转录（未安装 Demucs / Basic Pitch） */
   simulated: boolean;
+  /** 实际使用的转录引擎：basic-pitch / node-yin / simulation */
+  engine?: string | null;
   warnings: string[];
   error?: string | null;
   notes: ApiTranscriptionNote[];
@@ -590,7 +637,15 @@ export interface ApiTranscriptionPublishResult {
     degradedAudioCount: number;
     metronomeFallbackCount: number;
   };
-  mirrored: { enabled: boolean; scoreId?: string; trackId?: string; measureCount?: number; error?: string };
+  mirrored: {
+    enabled: boolean;
+    scoreId?: string;
+    trackId?: string;
+    measureCount?: number;
+    /** 镜像后 Score 的状态：`published` 才会出现在 C 端列表 /api/published/scores */
+    scoreStatus?: string;
+    error?: string;
+  };
   warnings: string[];
   package: any;
 }
@@ -935,11 +990,17 @@ export const api = {
     tuning?: number[];
     license?: string;
     preferDirect?: boolean;
+    /** server = 服务器下载；client = 本机代理下载（服务器下不了时用） */
+    downloadDriver?: 'server' | 'client';
   }) =>
     request<{ success: boolean; project: ApiTranscriptionProjectDetail; started: any }>(
       '/api/transcription/projects/from-url',
       { method: 'POST', body: JSON.stringify(body) },
     ),
+
+  /** 本机下载代理的待办（供 `npm run agent` 轮询；CMS 也可用来展示「等回传」列表） */
+  getDownloadTasks: () =>
+    request<ApiDownloadTasksResponse>('/api/transcription/download-tasks'),
 
   /** 启动/续跑流水线（202 立即返回，实际工作在队列里跑） */
   startTranscriptionProject: (
@@ -951,11 +1012,14 @@ export const api = {
       { method: 'POST', body: JSON.stringify(body || {}) },
     ),
 
-  /** 失败后重试：自动从「第一个未完成的阶段」恢复 */
-  retryTranscriptionProject: (projectId: string) =>
+  /**
+   * 失败后重试：默认自动从「第一个未完成的阶段」恢复；
+   * 传 `from` 可显式指定（`'transcribe'` = 用新版识别算法**重新转录**已有项目）。
+   */
+  retryTranscriptionProject: (projectId: string, from?: TranscriptionStage) =>
     request<{ success: boolean; projectId: string; stage: TranscriptionStage; jobId: string }>(
       `/api/transcription/projects/${projectId}/retry`,
-      { method: 'POST', body: JSON.stringify({}) },
+      { method: 'POST', body: JSON.stringify(from ? { from } : {}) },
     ),
 
   /**
@@ -1045,6 +1109,108 @@ export const api = {
       durationSec?: number;
       title?: string;
     }>(`/api/transcription/projects/${projectId}/audio-url`),
+
+  // ── Curriculum 课程大纲 ────────────────────────────────────
+  /**
+   * 上传课程封面图（base64，可带 `data:image/...;base64,` 前缀）。
+   *
+   * 返回：
+   * - `path` = `/uploads/curriculum/covers/cover_<内容指纹>.png` → **存进课程树的 `coverImage`**
+   * - `url`  = 绝对地址，仅供「上传后立刻预览」
+   *
+   * ⚠️ 后端按**文件头**判类型（不信扩展名），判不出来直接 400。
+   */
+  uploadCurriculumCover: (base64: string, fileName?: string) =>
+    request<{ path: string; url: string; mime: string; sizeBytes: number }>(
+      '/api/curriculum/assets/cover',
+      { method: 'POST', body: JSON.stringify({ base64, fileName }) },
+    ),
+
+  /**
+   * 上传课程视频（base64，**≤20MB，不转码**）。
+   *
+   * 返回值里的 `path`（`/uploads/curriculum/videos/x.mp4`）就是应该写进
+   * `TeachingVideo.videoUrl` 的东西 —— **存相对路径**，C 端投影会拼成绝对 URL。
+   * 大视频请放 OSS/CDN 后填地址：上限是 `main.ts` 的 30mb body ÷ base64 膨胀 4/3 算出来的。
+   */
+  uploadCurriculumVideo: (base64: string, fileName?: string) =>
+    request<{ path: string; url: string; mime: string; sizeBytes: number }>(
+      '/api/curriculum/assets/video',
+      { method: 'POST', body: JSON.stringify({ base64, fileName }) },
+    ),
+
+  /**
+   * 转码课程视频（后端真跑 ffmpeg，出 720p / 1080p 变体）。
+   *
+   * ⚠️ **同步接口**：会占到转完（默认超时 10 分钟）—— 单步、量小的活；
+   * 产物路径由**调用方**写回课程树（服务端不改文档，保持「CMS 是唯一写者」）。
+   */
+  transcodeCurriculumVideo: (source: string) =>
+    request<{
+      sourcePath: string;
+      sourceResolution: { width: number; height: number } | null;
+      durationSec: number | null;
+      variants: Array<{ label: string; path: string; url: string; height: number; sizeBytes: number }>;
+      elapsedMs: number;
+      notes: string[];
+    }>('/api/curriculum/assets/transcode', {
+      method: 'POST',
+      body: JSON.stringify({ source }),
+    }),
+
+  /**
+   * **统一资产库**：磁盘上所有已提交的字节（视频 + 封面）。
+   *
+   * - `videos.items[].referencedBy` 为空 = 孤儿文件；
+   * - `covers.items[].referencedBy` 同上；
+   * - `dangling` = **反过来**的不一致：被引用、但文件不在磁盘上（C 端会点出假播放按钮 / 封面裂图）；
+   * - `orphanBytes` = 一键清理能省多少空间。
+   *
+   * ⚠️ 与「视频库」列表是两件事：那边是**记录**（`TeachingVideo`），这边是**字节**（文件）。
+   */
+  listCurriculumAssets: () => request<CurriculumAssetLibrary>('/api/curriculum/assets'),
+
+  /**
+   * 删一个资产文件（孤儿清理；视频/封面都走这个）。
+   *
+   * ⚠️ 被引用时后端返回 409（报错里写清是谁在用）；确实要删就传 `force`。
+   *
+   * `ignoreVideoId`：对账时忽略这条视频记录 —— 用于「删记录同时清文件」：
+   * 文档保存是**防抖**的，刚删掉的那条记录在库里还在，不带这个参数就会自已被自已拦成 409（实测过）。
+   */
+  deleteCurriculumAsset: (path: string, force = false, ignoreVideoId?: string) =>
+    request<{ kind: 'video' | 'cover'; relativePath: string; sizeBytes: number }>(
+      `/api/curriculum/assets?path=${encodeURIComponent(path)}${force ? '&force=1' : ''}${
+        ignoreVideoId ? `&ignoreVideoId=${encodeURIComponent(ignoreVideoId)}` : ''
+      }`,
+      { method: 'DELETE' },
+    ),
+
+  /**
+   * 数据体检：悬空引用（引用了不存在的文件 / 视频 / 和弦组 / 和弦）+ 孤儿文件汇总。
+   *
+   * C 端 `playable` 只是「CMS 填过地址」，这份报告才是「真的能播吗」的答案。
+   */
+  fetchCurriculumHealth: () => request<CurriculumHealth>('/api/curriculum/health'),
+
+  /**
+   * **后端存储体检**：`uploads/` 下课程以外目录（转录项目 / 小节切片 / 导入工程 / 合成缓存）。
+   *
+   * 与课程资产同一个模式：孤儿文件（无主） + 悬空引用（有主无文件） + 结构性数据缺失，
+   * 归属规则在后端按各自的表算（`Project` / `TranscribeTrack` / `Score` / `Track` / `MeasureTrack`）。
+   */
+  fetchStorageHealth: () => request<StorageHealth>('/api/storage/health'),
+
+  /**
+   * 清理某个目录的孤儿文件（`uploads/demo` 是可重建缓存，后端会拒掉）。
+   *
+   * ⚠️ `dryRun: true` 只统计不删；真正删除时后端**重新跑一遍归属判定**（不信任前端传的列表）。
+   */
+  cleanupStorageOrphans: (domain: string, dryRun = false) =>
+    request<StorageCleanupResult>(
+      `/api/storage/orphans?domain=${encodeURIComponent(domain)}${dryRun ? '&dryRun=1' : ''}`,
+      { method: 'DELETE' },
+    ),
 };
 
 export default api;

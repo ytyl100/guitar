@@ -28,6 +28,7 @@
  */
 export type ProjectStatus =
   | 'pending'
+  | 'awaiting_audio'
   | 'downloading'
   | 'separating'
   | 'transcribing'
@@ -38,6 +39,7 @@ export type ProjectStatus =
 
 export const PROJECT_STATUSES: ProjectStatus[] = [
   'pending',
+  'awaiting_audio',
   'downloading',
   'separating',
   'transcribing',
@@ -50,6 +52,7 @@ export const PROJECT_STATUSES: ProjectStatus[] = [
 /** 状态的中文说明（CMS 直接用，避免前端再维护一份映射） */
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   pending: '待处理',
+  awaiting_audio: '等待本机代理回传音频',
   downloading: '下载中',
   separating: '乐器分离中',
   transcribing: '转录中',
@@ -274,10 +277,24 @@ export interface MidiToTabWorkerResult extends WorkerResultBase {
   warnings: string[];
 }
 
+/**
+ * yt-dlp 的 cookie 来源。
+ *
+ * 为什么需要它：YouTube 现在对大部分请求返回
+ * `Sign in to confirm you're not a bot`，**没有 cookies 时任何客户端都拿不到音频**。
+ * 两种来源：
+ * - `file`    → `--cookies <cookies.txt>`（Netscape 格式，最稳，不受浏览器加密影响）
+ * - `browser` → `--cookies-from-browser <chrome|edge|firefox:profile>`（Firefox 最稳；
+ *               Chromium 127+ 的 App-Bound 加密会导致 `Failed to decrypt with DPAPI`）
+ */
+export type YtDlpCookieSource =
+  | { mode: 'file'; value: string }
+  | { mode: 'browser'; value: string };
+
 /** 环境能力探测结果（`GET /api/transcription/capabilities`） */
 export interface WorkerCapabilities {
   python: { available: boolean; bin: string; version?: string; reason?: string };
-  ytDlp: { available: boolean; bin: string; reason?: string };
+  ytDlp: { available: boolean; bin: string; reason?: string; cookies?: YtDlpCookieSource | null };
   demucs: { available: boolean; reason?: string };
   basicPitch: { available: boolean; reason?: string };
   tayuya: { available: boolean; reason?: string };
