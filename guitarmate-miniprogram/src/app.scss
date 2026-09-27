@@ -410,8 +410,9 @@ page,
   z-index: 40;
   height: var(--gm-nav-h);
   padding-bottom: env(safe-area-inset-bottom);
-  background-color: rgba(9, 9, 11, 0.95);
-  border-top: 1px solid rgba(39, 39, 42, 0.7);
+  /** 与 Web 深色底栏一致：bg-[#12141a]/95 + border-zinc-800/80 */
+  background-color: rgba(18, 20, 26, 0.95);
+  border-top: 1px solid rgba(39, 39, 42, 0.8);
 }
 
 /*
@@ -427,6 +428,8 @@ page,
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /** Web 端每项是 `py-1`（4px） */
+  padding: 8rpx 0;
 }
 
 .gm-nav-label {
@@ -434,7 +437,95 @@ page,
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  /**
+   * ⚠️⚠️ 字号/行高/间距**必须写在这里**（app.scss 是普通 CSS，选择器不会被动）。
+   * 不能交给 JSX 里的 `text-[20rpx] mt-[4rpx]` 这类 **Tailwind 任意值类名**：
+   * 小程序端 WXSS 里那些选择器被 weapp-tailwindcss 转义成 `.text-_b20rpx_B`，
+   * 而 JS 里的 class 字符串还是原文 `text-[20rpx]` → **永远匹配不上，等于没写**
+   * （实测症状：字号回落到 Text 默认值 16px，用户看到的就是「菜单字号偏大」）。
+   * 数值口径：本文件是 rpx，写「Web 的 CSS px × 2」。
+   */
+  font-size: 20px; /* Web text-[10px] */
+  line-height: 30px; /* Web 实测行高 15px */
+  margin-top: 4px; /* Web mt-0.5 = 2px */
+  letter-spacing: -0.025em; /* Web tracking-tight */
+  /** 与 guitarmate-frontend 对齐：未激活 zinc-500（浅色主题下是 zinc-400） */
+  color: #71717a;
+  font-weight: 400;
 }
+
+/** 激活态：Web 是 `text-emerald-500 font-bold`（字号同为 10px，只是字重与颜色不同） */
+.gm-nav-label--on {
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* ⚠️ 浅色主题的覆盖**写在文件末尾的 .gm-light 区块里**（同一选择器写两处会按「后写的赢」拼运气）*/
+
+/* ------------------------------------------------------------------
+ * 底部导航图标（与 guitarmate-frontend 的 lucide 线性图标逐字对齐）
+ * ------------------------------------------------------------------
+ * Web 端是 `<Music2 size={20} />` 这样的 lucide 组件（24 格 viewBox、stroke-width 2，
+ * 激活时 `stroke-[2.5]`）；小程序不引图标库、WXSS 也不能写本地图片路径，
+ * 所以图标内联成 **base64 的 PNG data URI** 当 background-image。
+ *
+ * ⚠️ 为什么是 PNG 而不是 SVG：SVG data URI 在 WXSS 里的支持度在不同基础库/工具版本上并存疑，
+ *    而 base64 PNG 是小程序里人人都在用的写法（形状仍取自上面那套 lucide path，
+ *    用 resvg 栅格化成 80×80 = 显示 20px 的 4 倍图，高分屏不糊）。
+ * ⚠️ data URI 里的图**拿不到外部颜色**（不能写 `currentColor`），
+ *    所以「未激活 #71717a / 激活 #10b981」各自生成一张图：
+ *    - 尺寸与 Web 完全一致（24×24 viewBox → 40rpx = 20px 显示）
+ *    - 颜色变化靠 `.gm-nav-item--on` 覆盖 background-image，而不是 WXML 里换图
+ *
+ * 生成/更新：`node scripts/gen-nav-icons.mjs`（会重写下面标记之间的内容）
+ */
+.gm-nav-icon {
+  width: 40rpx; /* = 20px，与 Web 的 size={20} 一致 */
+  height: 40rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  flex-shrink: 0;
+}
+
+/* >>> NAV-ICONS:START（由 scripts/gen-nav-icons.mjs 生成，勿手改） >>> */
+/* 由 scripts/gen-nav-icons.mjs 生成（PNG 80×80 base64）—— 形状取自 lucide-react@0.546.0 */
+.gm-nav-icon--songs {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAFC0lEQVR4nO2cz24aRxzHf7Ns8M24TxAq9W7yBKGnnirTJzCcewg4QUVOpAyqbaUiManUu9dPUEfqoTfjJyg99xDyBAXfDITtd2BXQWXZP8wCs8t8pNH8NkK72Q8zv5lhZ81II4UWKIkWKImyAl+8eFWcTOwjIvvAMIzrt2/POqQgSgo8OXlZtW27jXAO1jFNu9ZqXXRxoAzKCWw0eP7hYfgRoSeMkbW/n61xzvs43DrKCRRd9/PnyS1CP/oQ+f7y8qKJeKswFKUIKdClh/xYe/fu7AbxVki6QIft5ceUCJyBbr3x/JgqgQ4bzY8MRSliEOiykfyYNIEfUIpElEMJyXrzY6IEZjLGt6Zp9h4eRhwrlGOKALr1WvJj4gS6Szrnc5yInqKEJfb8yFCUwhFzi3CBeYEuJyenZdsmTkSPUcISW35MvEAB5/zg/n6I9TNVcbjR/JgKgS6zdfSIR82PoNpuX/yKOjKpEujinINThPwY9tz/J5UCXaLkRwwuTQwunCKSaoECHjo/sut2+7xMEUm9QJeg/LjquXdGoItzfk5z+ZExVru8PH+PMDI7J9ClXj8t2LZxIFY2b97wHq3IzgqMCy1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QkrUJdJ6CPWXMztOMAi7Xw1OxPh4x9k2T7ry2VOy0QD57BvsMgko4LKAE0cMD7Y4x9yLNTgrkX8RVcXiAEhmItLLZbHM8Hud3SqB4PDge0+8I8xQDEPkLvoifEC6QOoHPn78qTSaTK4QrtbqopEqgs3FHyNsYqRHodNu/EG6UVAhsTKcnQyEvqNt+wuk7yGldw2BdceNC/GRi5G17UrBtVsKU5hCfC00qBNZqLy3c+DH5wq5zuUdVjM59HCzFea2Vk++2sy8kXqBoQWP/rjvAnK4cZfN2Y9aiLZrbLbWMxAus1U6FmCMUT0yTnnitLoLgmEcOBqMOWvYh+ZBogXx6k8N/EXqCXLfSFlmXenDrTrZA/2kL+7vdPi8gkALX4LjGa4SeJFqg3+CBvPdDlLznB9KEjcqThAs87dCSRL+3l/1aZpfnPPii/sEX9Q3CBUzT+L7VOvsDoTJEEfgRVZ48aLcvGKpYQDf+E934O4QLyOxlXhehbxwCbVRe3EFgkWICAn+DwB8RLqAFhiDNAnu05I0fCAx9niCQAy3kwGPyQA8iIcB1xFywgLJALpf9CvPRPkJliCBwecvY0DRmgJZ+gFopQgtEbiojN10h9KKLm3uCWgpcg+MarxF68QHXKKFWitAC+ZaXcjh/Bee3SDFCCxSge92gOkLxxJT6MWF4i7CA4sUgl8vmuWL5TxBJYD2glYA+8mElSj5sTH/OGl0hvxZpCWh9TbQ+TgoSSaDAbzBxwQ3f7O9nK0EtBi36GSpO/r9uK9v6BJEF8ll36xFmFSh+9CCyg0GhixkcBpmf7+rTFswOxW4F/HsJnymg+IJzVND6LFKUyAIFMxG+XTkWIK8JeZwUZiWBAkw5ymhFVwjXxGqv4G+alQUKnAfrFgV354gkQ55ASqDA6c43CB+jSINuW0G3tSghSAsUcAws96H+MoYf7Hpv7xGPa029KWIR6MKnIkciN5Yx1TmkYD7hv9DJZJil2q8sYWEoa6GBCfJwOCwSUZ4ApBbQPbsIAetnMnantcKqRTUYikYCLVASLVCS/wCAZ2V+Q2vucgAAAABJRU5ErkJggg==");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--songs {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAE8klEQVR4nO2bwVLbRhjHv89g9xIScesN+gTQJ8DMpCGHzoQce4rzBMCxkwmWYTo9Yp6g5tTeINMLJp3BeYKavgDuqUdE2xMBb/4r7IR4kLXSruSVs7+Zb/TJA5L2J+nbtbRmcmjhBGpirUDv5KdlousVEuQRz74Jnrzq4mPrsFKg197ZIxKbSD/B3KFy+WWw+mOPLMI6gV674RNRHREBN6ky1whWtwKsTBwbBQos4ghw5H7wpL6PfKJYJdA7/XmRrq7OkarSo1LpZfDd6w5NCLsEvt2tUr9/ijQZE6yPjLCG1AI/kn99ZIQ16AsMybU+MsIaDAkckkt9ZIQ1GBZ4S8b1kRHWkInAj2RTHxlhDdkKDDFeHxlhDWoCS8+J+utIXiDS0jNVHxlhDUoCS6VV2fDwYYO4buKTFUQ6DNRHRlhDEoE0wGvvrpPoN9GSBaymhJvB2vYWksQwwhrSCByC79A+EW0iHiGSw7SP2ij/PxGMsAYdgRLvdM+jq3+bSF8gklOpfJP0dmaENegKHJK6PgreCp5uy/9ThhHWYErgkMT10Qm8H+X66G7haBTq40GwVq9RQhhhDVkKHHJPfbxEYBhT9ykFjLCGPATeRe5Pd1uMsAbZoDwFmoAR1uAEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEjuCd7KxgAQQeo5OHBHvkDknKc2ejM6W+eIGDFzfPsNl1SKsSPkKMo4sjaFG58ka+DfuiBXonjQ1cZT4hRSRHcItnqS1uxK9Yi2baBA7ech0iXSRNmOh/QfQAaTTTJBA1rkZC/II0P6ZF4L2/Z8uDaRDoHe9sEgsInABFFxhO2KH+IdLJUGSBg2HKuUwRyRD0N/a2gEyPQgtsN1oUPTnnc6Qw4ibNcPdug8Nem27Qc4safZqfok5RBSb6JSXTPpUf+qPfNEYZ1FKf4qad3aWwApWvvtLzYO31ERIlBidG/v0SIp4CC7yQC8Q4GmmmiYW3tbj+E2k8RRSo2MAzyFvGMhU4QT6N/an/gEIKVGmcgYbNtxv/CKKvkUZjYD8mURN40miiV91AGgmuPqVtjWP+uHEsmNaQRlNIge1Gh8YPOd5BYJU0wX5aFNdRTaVADFvS/MpnFO8thjV9sYc0Ep7hHy4eb/+G1AqsEjj/x+734qb/O9JIeGZ26eLxq7+QWoEZgeZuYZ9iOivsR+mY80LpYPLqRCDwCItniEhM7MckSgeDhvkUc2WYKO7YzzkWixSN1lgzCxgRi+JAuovGfYtlKiDPp7iTZKjWmkRJoAQNDLB4hBhHAxJ9SojiCTJylZsmicAWxY3RQlI9TDhEuowYxyVOjoelVagLvG3oOdJ48IqSvprbin2clexVaKqrO2uUBUrUr8KQHrbeJOLu3VkIg9t1iZhreKhaJRXwcDZ4Wl8kC0km8PaRfo/ia+F9SIEeIgXJykKeJBIoUZp+YZYD3Lo1shRGJGbwKH4Pada8g7wqWUwqgRJ0AE3Upg2kWXFGlYfVYe20ldQCJRlO7TiAvE3b5UkYoUXYq/avj7ClBazqcolo4rb1qSBoCxwyqIs+peuhJbjqKr6cJ0gFwphASTjMef/fOm7rdaxWKV7m2e2gu3xUNHFDjAocJRzySG7EMq5ODxmGdKUOSWYfdItQ4+JghEMDJ1CTD3Ya32/WycItAAAAAElFTkSuQmCC");
+}
+.gm-nav-icon--learn {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--learn {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAGzElEQVR4nO2ZP2/bRhjGn5NjuYsddi9gFehufYPYQJpkaGF3a5ea+QRWxiJwRMcoOkbuVnSItLVTFbRDkxawDHSP/AmiDp3NOC3Q+I+Y546kTcmiJOqOlBzwBzzmKxk6Hh/eve8dKZCjRW6gJrmBmuQGapIbqEluoCa5gZrkBmqSG6hJbqAmuYGa5AZqMpMGWi++LcM7W2FYgk8H4sahe+dhm/FMIaiZwNr/roSTk02GNoASBtMBUEdxac9de+AynjqCmirKuLenVQjPRhI8UcfC/I679k0HU2RqBlp/7K7C86rUKrQQTRTEnvvpdgtTQFCZYj3f2YQQtr5xfQjRYpt19261wU+ZIajUsfafWDg5XmfoACghXTqQ5ykuPcsiTwoqNQLjthhWKIvKEpeq0ci9NI1MxcCJC0NapFhwjBqoCkPX44jzNvhRHw9/86/s5TL/GkAYLziC0iaFwnCAQsEJL9S/MV0HwC1KH4MFR1ATEeS3dYYOgBLM0ECx6MRNNZUaTk4cAJuUCTqQ/dcoOIJKRGDcFsMKZVG6vKaY7Iv1OOP6CYy04ffhJqWLS7EPyQvO2AaqTpssDCq/iRoWFmlcsk6HBDezwrZsXskyv9InYcER1FD8/GOwMACHzEE1986jOgxivXhss58Or8ickXOiEebhOAQ1EGWcka3WBT2FIS1Uv00XHCF24votqB78afHmKcyNuKGFIS2CR2IVhpuUAUQTxcX7/emmx0DfvON9hmVKh9dsuY75Yi1r4/pRufv0pKLypH7BabPQrEVN7DXw+Y4DoEpNhiwM0rjiEo27PMksEAwO30idPCmw596pVhgpLgwMTvBKhlQypHEF4ZguDGmhU3AExH9ecfGjcIAIShEk332GSTjIojCkRXDNDhIWHDFX+Pzo9vZvDCMG/v64wjXeE4bj0OA7Ci5FHrYZX3uSFhya9vPR3eqXDGXsM3b+k+ujhcUH4RB+n6AH8vodjIJLG6arNUZRA3c3gO4vDMfBpWpcnjSmXWV1CXL/FsMKZVEjER6eH92r3mMYMdAfxi8ZJkONyPG3PrOCWt74W9MN+ZFKQoNPcmyQCwMlHMJtHlao5HBYU7Er9llBFY5zb5PG2ZicHRrogAjqgoTTeCBs8B9P4AeulXb5cWawXuxsc7n1NcNPKF0GGyhRayTPe8pQCwEc08hHmF9qTKvgBPltnX353gOW+JUp4g2UqJHodWv87zI/6iLNy7TgBMZtMaxQFmWa4QaGqNE44Yp9ICkXnEhhsJEu4xkYooz0VKduUfoYLjiqMBh8ZimA/z3gA4ZxJDMwxO9ot8JwndJHGqnxcoerhk22YbONVZhBbU15jQ6GD5bJDAxRU2VKL3eC/CZvoAOgBDP0bE15Y1pI08CQD//c/cw77/7K0BQuxYJz9eVOYNwWwwplUUYQc+Kro9uPfmJ4QWYGBlN6n6F5ZMEpoA5JF3ZqhaFQWOvPxe+HgVmRG6jJrBsoc4x37t1juEllSaMgxF9dz/uRcTyzbmDYwaBy2/CLwE0qDXpeZiXpHyLMpIEIUNX07RubVaLCsy/DBPKdjDSu72XWJP2TzLSBUdQOR2erKI0rxL/MmrR/18bAkKAdB8M7HeWA7Y58mRW0u88wngH9y85AP6+9YjiEwhfu3e0mg5Gop+I4s7nu22DPlvnVJWq0oQncqIc7hlGop0qjnm8Wix/LfIkImRko4ck8HuLhfpdTbI1RYnxDuT0Z07B+2LeXPJSpWGiE4KEH/q6OYauGyKi98uOk8GRtHlaoeGgi5ufv99/ptFAz4/T06RgPGQ5pYJnHHtSNi38/1PMbEwbWMexuXeJSA/e5plAV3t8vOxiPBs2wMYBg+tfRu+Q65EMHOzoj9A2Ud3tkHuxHNJnUmjTzma6ZgWnrbHODbVIJGJD/ovht/7tKI8uctq1w2kbRNlCSYBQOQJnZZoFo8wGCyy/AnHnAwxW47LnFA3/iWSw0ZQZUQtMuiR19SRCUNsEobDO8SZmkA58SzPKao688bPSNi6CMECTeFsybaJpDmrdhwjyJMQMl18BEmre0qpt3oxg1UKIS7+mxw4XvFj/ODgJ7fEftmDRPYtzAkGAbVWO4Qk2TK0sPkwgqVVg5bS5obQzfGqXBARfwdVb0OlJEUJkQ5McKp/Yqz7rMr8wj98sCLRYJTlUzRWIUmRkYRS173p7ygYHaapUw+TQ/pDpcP7awMN/MyrQogpoJlKlnZyVIzr0yzbUYXSIX2XOizYgPZG50pmHWIGbGwOtKbqAmuYGa5AZqkhuoSW6gJrmBmuQGapIbqEluoCa5gZrkBmryDiQNf37FHmqIAAAAAElFTkSuQmCC");
+}
+.gm-nav-icon--tune {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--tune {
+  background-image: url("data:image/png;base64,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");
+}
+.gm-nav-icon--tools {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAFDElEQVR4nO2cT2sbRxiHZ62Nc5S/QRRoz3E/QdRTe4t9aguFpqcWWmjkP2Bsh2xwYgJ2ohRaaE9JodD2FOfWniJ/gjrnFiJ/A/sYR9LbZxXJaLXvymOvVpqSeWDye020aPbZ2dmR8Dgwnlx4gTnxAnPiBebEC8yJF5gTK4G12u3rxNio17f2ibEzjX4GNJWVlc1qu915QlkxxdAMgmBPxDTq9fvP+fnc1GobN4LAVEVkgR8rphiaYWgWd3a2D6hTBLQUS0vrdzixyEyOJl2JEPmLsQBxXxgjkTGmYiYEFyp69Gj7LmWCgJZgeXlzodPpPKOcAkEjDKWWdbVXV9fnW62gjryqmQIzMzOLDx/e26M8JSEwiqK54+OTV5RztGlxVCrNLO7u3muYAXpTyjPKqfatXJ69iqcj6i4JgdMdfUm4Zb7klnlqgCnlJlPKE8qpMzwKEwLpaERH71A6ASPxQ8Iw8l4QTsCFvcuFjUyPgHZKrbbeMMZcp6Xon0weGN1VLtA8Zdyu0M7iiBYzRzuLQ9oBJ3jAKGmYnIy4aM/r9e0FsktAO2WUQA5KvDYva2tR5fXrk6cm4/3Owf7ly7M3HzyImmaM4EIIjX1cVE2PhBQOapiME+KgxGvHxdLSxi2R7pKkTDsPx6wjWVrcf0w9dnAhhIZbAmNWu8sT0zD2Eo/D0FR3MpY74wAXQmi4JzCmNxLrlGfCyKsVNfL64EIIDTcFxox6/wESJ1AU9EUIjcT7J6RwUMNknAAHJV5bBGtvHyyvKDPhgXF13A8MDVwIoeGuwBj60DTZS5xD+lExE4B+CKGxTx+qpkdCCgc1zPQF7hE3aBqJNViR0A8hNNwWyKehn1hsf0WZgkXyz3wK+JqycHAhhIbbApeXNzY7HdmiTDGJp28fXAih4bbAlZXbn7bb7d8oU5RKpc92d7d+pywcXAih4brA7tdWLyhTxJ/Hh7/mKgpcCKHhBdqACyE0vEAbcCGEhhdoAy6E0PACbcCFEBpeoA24EELDC7QBF0JoeIE24EIIDS/QBlwIoeEF2oALITS8QBtwIYSGF2gDLoTQ8AJtwIUQGl6gDbgQQsMLtAEXQmh4gTbgQggNL9AGXAih4QXagAshNLxAG3AhhIYXaAMuhNDwAm3AhRAaXqANuBBCwwu0ARdCaHiBNuBCCA0v0AZcCKHhBdqACyE0vEAbcCGEhhdoAy6E0PACbcCFEBpeoA24EELDC7QBF0JoXEwg3a+aAiiXSy+jgd2P5xEYdXeXtq9RFkC7YXQSv2Yc0E5Zmt5mw2YQBHuzs5e+b7ValVECwzBsnpy8+U6K3aWeSTBqs6EL210R+SdyPqZMMer/JsXMqO2uUfeWOGka7iyaJ81xuTxbiQamnITAGBdGoasMj76YlMCYKc6FzjI89/VRBcasvt1BGdu+QnuXOQxDs7CTsTM0U+Ag8dLCjJlOR+YZ5fOUNLlGXoDgJf/0dqkHB9RjZXDJlIWVwKK5yJTBE3lim25G4YTAmN6U8TflmXBLfZB1S00aZwTG2IxEV0ZeH6cExiDxHyS+R5mCue5fnoTvUzqDiwL5tGE+okyBwL8QONVPIsO4KPAHBH5DmQKBPyLwW0pncFBg9h+fcG3+i3FOYAxfq70hQtogLb5GukQ6hZMCGYWfMAp/pQxpMS1G3+eMvj+oncJJgX0QeYswiHtMOInTAv8PeIE58QJz4gXmxAvMiReYk/8AwRnvflp3K10AAAAASUVORK5CYII=");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--tools {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAEeklEQVR4nO2cT24jRRTGv3LibAClZ8Uy4QRjTjCO0GSQWBB2sCJHcCRYIJRJdyLEAiQPJyCsWE7YICYDyssJxnOD5ATTEbAgdrr5qhPHifHf6m67LN5Peq6XKLaff+5XVbG6baDkQgXmRAXmRAXmRAXmZCKBwUkzQPvPh0zzUX3ndbyxEzMrjVnXOlRgcPxNDenVHpDW+OM6iiWGMS0+9hGqK7/EG1+dwYHg5Nt1tC8/5svYQprVGTCK5IyP3YJZiuLNr1sYgGH8h+BFRHEIMTtaqFR24se7ggkIXh7UkSRNpjXGrAjjJ3sRx3sYxj2C3/Z/hEm3MQ+MEWBpZ9i7nXUFrpo82uqYBwY/xJt7DWa33BMYvDjYApLnTOdJTJE78ebTQ9whON7fprimTRlzpPJJ/GT3iEmGYdzC1n1jB4YP3LYM65r1lDKKmHU94JhhGBlZe6SdV0x9ImJYrEB/WFl5r7vwGUaGJ+27IPTa+I7AKIRv77S/RGzjEGQaga+51WhwdCex82tSY1bH9RZklVEEF4wWQ3h0cEvEhSgPSfKMtw8Zw3ASeMo71VEQ2Sb48vIQwCNGHk45J21356QioAvB6LoiughB5iawC/edDe47Q0x/NF4gNWH84VN7tBQKXQgWRaDlRmKT6eSk3CuWIM9CF4JFEmjh8wtGF32XedcS8flDEH8EXs+JLaarjFFccM6rFTnn9UMXgkUTaGENgtGFW3yoI2INIYhvAkOMrsESsY4QJcI6BIsp8GCLm7DnTEfQ+y+gLOhCsIgCH/y+/2l6lf7MdCjGVD56s7n7K9PSoAvBIgq8+aD0hOlwKpWNST94dYUuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EJQgsAWjGlwLIZq9bz/PGdXgdn51e32GtNiSNNnvK0xhuEksETMEas+Mkvmn7EnWC6Zz9IkfRepqfM+W5gPgwQesJhxp9cq1/ROM+4J9PNyVz8ZdLmrhW0cc1hlKMO5YPsGHDP6BGobj6fXvpZ7Ai08Cg8BfM5Q+hn3pRNdKDHE3FZkb7ldee8yUKDlZlEJkaLGv1rjr/5/pDjna2/BLIfDvorFMMaSfZ1S568a02JJkjqQXb3+iOHCKUO4uRYUzfLbrVxf/TRLHK4XLu1i62nxQqBlKoklXmw9Ld4ItATH0SvOOzWmw+GcxJXwfWZe4JfAybZQP3E13IYn+CXw5X4DyZg2rrB9H/vRvha/BP7x/Ro6f59hFMtvrccffHHOzAsMwyvYxm0Oy4xBdNi+VY7e4J/AUW3sWftavBNouZH4HdPukdihvC99k2fxUmCXbE4kPs15/RiGkgMVmBMVmBMVmBMVmJN/AffXw35r+oy7AAAAAElFTkSuQmCC");
+}
+.gm-nav-icon--profile {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--profile {
+  background-image: url("data:image/png;base64,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");
+}
+/* <<< NAV-ICONS:END <<< */
 
 /* 昵称过长要截断（Web 是 `text-lg font-black truncate`），否则会把会员徽标挤到下一行 */
 .gm-profile-name {
@@ -1500,48 +1591,110 @@ page,
   background-color: rgba(24, 24, 27, 0.5);
 }
 
-.gm-tune-string-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
+/**
+ * 琴头 + 六弦选择
+ * ----------------
+ * 照 Web 版 `GuitarHeadstockTuner.tsx` 的 **side + photo** 模式搬过来：
+ * 左边一列 6 个圆形音名按钮（上=1弦 E4，下=6弦 E2），右边琴头实拍图，
+ * 选中那根弦的**卷弦柱**上打一层白色高光（Web 版同款光斑）。
+ *
+ * ⚠️ 图片用 `<Image>`（weapp 支持本地图片；H5 端 Taro 的 Image 不渲染，属已知限制）。
+ * ⚠️ 显示尺寸必须给**绝对数值 + 两边都定死**：weapp 里 `<Image>` 宿主是 inline，
+ *    百分比高度会退化成 0（本项目踩过）。宽高比 = 原图 896:1200 → 440:590 不拉伸。
+ * ⚠️ 本文件里的长度是 **rpx 口径**（`config/index.js` designWidth=750，写 40 渲染出来是 20px，
+ *    导航图标那轮在开发者工具里量过）。下面括号里的 px 是 Web 版对照值，已 ×2 换算。
+ */
+.gm-tune-head {
+  position: relative;
+  width: 100%;
+  height: 590px; /* Web 琴头显示高度 295px */
+  margin-top: 40px;
 }
 
-.gm-tune-string {
-  width: 30%;
-  margin: 0 3% 16px 0;
-  padding: 16px 0;
-  border-radius: 24px;
-  border: 1px solid rgba(63, 63, 70, 0.8);
-  background-color: rgba(9, 9, 11, 0.6);
+.gm-tune-head-notes {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 0;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.gm-tune-note {
+  width: 88px; /* Web w-11 = 44px */
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(24, 28, 37, 0.9);
+  color: #e4e4e7;
+  font-size: 32px; /* Web text-base 16px */
+  font-weight: 700;
   box-sizing: border-box;
 }
 
-.gm-tune-string--on {
-  border-color: #10b981;
-  background-color: rgba(16, 185, 129, 0.15);
-}
-
-.gm-tune-string-note {
-  font-size: 32px;
+/* 选中态与 Web 版一致：白底黑字 + 翠绿外环 + 放大字号 */
+.gm-tune-note--on {
+  border-color: #34d399;
+  background-color: #ffffff;
+  color: #09090b;
+  font-size: 40px; /* Web text-xl 20px */
   font-weight: 900;
-  font-family: monospace;
-  color: #ffffff;
+  box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.55); /* Web ring-4 */
 }
 
-.gm-tune-string-num {
-  font-size: 20px;
+.gm-tune-head-stock {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 440px; /* Web 琴头宽 220px（原图 896:1200 → 高 295px） */
+  height: 590px;
+}
+
+.gm-tune-head-img {
+  width: 440px;
+  height: 590px;
+  display: block;
+  /* 图片自带纯黑底，圆角一下跟卡片衔接更自然（Web 版是 rounded-xl） */
+  border-radius: 24px;
+}
+
+/**
+ * 卷弦柱高光：用**百分比**定位（相对琴头图的定位盒），换机型/换尺寸都不漂。
+ * 坐标是把原图 896×1200 按 10% 网格叠出来后，一个个量出来的 6 个卷弦柱中心。
+ */
+.gm-tune-peg-glow {
+  position: absolute;
+  width: 60px; /* Web w-8 = 32px，略微收一点更贴合旋钮 */
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 44px 16px rgba(255, 255, 255, 0.85); /* Web 0 0 25px 8px */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.gm-tune-peg-glow--1 { left: 58%; top: 14.5%; }
+.gm-tune-peg-glow--2 { left: 56%; top: 24.5%; }
+.gm-tune-peg-glow--3 { left: 55%; top: 35%; }
+.gm-tune-peg-glow--4 { left: 52%; top: 46%; }
+.gm-tune-peg-glow--5 { left: 47%; top: 57%; }
+.gm-tune-peg-glow--6 { left: 43%; top: 68.5%; }
+
+/* 琴头下面那一行：当前选中弦的读数（原来的芯片行删掉了，信息量保留在这） */
+.gm-tune-head-cap {
+  display: block;
+  margin-top: 32px;
+  text-align: center;
+  font-size: 24px;
+  font-family: monospace;
   color: #a1a1aa;
-  margin-top: 4px;
-}
-
-.gm-tune-string-freq {
-  font-size: 18px;
-  font-family: monospace;
-  color: #52525b;
-  margin-top: 2px;
 }
 
 /* 麦克风开关 */
@@ -2595,10 +2748,17 @@ page,
 .gm-light .gm-nav {
   background-color: rgba(255, 255, 255, 0.96);
   border-top-color: #e4e4e7;
+  /** Web 浅色导航是 `bg-white/95 ... shadow-lg`：补一道向上投影，别让底栏看着漂在内容上 */
+  box-shadow: 0 -6rpx 24rpx rgba(15, 23, 42, 0.06);
 }
 
+/* 与 Web 浅色一致：未激活 zinc-400；激活仍为 emerald-500（必须写在 .gm-nav-label 之后） */
 .gm-light .gm-nav-label {
-  color: #52525b;
+  color: #a1a1aa;
+}
+
+.gm-light .gm-nav-label--on {
+  color: #10b981;
 }
 
 .gm-light .gm-bar {

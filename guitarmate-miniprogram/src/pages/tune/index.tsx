@@ -1,10 +1,12 @@
-import { View, Text } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchStrumUrl, resolveUrl } from '../../services/api';
 import { pageClass } from '../../utils/settings';
 import { useMicPitch, type TunerStringDef } from '../../hooks/useMicPitch';
 import BottomNav from '../../components/BottomNav';
+/** 琴头实拍图（Web 版 `side` 模式的「照片」子模式同款素材，已压到 480px 宽 / 28KB） */
+import headstockSidePhoto from '../../assets/tuner/headstock-side.jpg';
 
 /**
  * 调音器（「Tune 调音」tab）
@@ -31,9 +33,10 @@ import BottomNav from '../../components/BottomNav';
  * 2. **H5 跑不了麦克风**：浏览器的 `getRecorderManager` 是 MediaRecorder（webm/opus），
  *    没有 PCM 分帧回调 → 页面会明确提示「请在微信开发者工具/真机上使用」，
  *    而不是给一个点了没反应的按钮。
- * 3. **没有琴头插画**：Web 版有 3 套琴头渲染模式（单边旋钮矢量图 / 写实原木图 / 3D），
- *    这里只保留**六弦参考音按钮**这一种（Web 的 `inline` 模式同款）。琴头插画属于纯装饰，
- *    单独一轮再做更合适 —— 不画个假的糊弄。
+ * 3. **琴头插画是搬「照片」那一版**：Web 版琴头有 3 套渲染（单边旋钮矢量精绘 / 写实照片 / 3D 原木），
+ *    这里搬的是 `side` 模式里点「照片」切换出来的那套 —— 左边一列 6 个圆形音名按钮 +
+ *    右边琴头实拍图 + 选中弦的卷弦柱白色高光（坐标按原图 10% 网格量出，见 `app.scss`）。
+ *    矢量精绘那版是 400 行内联 SVG（含逐弦高亮），小程序没有 SVG 标签，要搬得先栅格化，另开一轮更合适。
  *
  * ⚠️ 指针映射与 Web 版一致：±50 音分 → ±85px（`needleOffsetPx`），音准阈值 ±3 音分。
  */
@@ -186,25 +189,34 @@ export default function Tune() {
         </View>
       )}
 
-      {/** ── 六根弦的参考音 ─────────────────────────────────────── */}
+      {/** ── 琴头 + 六弦选择（点音名试听参考音） ─────────────────── */}
       <View className="gm-tune-strings">
-        <Text className="gm-section-title">标准调弦 · 点弦试听参考音</Text>
-        <View className="gm-tune-string-row">
-          {[...STANDARD_TUNING].reverse().map((s) => (
-            <View
-              key={s.stringNumber}
-              className={`gm-tune-string${selectedStringNum === s.stringNumber ? ' gm-tune-string--on' : ''}`}
-              onClick={() => void playRef(s.stringNumber)}
-            >
-              <Text className="gm-tune-string-note">
-                {s.noteName}
-                {s.octave}
-              </Text>
-              <Text className="gm-tune-string-num">{s.stringNumber} 弦</Text>
-              <Text className="gm-tune-string-freq">{s.targetFreq}Hz</Text>
-            </View>
-          ))}
+        <Text className="gm-section-title">标准调弦 · 点音名试听参考音</Text>
+        <View className="gm-tune-head">
+          <View className="gm-tune-head-notes">
+            {/** 顺序与 Web 版一致：上=1弦 E4 → 下=6弦 E2 */}
+            {[...STANDARD_TUNING].reverse().map((s) => (
+              <View
+                key={s.stringNumber}
+                className={`gm-tune-note${selectedStringNum === s.stringNumber ? ' gm-tune-note--on' : ''}`}
+                onClick={() => void playRef(s.stringNumber)}
+              >
+                <Text>{s.noteName}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View className="gm-tune-head-stock">
+            <Image className="gm-tune-head-img" src={headstockSidePhoto} mode="aspectFit" />
+            {/** 选中那根弦的卷弦柱高光（Web 版同款光斑，位置用百分比定位） */}
+            <View className={`gm-tune-peg-glow gm-tune-peg-glow--${selectedStringNum}`} />
+          </View>
         </View>
+
+        <Text className="gm-tune-head-cap">
+          {currentString.stringNumber} 弦 {currentString.noteName}
+          {currentString.octave} · {currentString.targetFreq}Hz
+        </Text>
       </View>
 
       {/** ── 麦克风开关 ─────────────────────────────────────────── */}
