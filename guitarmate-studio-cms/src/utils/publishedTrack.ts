@@ -106,3 +106,46 @@ function parseTimeSignature(value?: string | null): [number, number] | undefined
   if (!Number.isFinite(beats) || !Number.isFinite(denom) || beats <= 0 || denom <= 0) return undefined;
   return [beats, denom];
 }
+
+/**
+ * 「从转录项目建一条**草稿**工程」。
+ *
+ * 场景：在「① 音频导入与六线谱校正」里点「去对齐工作台精修」时，
+ * 该项目可能**还没发布过**（音乐库里没有对应条目）。而对齐工作台的
+ * `onUpdateTrack` / `onChangeConfig` 都是**按当前激活曲目**写回音乐库的 ——
+ * 如果没有对应条目就直接切过去，用户的编辑会被写进**上一条曲目**（数据串味）。
+ * 所以这里按同一套「只填真的知道的」规则补一条草稿工程，id 用 `track-<projectId>`（幂等）。
+ */
+export function buildDraftMusicTrackFromProject(input: {
+  title: string;
+  projectId: string;
+  scoreId?: string | null;
+  artist?: string | null;
+  bpm?: number | null;
+  durationSec?: number | null;
+  timeSignature?: string | null;
+  /** 已按 `buildAlignmentPatch` 合并好的对齐工作台配置 */
+  tabConfig: AudioTabSyncConfig;
+  stamp?: string;
+}): MusicTrack {
+  const now = input.stamp || new Date().toISOString();
+  const scoreId = input.scoreId || undefined;
+  return {
+    id: `track-${input.projectId}`,
+    title: input.title || '未命名曲目',
+    artist: (input.artist || '').trim() || '未标注',
+    genre: '综合练习曲',
+    difficulty: '入门',
+    keySignature: '未定调',
+    status: 'draft',
+    currentVersion: 'v0.1',
+    versions: [],
+    tabConfig: input.tabConfig,
+    tags: ['自动转录', '对齐中'],
+    createdAt: now,
+    updatedAt: now,
+    cEndPlayCount: 0,
+    backendScoreId: scoreId,
+    sourceProjectId: input.projectId,
+  };
+}

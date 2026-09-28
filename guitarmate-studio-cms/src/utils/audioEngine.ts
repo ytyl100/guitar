@@ -64,8 +64,25 @@ class GuitarAudioEngine {
       peaks.push(Math.max(0.06, Number(combined.toFixed(3))));
     }
 
+    /**
+     * ⚠️ 必须做一次**动态范围归一化**。
+     *
+     * 上面的公式对「响度正常但峰值不高」的混音会给出很小的绝对值 ——
+     * 实测一段 206s 的完整混音得到的是 0.068~0.188，也就是
+     * **一条几乎水平的波形**（UI 里每根柱子都只有 ~16% 高），
+     * 起音点检测在这种「平平的」数据上也基本失效。
+     *
+     * 参照取**本段音频自身的最大值**（不是 95 分位）：
+     * 实测改用分位数反而更糟 —— 音乐几乎处处都是瞬态，95 分位归一化后
+     * 中位数直接到 0.95，波形变成一整块实心色。
+     * 按最大值缩放能保住原有的相对动态（那一段会变成 0.36~1.0，可读）。
+     * 显示口径不变（依旧是 0~1 的 `number[]`）。
+     */
+    const ref = peaks.reduce((max, v) => Math.max(max, v), 0) || 1;
+    const normalized = peaks.map((p) => Math.max(0.06, Math.min(1, Number((p / ref).toFixed(3)))));
+
     return {
-      peaks,
+      peaks: normalized,
       duration: audioBuffer.duration,
       buffer: audioBuffer,
     };
@@ -275,3 +292,36 @@ class GuitarAudioEngine {
 }
 
 export const audioEngine = new GuitarAudioEngine();
+
+/**
+ * 把高分辨率峰值降采样成 N 点**显示**峰值（每段取**均值**）。
+ *
+ * 为什么需要它：页面上的波形条是 `flex-1` + `gap` 铺出来的，
+ * 128 点才是它的设计口径（1024 根柱子光 gap 就有 2 千多像素，整条波形会挤爆）。
+ * 但**起音点检测**又需要更细的粒度 —— 206s 的曲子均分 128 点等于 ±1.6s，
+ * 那个精度根本没法用来对齐。
+ *
+ * 所以：`extractWaveformPeaks(buf, 1024)` 拿细粒度 → 显示用本函数压回 128，
+ * 起音点检测用原始 1024 点。
+ *
+ * ⚠️ 取**均值**而不是最大值：实测取最大值会把显示波形抬成一块实心色
+ * （每段 8 个点里总有一个接近峰值），均值才接近原来的 128 点口径。
+ */
+export const downsamplePeaks = (peaks: number[], target: number): number[] => {
+  if (!peaks || peaks.length === 0) return [];
+  if (peaks.length <= target) return peaks;
+  const groupSize = peaks.length / target;
+  const out: number[] = [];
+  for (let i = 0; i < target; i++) {
+    const start = Math.floor(i * groupSize);
+    const end = Math.max(start + 1, Math.floor((i + 1) * groupSize));
+    let sum = 0;
+    let count = 0;
+    for (let j = start; j < end && j < peaks.length; j++) {
+      sum += peaks[j];
+      count++;
+    }
+    out.push(Number((count > 0 ? sum / count : 0).toFixed(3)));
+  }
+  return out;
+};

@@ -712,6 +712,25 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(Array.isArray(msg) ? msg.join('; ') : String(msg), res.status);
   }
 
+  /**
+   * ⚠️ 2xx 但拿到 HTML = **请求打到了前端 dev server，而不是后端**。
+   *
+   * 典型场景：`API_BASE_URL`（默认 `http://localhost:3000`）上的监听者其实是 CMS 自己的
+   * Vite dev server（`npm run dev` 也写 3000）——Vite 的 SPA 回退会把 `/api/**` 也回成
+   * `index.html` 且带 200，于是这里拿到的是一个字符串。
+   *
+   * 以前这种响应会被当成"正常返回"，调用方 `res.projects` 得到 `undefined`，
+   * 再 `setState` 到组件里 → 渲染时 `xxx.length` 抛错 → React 卸载整棵树 → 整个 CMS 白屏。
+   * 必须在这里就把话说明白。
+   */
+  if (typeof payload === 'string' && /^\s*<(?:!doctype|html)/i.test(payload)) {
+    throw new ApiError(
+      `${API_BASE_URL} 返回的是 HTML 而不是 JSON —— 该端口被前端 dev server 占用了，后端并没有在 ${API_BASE_URL} 上监听。` +
+        `请先启动 guitarmate-audio-backend（默认 3000），并把 CMS dev server 换到别的端口（例如 npm run dev -- --port=5199）。`,
+      res.status,
+    );
+  }
+
   return payload as T;
 }
 

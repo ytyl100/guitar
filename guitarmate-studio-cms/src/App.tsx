@@ -32,7 +32,13 @@ import {
   MusicVersion,
 } from './types';
 import { ApiTranscriptionPublishResult } from './services/api';
-import { buildPublishedMusicTrack, type PublishedTrackMeta } from './utils/publishedTrack';
+import { buildPublishedMusicTrack, buildDraftMusicTrackFromProject, type PublishedTrackMeta } from './utils/publishedTrack';
+import {
+  buildAlignmentPatch,
+  describeAlignmentStats,
+  type AlignmentSeed,
+  type AlignmentSeedPayload,
+} from './components/review/reviewToAudioSync';
 import { audioEngine } from './utils/audioEngine';
 import { usePersistentState } from './hooks/usePersistentState';
 import { useCurriculumStore } from './hooks/useCurriculumStore';
@@ -108,6 +114,14 @@ export default function App() {
   const [previewProjectId, setPreviewProjectId] = useState<string>('');
   /** 「生成数据契约」跳转时要把哪个转录项目带进契约核准页 */
   const [pendingImportProjectId, setPendingImportProjectId] = useState<string>('');
+  /**
+   * 「① 音频导入与六线谱校正」→「音频与六线谱对齐（兼容）」的桥接种子。
+   *
+   * 配置的合并已由 `handleOpenAlignmentFromReview` 直接写进 `audioSyncConfig`，
+   * 这里只携带**需要异步补做**的副作用（提取真实波形 / 自动测横按），
+   * 由 `AudioTabSyncStudio` 按 `token` 保证只执行一次。
+   */
+  const [pendingAlignmentSeed, setPendingAlignmentSeed] = useState<AlignmentSeedPayload | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [audioEngineReady, setAudioEngineReady] = useState<boolean>(false);
   const [saveBannerMessage, setSaveBannerMessage] = useState<string | null>(null);
@@ -151,8 +165,71 @@ export default function App() {
     setTimeout(() => setSaveBannerMessage(null), 4000);
   };
 
-  const handleAddNewTrack = (newTrack: MusicTrack) => {
-    setTracks((prev) => [newTrack, ...prev]);
+  /**
+   * 「① 音频导入与六线谱校正」→「音频与六线谱对齐（兼容）」的桥接入口。
+   *
+   * 三件事必须一起做，少一件就会“看着跳过去了但没法干活”或写错数据：
+   * 1. **切到（或补建）对应的音乐库工程** —— 对齐工作台的 `onChangeConfig` / `onUpdateTrack`
+   *    都是按“当前激活曲目”写回音乐库的，不切就会把编辑结果写进**上一条曲目**；
+   * 2. **把谱面一起带过去**（小节线 / 音符 / 和弦 / BPM / 拍号 / 时长 / 音频路径），
+   *    而不是只传 scoreId（旧实现只传 scoreId，到了那边还是上一条曲目的谱）；
+   * 3. 清掉旧曲目的残留（波形 / A-B 循环）—— 留着会让起音线与对齐诊断全是错的。
+   *
+   * 换算全部在 `buildAlignmentPatch`（纯函数）里，这里只负责落地与提示。
+   */
+  const handleOpenAlignmentFromReview = (seed: AlignmentSeed) => {
+    const { patch, stats, warning } = buildAlignmentPatch(seed);
+
+    let target = tracks.find((t) => !!seed.scoreId && t.backendScoreId === seed.scoreId);
+    if (!target) target = tracks.find((t) => t.sourceProjectId === seed.projectId);
+
+    if (target) {
+      const merged: AudioTabSyncConfig = { ...target.tabConfig, ...patch };
+      const updated: MusicTrack = {
+        ...target,
+        title: seed.title || target.title,
+        sourceProjectId: seed.projectId,
+        backendScoreId: seed.scoreId || target.backendScoreId,
+        tabConfig: merged,
+        updatedAt: new Date().toISOString().split('T')[0],
+      };
+      setTracks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+      setActiveTrack(updated);
+      setAudioSyncConfig(merged);
+    } else {
+      // 项目还没发布过（音乐库里没条目）→ 补一条草稿工程，id = track-<projectId>（幂等）
+      const created = buildDraftMusicTrackFromProject({
+        title: seed.title,
+        projectId: seed.projectId,
+        scoreId: seed.scoreId,
+        artist: seed.artist,
+        bpm: seed.bpm,
+        durationSec: seed.durationSec,
+        timeSignature: seed.timeSignature,
+        tabConfig: { ...INITIAL_AUDIO_TAB_SYNC, ...patch } as AudioTabSyncConfig,
+      });
+      setTracks((prev) => [created, ...prev.filter((t) => t.id !== created.id)]);
+      setActiveTrack(created);
+      setAudioSyncConfig(created.tabConfig);
+    }
+
+    // 后端曲目绑定（有 scoreId 时才会自动拉曲目列表并绑定 Track）
+    setPendingRemoteScoreId(seed.scoreId || '');
+    setPendingAlignmentSeed({
+      token: `${seed.projectId}-${Date.now()}`,
+      waveformUrl: seed.audioUrl || null,
+      autoDetectBarres: true,
+    });
+    setActiveTab('audio-tab-sync');
+    setSaveBannerMessage(
+      `🎼 已从①带入《${seed.title}》：${describeAlignmentStats(stats)}` +
+        (warning ? `⚠️ ${warning}` : '') +
+        '（波形与横按正在后台补全，稍等片刻）',
+    );
+    setTimeout(() => setSaveBannerMessage(null), 8000);
+  };
+
+  const handleAddNewTrack = (newTrack: MusicTrack) => {    setTracks((prev) => [newTrack, ...prev]);
     setActiveTrack(newTrack);
     setAudioSyncConfig(newTrack.tabConfig);
     setActiveTab('audio-tab-sync');
@@ -506,6 +583,7 @@ export default function App() {
               onUpdateTrack={handleUpdateTrack}
               onReturnToLibrary={() => setActiveTab('music-library')}
               initialRemoteScoreId={pendingRemoteScoreId}
+              initialSeed={pendingAlignmentSeed}
             />
           )}
 
@@ -564,6 +642,7 @@ export default function App() {
                 );
                 setTimeout(() => setSaveBannerMessage(null), 5000);
               }}
+              onOpenInAlignment={handleOpenAlignmentFromReview}
               onPublished={(result, title, projectId, meta) =>
                 handleSongPublished(result, title, projectId, meta)
               }

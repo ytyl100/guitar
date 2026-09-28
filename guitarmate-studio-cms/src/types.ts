@@ -76,6 +76,32 @@ export interface AudioTabSyncConfig {
   transcriptionFileName?: string;
   /** 转录音符的低置信度数量 (<0.6)，需人工优先复核 */
   lowConfidenceCount?: number;
+  /**
+   * 和弦标注（可选）。
+   *
+   * 对齐工作台的 `chordMarkers` 原本只存在组件局部 state 里 →
+   * 从「① 音频导入与六线谱校正」跳过来时**复核阶段标注的和弦会在重新发布时丢掉**。
+   * 落到配置里之后：切走再回来还在，发布时也能照常写进 ChordMarker 表。
+   * `startTime` 是**整曲绝对秒**（与 `noteTimestamps[].timestampSec` 同一口径）。
+   */
+  chordMarkers?: Array<{ id: string; chordName: string; startTime: number }>;
+  /**
+   * 扫弦模式配置（「六线谱编辑器」用；**可选、不影响发布载荷**）。
+   *
+   * 这里刻意不引入独立的 `strums` 表：和弦轨 + 扫弦轨只是编辑期的中间表示，
+   * 点「套用为音符」时会合成成标准 `TabNote` 写进 `noteTimestamps`，
+   * 因此与既有发布链路（measures[].notes）完全兼容。
+   * 类型定义见 `components/studios/tablature/tabEditorModel.ts#StrumConfig`。
+   */
+  strumConfig?: {
+    chordName: string;
+    chordShape: number[];
+    strings: number[];
+    grid: string;
+    pattern: string[];
+    velocity: number;
+    stagger: boolean;
+  };
 }
 
 export interface VideoKeyPoint {

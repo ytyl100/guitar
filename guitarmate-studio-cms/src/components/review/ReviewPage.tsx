@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
+  ArrowRightLeft,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
@@ -37,6 +38,7 @@ import { TrackMixerPanel } from './TrackMixerPanel';
 import { useDraftHistory } from './useDraftHistory';
 import { practicePackageToTabProject, type PackageLike } from './revisionStore';
 import { NoteAddDialog, type NewNoteSpec } from '../studios/tablature/NoteAddDialog';
+import type { AlignmentSeed } from './reviewToAudioSync';
 import { useMultiTrackPlayer, type MultiTrackSource } from '../../hooks/useMultiTrackPlayer';
 import { useTabAutoScroll } from '../../hooks/useTabAutoScroll';
 import { audioEngine } from '../../utils/audioEngine';
@@ -180,6 +182,14 @@ export interface ReviewPageProps {
   initialProjectId?: string;
   /** 发布并镜像到既有发布链路后，可跳到「音频与六线谱对齐」继续精修 */
   onOpenInAudioStudio?: (scoreId: string) => void;
+  /**
+   * 把「当前选中的转录项目 + **当前六线谱草稿（含未保存改动）** + 音频」带到
+   * 「音频与六线谱对齐（兼容）」继续做毫秒级精修。
+   *
+   * 与 `onOpenInAudioStudio` 的区别：这里会把**谱面内容**（小节线 / 音符 / 和弦）一起带过去，
+   * 到了对齐工作台不用重新列小节线、重新挂音符；两个入口最终都落到同一处实现。
+   */
+  onOpenInAlignment?: (seed: AlignmentSeed) => void;
   /** 点「预览」→ 打开该曲目的预览页（按小程序渲染 + 音频对齐播放） */
   onPreviewProject?: (projectId: string) => void;
   /**
@@ -206,6 +216,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   darkMode,
   initialProjectId,
   onOpenInAudioStudio,
+  onOpenInAlignment,
   onPreviewProject,
   onPublished,
   onSyncPublished,
@@ -307,7 +318,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         api.getTranscriptionQueue(),
       ]);
       setCapabilities(caps);
-      setQueueDriver(`${queue.counts.driver}（${queue.counts.queueName}）`);
+      setQueueDriver(`${queue?.counts?.driver ?? '未知'}（${queue?.counts?.queueName ?? '-'}）`);
     } catch (err) {
       notify('error', `能力探测失败：${describeError(err)}`);
     }
@@ -316,9 +327,15 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const loadProjects = useCallback(async () => {
     try {
       const res = await api.listTranscriptionProjects(80);
-      setProjects(res.projects);
+      /**
+       * ⚠️ 必须 `Array.isArray` 兜底：后端不可达时 `res.projects` 可能是 `undefined`，
+       * `setProjects(undefined)` 会让下面渲染里的 `projects.length` 直接抛错，
+       * React 卸载整棵树 → 整个 CMS 白屏（症状就是「① 音频导入与六线谱校正 打不开」）。
+       */
+      const list = Array.isArray(res?.projects) ? res.projects : [];
+      setProjects(list);
       // 已发布的项目 → 同步进音乐库（幂等：App 侧按 projectId / scoreId 去重）
-      const published = res.projects
+      const published = list
         .filter((p) => p.status === 'published')
         .map((p) => ({
           projectId: p.id,
@@ -334,7 +351,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
           },
         }));
       if (published.length) onSyncPublished?.(published);
-      return res.projects;
+      return list;
     } catch (err) {
       notify('error', `加载项目列表失败：${describeError(err)}`);
       return [];
@@ -345,6 +362,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     async (projectId: string, keepDraft = false) => {
       try {
         const res = await api.getTranscriptionProject(projectId);
+        if (!res?.project) throw new ApiError('后端没有返回项目详情（project 字段缺失）。');
         setDetail(res.project);
         if (!keepDraft) {
           loadDraft(res.project.tabProject);
@@ -790,6 +808,44 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     } finally {
       setBusy('');
     }
+  };
+
+  /**
+   * 组织「去对齐工作台精修」的种子。
+   *
+   * ⚠️ 必须用 `draft`（内存里的草稿）而不是 `detail.tabProject` ——
+   * 用户很可能刚改完音符还没点「保存复核」，拿数据库里那份会把改动直接丢掉。
+   */
+  const buildAlignmentSeed = (scoreIdOverride?: string): AlignmentSeed | null => {
+    if (!detail) return null;
+    const guitarTrack =
+      detail.tracks?.find((t) => t.instrument === 'guitar' && t.stemUrl) ||
+      detail.tracks?.find((t) => !!t.stemUrl);
+    return {
+      projectId: detail.id,
+      title: detail.title,
+      artist: detail.artist ?? null,
+      scoreId: scoreIdOverride ?? detail.scoreId ?? null,
+      /**
+       * 优先用**吉他分轨**：转录就是从它来的，用作 C 端「Simplified 练习声道」最贴切；
+       * 没有分轨（模拟/旧数据）时退回源混音。
+       */
+      audioUrl: guitarTrack?.stemUrl || sourceAudioUrl || detail.audioUrl || null,
+      sourceAudioUrl: sourceAudioUrl || detail.audioUrl || null,
+      durationSec: detail.durationSec ?? null,
+      bpm: draft?.meta?.bpm ?? detail.bpm ?? null,
+      timeSignature: draft?.meta?.timeSignature ?? detail.timeSignature ?? null,
+      tabProject: draft,
+    };
+  };
+
+  /** 两个入口合流：带上谱面走新通道，未接入时退回只传 scoreId 的老通道 */
+  const openAlignmentStudio = (scoreIdOverride?: string) => {
+    const seed = buildAlignmentSeed(scoreIdOverride);
+    if (!seed) return;
+    if (onOpenInAlignment) onOpenInAlignment(seed);
+    else if (seed.scoreId) onOpenInAudioStudio?.(seed.scoreId);
+    else notify('info', '该项目还没有镜像到发布链路（没有 scoreId）—— 请先「发布 PracticePackage」并勾选镜像');
   };
 
   const handleUploadFile = async (file: File) => {
@@ -1367,6 +1423,17 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                     >
                       <Eye size={12} /> 预览
                     </button>
+                    {(onOpenInAlignment || onOpenInAudioStudio) && (
+                      <button
+                        type="button"
+                        onClick={() => openAlignmentStudio()}
+                        disabled={!draft}
+                        title="把当前谱面（含未保存的改动）与音频一起带到「音频与六线谱对齐（兼容）」做毫秒级精修"
+                        className="flex items-center gap-1.5 rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-2.5 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/20 disabled:opacity-40"
+                      >
+                        <ArrowRightLeft size={12} /> 去对齐工作台精修
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => runPublish(false)}
@@ -1774,7 +1841,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                 {publishResult.mirrored?.scoreId && onOpenInAudioStudio && (
                   <button
                     type="button"
-                    onClick={() => onOpenInAudioStudio(publishResult.mirrored.scoreId!)}
+                    onClick={() => openAlignmentStudio(publishResult.mirrored?.scoreId)}
                     className="rounded-lg border border-emerald-500/40 px-2 py-1"
                   >
                     去对齐工作台精修
