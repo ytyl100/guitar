@@ -1,0 +1,1191 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "Isolated | YouTube Audio Library",
+    "artist": null,
+    "bpm": 100,
+    "timeSignature": "4/4",
+    "instrument": "piano",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "piano-1",
+      "name": "吉他轨",
+      "instrument": "piano",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "第 1 小节",
+          "startTime": 0,
+          "endTime": 2.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m0_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 2.2182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 1,
+          "label": "第 2 小节",
+          "startTime": 2.4,
+          "endTime": 4.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m1_n0",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.1636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 0,
+              "position": 2
+            },
+            {
+              "id": "piano_m1_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 1.3705,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 94,
+              "confidence": 0.7402,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            },
+            {
+              "id": "piano_m1_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            },
+            {
+              "id": "piano_m1_n3",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.7682,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "position": 2,
+          "chords": [
+            {
+              "name": "Dsus4",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 3.1682
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "label": "第 3 小节",
+          "startTime": 4.8,
+          "endTime": 7.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m2_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.7682,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            },
+            {
+              "id": "piano_m2_n1",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.3273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 74,
+              "confidence": 0.5827,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 3,
+          "label": "第 4 小节",
+          "startTime": 7.2,
+          "endTime": 9.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m3_n0",
+              "string": 6,
+              "fret": 9,
+              "midi": 31,
+              "offsetSec": 1.35,
+              "beat": 2.25,
+              "durationSec": 0.3591,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 89,
+              "confidence": 0.7008,
+              "chordName": null,
+              "finger": 4,
+              "position": 6
+            },
+            {
+              "id": "piano_m3_n1",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.1636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 63,
+              "confidence": 0.4961,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            },
+            {
+              "id": "piano_m3_n2",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.8136,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "position": 6,
+          "chords": [
+            {
+              "name": "G5",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.7636
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "label": "第 5 小节",
+          "startTime": 9.6,
+          "endTime": 12,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m4_n0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 87,
+              "confidence": 0.685,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            },
+            {
+              "id": "piano_m4_n1",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1977,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 67,
+              "confidence": 0.5276,
+              "chordName": null,
+              "finger": 0,
+              "position": 2
+            },
+            {
+              "id": "piano_m4_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.5818,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 5,
+          "label": "第 6 小节",
+          "startTime": 12,
+          "endTime": 14.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m5_n0",
+              "string": 6,
+              "fret": 1,
+              "midi": 41,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.4636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 71,
+              "confidence": 0.5591,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 6,
+          "label": "第 7 小节",
+          "startTime": 14.4,
+          "endTime": 16.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m6_n0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m6_n1",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.175,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 78,
+              "confidence": 0.6142,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m6_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.5568,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 68,
+              "confidence": 0.5354,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m6_n3",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.4432,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 7,
+          "label": "第 8 小节",
+          "startTime": 16.8,
+          "endTime": 19.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m7_n0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.15,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m7_n1",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.6386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 94,
+              "confidence": 0.7402,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 8,
+          "label": "第 9 小节",
+          "startTime": 19.2,
+          "endTime": 21.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m8_n0",
+              "string": 5,
+              "fret": 3,
+              "midi": 48,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m8_n1",
+              "string": 4,
+              "fret": 0,
+              "midi": 50,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m8_n2",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.8932,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 94,
+              "confidence": 0.7402,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m8_n3",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.6841,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m8_n4",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.9409,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 93,
+              "confidence": 0.7323,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "C5",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 3.3409
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "label": "第 10 小节",
+          "startTime": 21.6,
+          "endTime": 24,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m9_n0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.9409,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 93,
+              "confidence": 0.7323,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m9_n1",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.9886,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 59,
+              "confidence": 0.4646,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m9_n2",
+              "string": 4,
+              "fret": 0,
+              "midi": 50,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 1.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 80,
+              "confidence": 0.6299,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "label": "第 11 小节",
+          "startTime": 24,
+          "endTime": 26.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m10_n0",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1841,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 78,
+              "confidence": 0.6142,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 11,
+          "label": "第 12 小节",
+          "startTime": 26.4,
+          "endTime": 28.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m11_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.4773,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 92,
+              "confidence": 0.7244,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m11_n1",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m11_n2",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.6386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m11_n3",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "F",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "label": "第 13 小节",
+          "startTime": 28.8,
+          "endTime": 31.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m12_n0",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 1,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m12_n1",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.4182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m12_n2",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.4636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 61,
+              "confidence": 0.4803,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m12_n3",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Dm7",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 13,
+          "label": "第 14 小节",
+          "startTime": 31.2,
+          "endTime": 33.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m13_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.7091,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 92,
+              "confidence": 0.7244,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m13_n1",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.75,
+              "beat": 1.25,
+              "durationSec": 0.2659,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m13_n2",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 1.1045,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 67,
+              "confidence": 0.5276,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m13_n3",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 1.0114,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 72,
+              "confidence": 0.5669,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Dsus4",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 3.5045
+            }
+          ]
+        },
+        {
+          "index": 14,
+          "label": "第 15 小节",
+          "startTime": 33.6,
+          "endTime": 36,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m14_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.1045,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 67,
+              "confidence": 0.5276,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n1",
+              "string": 6,
+              "fret": 2,
+              "midi": 38,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 1.0114,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 72,
+              "confidence": 0.5669,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n2",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.4886,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n3",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.2318,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 89,
+              "confidence": 0.7008,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n4",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.2545,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 72,
+              "confidence": 0.5669,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n5",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.3477,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 87,
+              "confidence": 0.685,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.5977
+            }
+          ]
+        },
+        {
+          "index": 15,
+          "label": "第 16 小节",
+          "startTime": 36,
+          "endTime": 38.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 16,
+          "label": "第 17 小节",
+          "startTime": 38.4,
+          "endTime": 40.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m16_n0",
+              "string": 6,
+              "fret": 11,
+              "midi": 29,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.2682,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 4,
+              "position": 8
+            },
+            {
+              "id": "piano_m16_n1",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.75,
+              "beat": 1.25,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 68,
+              "confidence": 0.5354,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "position": 8
+        },
+        {
+          "index": 17,
+          "label": "第 18 小节",
+          "startTime": 40.8,
+          "endTime": 43.2,
+          "beats": 4,
+          "notes": [],
+          "position": 3
+        },
+        {
+          "index": 18,
+          "label": "第 19 小节",
+          "startTime": 43.2,
+          "endTime": 45.6,
+          "beats": 4,
+          "notes": [],
+          "position": 3
+        },
+        {
+          "index": 19,
+          "label": "第 20 小节",
+          "startTime": 45.6,
+          "endTime": 48,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m19_n0",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.8136,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 106,
+              "confidence": 0.8346,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            },
+            {
+              "id": "piano_m19_n1",
+              "string": 4,
+              "fret": 3,
+              "midi": 53,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 2.4273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 91,
+              "confidence": 0.7165,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "position": 3
+        },
+        {
+          "index": 20,
+          "label": "第 21 小节",
+          "startTime": 48,
+          "endTime": 50.4,
+          "beats": 4,
+          "notes": [],
+          "position": 3
+        },
+        {
+          "index": 21,
+          "label": "第 22 小节",
+          "startTime": 50.4,
+          "endTime": 52.4523,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m21_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 1.6023,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "position": 3
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "solo-trace",
+    "fileName": null,
+    "site": "GuitarMate 转录流水线",
+    "rights": "user-submission",
+    "rightsNote": "basic-pitch MIDI → 内置 Tayuya 兼容转换器（网格 1/16，capo 0）",
+    "parsedAt": "2026-09-26T03:52:29.968427+00:00",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [
+    {
+      "level": "info",
+      "code": "rhythm-quantized",
+      "message": "音符起点已量化到 1/16 网格（可用 --no-quantize 关闭）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-derived",
+      "message": "已按「最低把位优先 + 同帧整体出手型」推定 46 个音符的左手手指（0=空弦 / 1=食指 / 2=中指 / 3=无名指 / 4=小指），并为 22 个小节标注把位。自动指法只是建议值，可在复核工作台逐音符修改。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-barre",
+      "message": "识别出 4 处横按（同一帧内同一品出现在多根弦上）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1, 4, 6, 17 需要换把（已按最近的可覆盖手位标注）。"
+    }
+  ],
+  "stats": {
+    "measureCount": 22,
+    "noteCount": 52,
+    "chordCount": 0,
+    "barreCount": 0,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 52.4523
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
+  ArrowRightLeft,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
@@ -37,10 +38,12 @@ import { TrackMixerPanel } from './TrackMixerPanel';
 import { useDraftHistory } from './useDraftHistory';
 import { practicePackageToTabProject, type PackageLike } from './revisionStore';
 import { NoteAddDialog, type NewNoteSpec } from '../studios/tablature/NoteAddDialog';
+import type { AlignmentSeed } from './reviewToAudioSync';
 import { useMultiTrackPlayer, type MultiTrackSource } from '../../hooks/useMultiTrackPlayer';
 import { useTabAutoScroll } from '../../hooks/useTabAutoScroll';
 import { audioEngine } from '../../utils/audioEngine';
 import { stemLabel } from '../../utils/instrumentLabels';
+import type { PublishedTrackMeta } from '../../utils/publishedTrack';
 import {
   DEFAULT_REVIEW_META,
   applyAddNote,
@@ -74,21 +77,149 @@ import {
  * - **本工作台**：原始音频 → Demucs/Basic Pitch/Tayuya → TabProject（**同一结构**）→ PracticePackage
  * - `AudioTabSyncStudio`：对已发布的 Score/Measure 做精细对齐（可选的回流链路）
  */
+/** 流水线四个阶段的展示名（进度卡片 / 阶段条用） */
+const STAGE_ORDER = ['download', 'separate', 'transcribe', 'convert'] as const;
+const STAGE_LABELS: Record<string, string> = {
+  download: '下载音频',
+  separate: '分离音轨',
+  transcribe: '识别音符',
+  convert: '生成六线谱',
+};
+/** 项目状态 → 当前阶段文案（后端 status 用的是动名词） */
+const STATUS_STAGE_LABELS: Record<string, string> = {
+  pending: '排队中',
+  downloading: '下载音频',
+  separating: '分离音轨',
+  transcribing: '识别音符',
+  converting: '生成六线谱',
+};
+
+/**
+ * 流水线进行中的**显式进度卡片**。
+ *
+ * 之前只有侧边栏一行小字 `· 12%` 和一个「流水线运行中」徽标，
+ * 用户看不出到底在跑没跑、跑到哪一步、已用时多久 —— 这就是"看不到进度"的根因。
+ */
+const PipelineProgressCard: React.FC<{
+  detail: ApiTranscriptionProjectDetail;
+  elapsedSec: number;
+}> = ({ detail, elapsedSec }) => {
+  const jobs = detail.jobs || [];
+  const jobOf = (stage: string) => jobs.find((j) => j.stage === stage);
+  const convertOut = jobOf('convert')?.output as { measureCount?: number; noteCount?: number } | undefined;
+  const transcribeOut = jobOf('transcribe')?.output as { noteCount?: number; engine?: string } | undefined;
+
+  return (
+    <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4">
+      <div className="flex items-center gap-2 flex-wrap text-sky-200">
+        <Loader2 size={14} className="animate-spin" />
+        <span className="text-xs font-semibold">
+          {STATUS_STAGE_LABELS[detail.status] || '处理中'}…（{detail.progress}%）
+        </span>
+        <span className="text-[11px] text-sky-300/80">
+          已用时 {Math.floor(elapsedSec / 60)}:{String(elapsedSec % 60).padStart(2, '0')}
+        </span>
+        <span className="text-[11px] text-sky-300/60">曲谱会在跑完后自动出现，无需刷新</span>
+      </div>
+
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-sky-900/40">
+        <div
+          className="h-full rounded-full bg-sky-400 transition-all duration-500"
+          style={{ width: `${Math.max(2, Math.min(100, detail.progress))}%` }}
+        />
+      </div>
+
+      <div className="mt-3 flex items-center gap-2 flex-wrap text-[11px]">
+        {STAGE_ORDER.map((stage, i) => {
+          const job = jobOf(stage);
+          const done = job?.status === 'completed';
+          const active = job?.status === 'active' || job?.status === 'queued';
+          const failed = job?.status === 'failed';
+          return (
+            <React.Fragment key={stage}>
+              {i > 0 && <span className="text-sky-700">→</span>}
+              <span
+                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${
+                  failed
+                    ? 'border-rose-500/50 bg-rose-500/15 text-rose-300'
+                    : done
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                      : active
+                        ? 'border-sky-400/60 bg-sky-500/20 text-sky-200 font-semibold'
+                        : 'border-slate-700 text-slate-500'
+                }`}
+              >
+                {done ? (
+                  <CheckCircle2 size={10} />
+                ) : failed ? (
+                  <AlertTriangle size={10} />
+                ) : active ? (
+                  <Loader2 size={10} className="animate-spin" />
+                ) : null}
+                {i + 1}. {STAGE_LABELS[stage]}
+                {done && job?.durationMs ? ` · ${(job.durationMs / 1000).toFixed(1)}s` : ''}
+              </span>
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {detail.stageNote && <div className="mt-2 text-[11px] text-sky-300/80">{detail.stageNote}</div>}
+      {(transcribeOut?.noteCount != null || convertOut?.measureCount != null) && (
+        <div className="mt-1 text-[11px] text-sky-300/80">
+          {transcribeOut?.noteCount != null && <>已识别音符 {transcribeOut.noteCount}</>}
+          {convertOut?.measureCount != null && <> · 已生成小节 {convertOut.measureCount}</>}
+          {transcribeOut?.engine && <> · 引擎 {transcribeOut.engine}</>}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export interface ReviewPageProps {
   darkMode: boolean;
   /** 从其它工作台跳转进来时直接定位的项目 */
   initialProjectId?: string;
   /** 发布并镜像到既有发布链路后，可跳到「音频与六线谱对齐」继续精修 */
   onOpenInAudioStudio?: (scoreId: string) => void;
+  /**
+   * 把「当前选中的转录项目 + **当前六线谱草稿（含未保存改动）** + 音频」带到
+   * 「音频与六线谱对齐（兼容）」继续做毫秒级精修。
+   *
+   * 与 `onOpenInAudioStudio` 的区别：这里会把**谱面内容**（小节线 / 音符 / 和弦）一起带过去，
+   * 到了对齐工作台不用重新列小节线、重新挂音符；两个入口最终都落到同一处实现。
+   */
+  onOpenInAlignment?: (seed: AlignmentSeed) => void;
   /** 点「预览」→ 打开该曲目的预览页（按小程序渲染 + 音频对齐播放） */
   onPreviewProject?: (projectId: string) => void;
+  /**
+   * 发布成功 → 回写音乐库（需求：发布后的曲目要出现在音乐库工程列表）。
+   * 传上 projectId，便于 App 在**未镜像到 Score 链路**时也能按转录项目去重/入库。
+   */
+  onPublished?: (
+    result: ApiTranscriptionPublishResult,
+    title: string,
+    projectId: string,
+    /** 项目真实元数据 —— 音乐库条目要用它，不能拿上一条曲目当模板（否则原唱/调性/时长全串味） */
+    meta?: PublishedTrackMeta,
+  ) => void;
+  /**
+   * 把「已发布」的转录项目同步进音乐库（幂等 upsert）。
+   * 解决「发布时没回写 / 早期版本发布的项目在音乐库里看不到」这个历史缺口。
+   */
+  onSyncPublished?: (
+    items: Array<{ projectId: string; title: string; scoreId?: string | null; updatedAt?: string }>,
+  ) => void;
 }
 
 export const ReviewPage: React.FC<ReviewPageProps> = ({
   darkMode,
   initialProjectId,
   onOpenInAudioStudio,
+  onOpenInAlignment,
   onPreviewProject,
+  onPublished,
+  onSyncPublished,
 }) => {
   // ── 全局状态 ──
   const [capabilities, setCapabilities] = useState<ApiTranscriptionCapabilitiesResponse | null>(null);
@@ -150,6 +281,16 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const [newTitle, setNewTitle] = useState('');
   const [newUrl, setNewUrl] = useState('');
   const [newBpm, setNewBpm] = useState<string>('');
+  /**
+   * URL 项目的下载执行方。`''` = 跟随服务器默认（`capabilities.download.driverDefault`）。
+   * 国内 / 服务器访问不了 YouTube 时选「本机代理下载」：服务器只挂起任务，
+   * 你在本机跑 `npm run agent` 把音频回传上来。
+   */
+  const [newDownloadDriver, setNewDownloadDriver] = useState<'' | 'server' | 'client'>('');
+  /** URL 表单的就地反馈（成功/失败都不再只靠顶部 toast） */
+  const [urlFeedback, setUrlFeedback] = useState<{ kind: 'info' | 'error' | 'success'; text: string } | null>(
+    null,
+  );
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   // ── 发布结果 / 契约预览 ──
@@ -177,7 +318,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         api.getTranscriptionQueue(),
       ]);
       setCapabilities(caps);
-      setQueueDriver(`${queue.counts.driver}（${queue.counts.queueName}）`);
+      setQueueDriver(`${queue?.counts?.driver ?? '未知'}（${queue?.counts?.queueName ?? '-'}）`);
     } catch (err) {
       notify('error', `能力探测失败：${describeError(err)}`);
     }
@@ -186,18 +327,42 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const loadProjects = useCallback(async () => {
     try {
       const res = await api.listTranscriptionProjects(80);
-      setProjects(res.projects);
-      return res.projects;
+      /**
+       * ⚠️ 必须 `Array.isArray` 兜底：后端不可达时 `res.projects` 可能是 `undefined`，
+       * `setProjects(undefined)` 会让下面渲染里的 `projects.length` 直接抛错，
+       * React 卸载整棵树 → 整个 CMS 白屏（症状就是「① 音频导入与六线谱校正 打不开」）。
+       */
+      const list = Array.isArray(res?.projects) ? res.projects : [];
+      setProjects(list);
+      // 已发布的项目 → 同步进音乐库（幂等：App 侧按 projectId / scoreId 去重）
+      const published = list
+        .filter((p) => p.status === 'published')
+        .map((p) => ({
+          projectId: p.id,
+          title: p.title,
+          scoreId: p.scoreId ?? null,
+          updatedAt: p.updatedAt,
+          // 同步历史已发布项目时也带上真实元数据（避免新条目显示别人的原唱/时长）
+          meta: {
+            artist: p.artist ?? null,
+            bpm: p.bpm ?? null,
+            durationSec: p.durationSec ?? null,
+            timeSignature: p.timeSignature ?? null,
+          },
+        }));
+      if (published.length) onSyncPublished?.(published);
+      return list;
     } catch (err) {
       notify('error', `加载项目列表失败：${describeError(err)}`);
       return [];
     }
-  }, []);
+  }, [onSyncPublished]);
 
   const loadDetail = useCallback(
     async (projectId: string, keepDraft = false) => {
       try {
         const res = await api.getTranscriptionProject(projectId);
+        if (!res?.project) throw new ApiError('后端没有返回项目详情（project 字段缺失）。');
         setDetail(res.project);
         if (!keepDraft) {
           loadDraft(res.project.tabProject);
@@ -223,12 +388,18 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
 
   // ── 流水线运行中时轮询 ──
   const runningStatuses = ['pending', 'downloading', 'separating', 'transcribing', 'converting'];
+  /**
+   * 需要轮询的状态 = 服务器在跑的状态 + `awaiting_audio`。
+   * 后者服务器不动了（等人回传音频），但本机代理一上传就会跳到 separating，
+   * 界面上必须能自动接上，否则用户以为卡死了。
+   */
+  const pollingStatuses = [...runningStatuses, 'awaiting_audio'];
   useEffect(() => {
     if (!selectedId || !detail) return;
-    if (!runningStatuses.includes(detail.status)) return;
+    if (!pollingStatuses.includes(detail.status)) return;
     const timer = setInterval(async () => {
       const next = await loadDetail(selectedId, true);
-      if (next && !runningStatuses.includes(next.status)) {
+      if (next && !pollingStatuses.includes(next.status)) {
         loadDraft(next.tabProject);
         loadProjects();
       }
@@ -280,6 +451,48 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
 
   const warnings = useMemo(() => tabProjectWarnings(draft), [draft]);
   const simulated = useMemo(() => isSimulatedTabProject(draft), [draft]);
+
+  // ── 流水线可见性（需求：下载/转录过程必须能看见进度与步骤）──
+  const isRunning = !!detail && runningStatuses.includes(detail.status);
+  /**
+   * 「等本机代理回传音频」：服务器已把项目挂起（downloadDriver=client），
+   * 必须给出**可复制的命令**，否则用户只能看到界面不动。
+   */
+  const isAwaitingAudio = detail?.status === 'awaiting_audio';
+  const agentCommand = capabilities?.download?.agentCommand || 'npm run agent';
+  const serverCanDownload = capabilities?.download?.serverCanDownload ?? true;
+  /** 实际会用的下载执行方：表单选择优先，否则跟随服务器默认（`YTDLP_DRIVER`） */
+  const effectiveDownloadDriver: 'server' | 'client' =
+    newDownloadDriver || capabilities?.download?.driverDefault || 'server';
+
+  /** 每秒 tick，让「已用时」持续跳动（否则界面看起来像卡死了） */
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  useEffect(() => {
+    if (!isRunning) return;
+    const t = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [isRunning]);
+
+  const pipelineStartedAt = useMemo(() => {
+    const stamps = (detail?.jobs || [])
+      .map((j) => j.startedAt || j.createdAt)
+      .filter(Boolean)
+      .map((s) => new Date(String(s)).getTime())
+      .filter((n) => Number.isFinite(n));
+    return stamps.length ? Math.min(...stamps) : null;
+  }, [detail?.jobs]);
+  const elapsedSec = pipelineStartedAt
+    ? Math.max(0, Math.floor((nowTick - pipelineStartedAt) / 1000))
+    : 0;
+
+  /** 转录诊断（回答「为什么音符这么少」：引擎 + 是否真做了分轨） */
+  const transcribeJob = detail?.jobs?.find((j) => j.stage === 'transcribe');
+  const separateJob = detail?.jobs?.find((j) => j.stage === 'separate');
+  const engineName =
+    ((transcribeJob?.output as any)?.engine as string) || detail?.tracks?.[0]?.engine || '';
+  const detectedNoteCount =
+    (((transcribeJob?.output as any)?.noteCount as number) ?? detail?.tracks?.[0]?.noteCount) || 0;
+  const separationSimulated = /simulated/i.test(String((separateJob?.output as any)?.model || ''));
 
   // ═══════════════════════════════════════════
   // 对照音频：多音轨播放 + 谱面跟随（需求 2.1 / 2.2）
@@ -541,11 +754,40 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
         mirrorToScorePipeline: mirror,
       });
       setPublishResult(res);
+      /**
+       * 镜像到旧发布链路时，`mirrorToScorePipeline` 只写 Score **草稿**，
+       * 而 C 端列表 `GET /api/published/scores` 只返回 `status='published'` 的曲目 ——
+       * 不补这一步就会出现「界面提示已发布到小程序、C 端却查不到」。
+       * （`AudioTabSyncStudio` 的老流程也是这么做的，保持一致。）
+       */
+      const mirroredScoreId = res.mirrored?.scoreId;
+      let mirrorNote = '';
+      if (mirror && mirroredScoreId) {
+        if (res.mirrored?.scoreStatus === 'published') {
+          // 服务端默认已置为 published（C 端列表只返回 published）
+          mirrorNote = `，已镜像并置为已发布（scoreId=${mirroredScoreId}）`;
+        } else {
+          // 兼容老后端 / 显式 publishMirroredScore=false：补一次状态发布
+          try {
+            await api.updateScoreStatus(mirroredScoreId, 'published');
+            mirrorNote = `，已镜像并置为已发布（scoreId=${mirroredScoreId}）`;
+          } catch (err) {
+            mirrorNote = `，但镜像曲目置为已发布失败：${describeError(err)}`;
+          }
+        }
+      }
       notify(
         'success',
         `已发布 PracticePackage r${res.revision}：${res.stats.measureCount} 小节 / ${res.stats.noteCount} 音符` +
-          `（切片 ${res.stats.slicedAudioCount}，降级 ${res.stats.degradedAudioCount}）`,
+          `（切片 ${res.stats.slicedAudioCount}，降级 ${res.stats.degradedAudioCount}）${mirrorNote}`,
       );
+      // 回写音乐库（未镜像时也入，用 projectId 去重）—— 带上项目真实元数据
+      onPublished?.(res, detail?.title || draft?.meta?.title || '未命名曲目', selectedId, {
+        artist: detail?.artist ?? null,
+        bpm: detail?.bpm ?? draft?.meta?.bpm ?? null,
+        durationSec: detail?.durationSec ?? null,
+        timeSignature: detail?.timeSignature ?? draft?.meta?.timeSignature ?? null,
+      });
       await loadDetail(selectedId, true);
       await loadProjects();
     } catch (err) {
@@ -566,6 +808,44 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
     } finally {
       setBusy('');
     }
+  };
+
+  /**
+   * 组织「去对齐工作台精修」的种子。
+   *
+   * ⚠️ 必须用 `draft`（内存里的草稿）而不是 `detail.tabProject` ——
+   * 用户很可能刚改完音符还没点「保存复核」，拿数据库里那份会把改动直接丢掉。
+   */
+  const buildAlignmentSeed = (scoreIdOverride?: string): AlignmentSeed | null => {
+    if (!detail) return null;
+    const guitarTrack =
+      detail.tracks?.find((t) => t.instrument === 'guitar' && t.stemUrl) ||
+      detail.tracks?.find((t) => !!t.stemUrl);
+    return {
+      projectId: detail.id,
+      title: detail.title,
+      artist: detail.artist ?? null,
+      scoreId: scoreIdOverride ?? detail.scoreId ?? null,
+      /**
+       * 优先用**吉他分轨**：转录就是从它来的，用作 C 端「Simplified 练习声道」最贴切；
+       * 没有分轨（模拟/旧数据）时退回源混音。
+       */
+      audioUrl: guitarTrack?.stemUrl || sourceAudioUrl || detail.audioUrl || null,
+      sourceAudioUrl: sourceAudioUrl || detail.audioUrl || null,
+      durationSec: detail.durationSec ?? null,
+      bpm: draft?.meta?.bpm ?? detail.bpm ?? null,
+      timeSignature: draft?.meta?.timeSignature ?? detail.timeSignature ?? null,
+      tabProject: draft,
+    };
+  };
+
+  /** 两个入口合流：带上谱面走新通道，未接入时退回只传 scoreId 的老通道 */
+  const openAlignmentStudio = (scoreIdOverride?: string) => {
+    const seed = buildAlignmentSeed(scoreIdOverride);
+    if (!seed) return;
+    if (onOpenInAlignment) onOpenInAlignment(seed);
+    else if (seed.scoreId) onOpenInAudioStudio?.(seed.scoreId);
+    else notify('info', '该项目还没有镜像到发布链路（没有 scoreId）—— 请先「发布 PracticePackage」并勾选镜像');
   };
 
   const handleUploadFile = async (file: File) => {
@@ -602,31 +882,59 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
   const handleCreateFromUrl = async () => {
     if (!newUrl.trim()) return;
     setBusy('url');
+    /**
+     * 表单内联反馈。
+     *
+     * 为什么必须有：成功/失败提示原本只出现在**屏幕顶部中央**的 toast，而用户在狭窄的
+     * 侧边栏里点按钮 → 很容易以为「点了没反应」（实测用户就是这么反馈的）。
+     * 另外失败时输入框不会被清空（行为正确），就更需要就地告诉他到底发生了什么。
+     */
+    setUrlFeedback({ kind: 'info', text: '正在创建项目…' });
     try {
+      const driver = newDownloadDriver || capabilities?.download?.driverDefault || 'server';
       const res = await api.createTranscriptionProjectFromUrl({
         url: newUrl.trim(),
         title: newTitle.trim() || undefined,
         bpm: Number(newBpm) > 0 ? Number(newBpm) : undefined,
         license: 'user_uploaded',
+        downloadDriver: driver,
       });
       setNewUrl('');
       setSelectedId(res.project.id);
-      notify('success', '已创建 URL 转录项目并开始下载（yt-dlp）');
+      setUrlFeedback(
+        driver === 'client'
+          ? {
+              kind: 'success',
+              text: `✅ 已创建「${res.project.title}」（本机代理下载）—— 请在本机运行 ${agentCommand}`,
+            }
+          : {
+              kind: 'success',
+              text: `✅ 已创建「${res.project.title}」并开始下载（yt-dlp）—— 进度见左侧列表 / 中间进度卡`,
+            },
+      );
+      notify(
+        'success',
+        driver === 'client'
+          ? '已创建项目（本机代理下载）—— 请在本机运行 npm run agent 回传音频'
+          : '已创建 URL 转录项目并开始下载（yt-dlp）',
+      );
       await loadProjects();
     } catch (err) {
+      setUrlFeedback({ kind: 'error', text: `❌ ${describeError(err)}` });
       notify('error', `URL 导入失败：${describeError(err)}`);
     } finally {
       setBusy('');
     }
   };
 
-  const handleRetry = async () => {
+  const handleRetry = async (from?: 'separate' | 'transcribe' | 'convert') => {
     if (!selectedId) return;
     setBusy('retry');
     try {
-      const res = await api.retryTranscriptionProject(selectedId);
+      const res = await api.retryTranscriptionProject(selectedId, from);
       notify('info', `已从「${res.stage}」阶段重新入队`);
       await loadDetail(selectedId, true);
+      await loadProjects();
     } catch (err) {
       notify('error', `重试失败：${describeError(err)}`);
     } finally {
@@ -787,23 +1095,43 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                 上传音频
               </button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <input
                 value={newUrl}
-                onChange={(e) => setNewUrl(e.target.value)}
+                onChange={(e) => {
+                  setNewUrl(e.target.value);
+                  // 用户重新输入时清掉上一次的结果，避免旧提示误导
+                  if (urlFeedback) setUrlFeedback(null);
+                }}
                 placeholder="或粘贴 URL（yt-dlp：YouTube/B站/直链）"
-                className={`flex-1 rounded-lg border px-2 py-1.5 text-xs ${field}`}
+                className={`min-w-[9rem] flex-1 rounded-lg border px-2 py-1.5 text-xs ${field}`}
+              />
+              <DownloadDriverSelect
+                value={newDownloadDriver}
+                onChange={setNewDownloadDriver}
+                defaultDriver={capabilities?.download?.driverDefault || 'server'}
+                field={field}
               />
               <button
                 type="button"
                 disabled={busy === 'url' || !newUrl.trim()}
                 onClick={handleCreateFromUrl}
-                className="flex items-center gap-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 px-2.5 py-1.5 text-xs text-sky-300 hover:bg-sky-500/20 disabled:opacity-50"
+                className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-sky-500/40 bg-sky-500/10 px-2.5 py-1.5 text-xs text-sky-300 hover:bg-sky-500/20 disabled:opacity-50"
               >
                 {busy === 'url' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                下载
+                {busy === 'url' ? '创建中…' : '下载'}
               </button>
             </div>
+            <UrlFeedbackLine feedback={urlFeedback} />
+            {effectiveDownloadDriver === 'client' ? (
+              <div className="text-[10px] text-fuchsia-300">
+                本机代理：创建后在本机跑 <code className="font-mono">{agentCommand}</code> 回传音频
+              </div>
+            ) : !serverCanDownload ? (
+              <div className="text-[10px] text-amber-400">
+                ⚠️ 服务器 yt-dlp / 登录态不可用，URL 项目请选「本机代理下载」
+              </div>
+            ) : null}
             <div className="text-[10px] text-slate-500">
               文件上限 24MB（base64 传输，与既有 tab-import 同一约定，无需 multer 依赖）
             </div>
@@ -917,26 +1245,47 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                   </div>
 
                   {/* URL 导入 */}
-                  <div className="mt-4 flex items-center gap-2">
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
                     <input
                       value={newUrl}
-                      onChange={(e) => setNewUrl(e.target.value)}
+                      onChange={(e) => {
+                        setNewUrl(e.target.value);
+                        if (urlFeedback) setUrlFeedback(null);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') void handleCreateFromUrl();
                       }}
                       placeholder="或粘贴音频 URL（yt-dlp：YouTube / B站 / 直链）"
-                      className={`flex-1 rounded-lg border px-3 py-2 text-xs ${field}`}
+                      className={`min-w-[12rem] flex-1 rounded-lg border px-3 py-2 text-xs ${field}`}
+                    />
+                    <DownloadDriverSelect
+                      value={newDownloadDriver}
+                      onChange={setNewDownloadDriver}
+                      defaultDriver={capabilities?.download?.driverDefault || 'server'}
+                      field={field}
                     />
                     <button
                       type="button"
                       onClick={handleCreateFromUrl}
                       disabled={!newUrl.trim() || busy === 'url'}
-                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs disabled:opacity-40 ${field}`}
+                      className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-2 text-xs disabled:opacity-40 ${field}`}
                     >
                       {busy === 'url' ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                      下载并转录
+                      {busy === 'url' ? '创建中…' : '下载并转录'}
                     </button>
                   </div>
+                  <UrlFeedbackLine feedback={urlFeedback} />
+                  {effectiveDownloadDriver === 'client' ? (
+                    <div className="mt-2 text-[11px] text-fuchsia-300">
+                      本机代理下载：项目会停在「等本机代理回传音频」，在本机跑{' '}
+                      <code className="font-mono">{agentCommand}</code> 取音频回传后自动续跑。
+                      {!serverCanDownload && <span className="text-amber-400">（服务器当前也无法下载）</span>}
+                    </div>
+                  ) : !serverCanDownload ? (
+                    <div className="mt-2 text-[11px] text-amber-400">
+                      ⚠️ 服务器没有可用的 yt-dlp / 登录态 cookies，直接下载很可能失败 —— 建议把下载方式改成「本机代理下载」。
+                    </div>
+                  ) : null}
 
                   {/* 可选：曲目名 / BPM */}
                   <div className="mt-3 grid grid-cols-2 gap-2">
@@ -1011,11 +1360,24 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                     {['failed'].includes(detail.status) && (
                       <button
                         type="button"
-                        onClick={handleRetry}
+                        onClick={() => handleRetry()}
                         disabled={busy === 'retry'}
                         className="flex items-center gap-1.5 rounded-lg border border-sky-500/40 bg-sky-500/10 px-2.5 py-1.5 text-xs text-sky-300 hover:bg-sky-500/20"
                       >
                         <RotateCcw size={12} /> 从失败阶段重试
+                      </button>
+                    )}
+                    {/* 用最新识别算法重新转录（重置分轨状态后重跑 transcribe → convert） */}
+                    {!isRunning && detail.status !== 'failed' && (
+                      <button
+                        type="button"
+                        onClick={() => handleRetry('transcribe')}
+                        disabled={busy === 'retry'}
+                        title="用当前的识别算法重新分析音频（会覆盖本项目的转录音符；已发布的小节不受影响）"
+                        className="flex items-center gap-1.5 rounded-lg border border-violet-500/40 bg-violet-500/10 px-2.5 py-1.5 text-xs text-violet-300 hover:bg-violet-500/20 disabled:opacity-40"
+                      >
+                        {busy === 'retry' ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                        重新转录
                       </button>
                     )}
                     <button
@@ -1061,6 +1423,17 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                     >
                       <Eye size={12} /> 预览
                     </button>
+                    {(onOpenInAlignment || onOpenInAudioStudio) && (
+                      <button
+                        type="button"
+                        onClick={() => openAlignmentStudio()}
+                        disabled={!draft}
+                        title="把当前谱面（含未保存的改动）与音频一起带到「音频与六线谱对齐（兼容）」做毫秒级精修"
+                        className="flex items-center gap-1.5 rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-2.5 py-1.5 text-xs text-indigo-300 hover:bg-indigo-500/20 disabled:opacity-40"
+                      >
+                        <ArrowRightLeft size={12} /> 去对齐工作台精修
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => runPublish(false)}
@@ -1179,18 +1552,94 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
 
               {/* 小节列表 */}
               <div ref={measureListRef} className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-                {!draft && (
+                {/* ① 运行中：显式进度卡片（阶段条 + 进度条 + 已用时 + 实时识别音符数） */}
+                {isRunning && detail && (
+                  <PipelineProgressCard detail={detail} elapsedSec={elapsedSec} />
+                )}
+
+                {/* ② 跑完：明确告知「已成功」以及识别/入谱数量 + 为什么音符可能偏少 */}
+                {!isRunning && draft && (
+                  <div className="flex items-center gap-3 flex-wrap rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[11px] text-emerald-200">
+                    <span className="inline-flex items-center gap-1 font-semibold">
+                      <CheckCircle2 size={12} /> 转录完成
+                    </span>
+                    <span>
+                      {stats.measureCount} 小节 / {stats.noteCount} 音符
+                    </span>
+                    {stats.lowConfidenceCount > 0 && (
+                      <span className="text-amber-300">
+                        低置信度 {stats.lowConfidenceCount}（谱面已标红，建议逐个核对）
+                      </span>
+                    )}
+                    {engineName && <span>引擎 {engineName}</span>}
+                    {detectedNoteCount > 0 && detectedNoteCount !== stats.noteCount && (
+                      <span>
+                        已识别 {detectedNoteCount} → 入谱 {stats.noteCount}
+                      </span>
+                    )}
+                    {separationSimulated && (
+                      <span
+                        className="text-amber-300"
+                        title="未安装 Demucs：直接分析混音（人声/鼓/贝斯混在一起），单音转录会明显漏音。安装 Demucs 后准确率会大幅提升。"
+                      >
+                        ⚠️ 未做音轨分离 → 音符会偏少
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* ② 等本机代理回传音频（方案 A）：给出明确命令 + 步骤，不留黑箱 */}
+                {isAwaitingAudio && detail && (
+                  <div className="rounded-xl border border-fuchsia-500/40 bg-fuchsia-500/10 px-4 py-3 text-[11px] text-fuchsia-100 space-y-2">
+                    <div className="inline-flex items-center gap-1.5 font-semibold">
+                      <Loader2 size={12} className="animate-spin" />
+                      等待本机下载代理回传音频（downloadDriver = client）
+                    </div>
+                    <div className="text-fuchsia-200/90">
+                      服务器不下载这个链接，只负责分离 / 转录 / 发布。请在<strong>你自己的电脑</strong>上运行：
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <code className="rounded bg-slate-950/60 border border-fuchsia-500/30 px-2 py-1 font-mono text-[11px] text-fuchsia-200">
+                        {agentCommand}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void navigator.clipboard?.writeText(agentCommand);
+                          notify('info', '命令已复制');
+                        }}
+                        className="rounded border border-fuchsia-500/40 px-2 py-1 text-[10px] hover:bg-fuchsia-500/20"
+                      >
+                        复制
+                      </button>
+                      <span className="text-fuchsia-200/70">
+                        （在 <code className="font-mono">guitarmate-audio-backend</code> 目录下执行，脚本会自动取音频并回传）
+                      </span>
+                    </div>
+                    <div className="text-fuchsia-200/70">
+                      回传成功后本页会<strong>自动续跑</strong>（分离 → 转录 → 转谱），无需手动刷新。
+                      {!serverCanDownload && (
+                        <span className="text-amber-300">
+                          {' '}
+                          当前服务器 yt-dlp / cookies 不可用，URL 项目请一律用本机代理下载。
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {!isRunning && !isAwaitingAudio && !draft && (
                   <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-[11px] text-amber-200">
                     转录尚未产出 TabProject。请等待流水线跑完（状态变为「待人工复核」），
                     或点击「从失败阶段重试」。
                   </div>
                 )}
 
-                {draft && visibleMeasures.length === 0 && (
+                {!isRunning && draft && visibleMeasures.length === 0 && (
                   <div className="text-xs text-slate-500">没有符合筛选条件的小节。</div>
                 )}
 
-                {systems.map((group, systemIndex) => {
+                {!isRunning && systems.map((group, systemIndex) => {
                   const anchor = group[0];
                   const collapsed = collapsedMeasures.has(anchor.index);
                   const first = group[0];
@@ -1392,7 +1841,7 @@ export const ReviewPage: React.FC<ReviewPageProps> = ({
                 {publishResult.mirrored?.scoreId && onOpenInAudioStudio && (
                   <button
                     type="button"
-                    onClick={() => onOpenInAudioStudio(publishResult.mirrored.scoreId!)}
+                    onClick={() => openAlignmentStudio(publishResult.mirrored?.scoreId)}
                     className="rounded-lg border border-emerald-500/40 px-2 py-1"
                   >
                     去对齐工作台精修
@@ -1483,7 +1932,64 @@ const STATUS_TONES: Record<string, string> = {
   review: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
   published: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   failed: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+  awaiting_audio: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/30 animate-pulse',
 };
+
+/**
+ * URL 导入的**就地**反馈行。
+ *
+ * 顶部的 toast 在屏幕中央，而用户在侧边栏点按钮 —— 成功/失败都看不见，
+ * 于是就有了「点了下载没反应」的反馈。这里把结果直接贴在表单下方。
+ */
+const UrlFeedbackLine: React.FC<{ feedback: { kind: 'info' | 'error' | 'success'; text: string } | null }> = ({
+  feedback,
+}) => {
+  if (!feedback) return null;
+  const tone =
+    feedback.kind === 'error'
+      ? 'border-rose-500/40 bg-rose-500/10 text-rose-200'
+      : feedback.kind === 'success'
+        ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200'
+        : 'border-slate-600/50 bg-slate-700/20 text-slate-300';
+  return (
+    <div
+      role={feedback.kind === 'error' ? 'alert' : 'status'}
+      className={`mt-2 max-h-28 overflow-y-auto rounded-lg border px-2.5 py-1.5 text-[11px] leading-relaxed break-words ${tone}`}
+    >
+      {feedback.kind === 'info' ? (
+        <span className="inline-flex items-center gap-1.5">
+          <Loader2 size={11} className="animate-spin" />
+          {feedback.text}
+        </span>
+      ) : (
+        feedback.text
+      )}
+    </div>
+  );
+};
+
+/**
+ * 下载方式选择器（方案 A）：两处 URL 导入区共用，避免重复实现漂移。
+ * - 服务器下载：服务器跑 yt-dlp（需要健康 cookies + 好声誉出口 IP）；
+ * - 本机代理下载：服务器挂起项目，本机 `npm run agent` 取音频回传。
+ */
+const DownloadDriverSelect: React.FC<{
+  value: '' | 'server' | 'client';
+  onChange: (v: '' | 'server' | 'client') => void;
+  defaultDriver: 'server' | 'client';
+  field: string;
+}> = ({ value, onChange, defaultDriver, field }) => (
+  <select
+    value={value}
+    onChange={(e) => onChange(e.target.value as '' | 'server' | 'client')}
+    title="服务器下载需要 yt-dlp + 健康的登录态 cookies；国内网络 / 机房 IP 建议选本机代理"
+    className={`shrink-0 rounded-lg border px-2 py-1.5 text-[11px] ${field}`}
+  >
+    <option value="">下载方式：默认（{defaultDriver === 'client' ? '本机代理' : '服务器'}）</option>
+    <option value="server">服务器下载（yt-dlp）</option>
+    <option value="client">本机代理下载（服务器挂起）</option>
+  </select>
+);
 
 const StatusPill: React.FC<{ status: string; label: string }> = ({ status, label }) => (
   <span

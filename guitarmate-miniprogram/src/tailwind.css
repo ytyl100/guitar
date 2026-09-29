@@ -1,0 +1,21 @@
+/**
+ * Tailwind 入口（小程序端）
+ * =========================
+ *
+ * ⚠️ **刻意不引入 Preflight（`@tailwindcss/preflight.css`）**：
+ * 它依赖 `*`、`:root`、`html/body` 这类选择器，而**小程序 WXSS 不支持**，
+ * 会把整份样式表变成非法选择器（症状是样式大面积失效，且报错很不直观）。
+ * 这里只取 theme（设计变量）+ utilities（工具类）。
+ *
+ * 有了它，**Web 版组件里的 Tailwind 类名可以原样复用**：
+ *   `<div className="rounded-2xl border border-zinc-800/70 bg-zinc-900/60 p-2.5">`
+ *   → `<View className="rounded-2xl border border-zinc-800/70 bg-zinc-900/60 p-2.5">`
+ */
+@layer theme, utilities;
+
+/* 显式声明扫描范围：Tailwind 4 默认自动探测，但显式写出来更可预期
+   （否则从 Web 版拷过来的类名可能因路径探测不到而不生成） */
+@source "./**/*.{tsx,ts}";
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);

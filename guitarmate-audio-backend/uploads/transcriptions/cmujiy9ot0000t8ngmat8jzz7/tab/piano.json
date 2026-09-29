@@ -1,0 +1,2657 @@
+{
+  "format": "guitarmate-tab-project",
+  "version": "1.0",
+  "meta": {
+    "title": "Laid Back Guitars | YouTube Audio Library",
+    "artist": null,
+    "bpm": 100,
+    "timeSignature": "4/4",
+    "instrument": "piano",
+    "capo": 0
+  },
+  "tuning": [
+    64,
+    59,
+    55,
+    50,
+    45,
+    40
+  ],
+  "capo": 0,
+  "tracks": [
+    {
+      "id": "piano-1",
+      "name": "吉他轨",
+      "instrument": "piano",
+      "tuning": [
+        64,
+        59,
+        55,
+        50,
+        45,
+        40
+      ],
+      "capo": 0,
+      "measures": [
+        {
+          "index": 0,
+          "label": "第 1 小节",
+          "startTime": 0,
+          "endTime": 2.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m0_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 68,
+              "confidence": 0.5354,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            },
+            {
+              "id": "piano_m0_n1",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.175,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            },
+            {
+              "id": "piano_m0_n2",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1841,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 80,
+              "confidence": 0.6299,
+              "chordName": null,
+              "finger": 2,
+              "position": 2
+            }
+          ],
+          "position": 2,
+          "chords": [
+            {
+              "name": "Asus4",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "label": "第 2 小节",
+          "startTime": 2.4,
+          "endTime": 4.8,
+          "beats": 4,
+          "notes": [],
+          "position": 2
+        },
+        {
+          "index": 2,
+          "label": "第 3 小节",
+          "startTime": 4.8,
+          "endTime": 7.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m2_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.2795,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 97,
+              "confidence": 0.7638,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 3,
+          "label": "第 4 小节",
+          "startTime": 7.2,
+          "endTime": 9.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 4,
+          "label": "第 5 小节",
+          "startTime": 9.6,
+          "endTime": 12,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m4_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 81,
+              "confidence": 0.6378,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 5,
+          "label": "第 6 小节",
+          "startTime": 12,
+          "endTime": 14.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m5_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 81,
+              "confidence": 0.6378,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 6,
+          "label": "第 7 小节",
+          "startTime": 14.4,
+          "endTime": 16.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 7,
+          "label": "第 8 小节",
+          "startTime": 16.8,
+          "endTime": 19.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m7_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 77,
+              "confidence": 0.6063,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 8,
+          "label": "第 9 小节",
+          "startTime": 19.2,
+          "endTime": 21.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 9,
+          "label": "第 10 小节",
+          "startTime": 21.6,
+          "endTime": 24,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m9_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.1409,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 10,
+          "label": "第 11 小节",
+          "startTime": 24,
+          "endTime": 26.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 11,
+          "label": "第 12 小节",
+          "startTime": 26.4,
+          "endTime": 28.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m11_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 12,
+          "label": "第 13 小节",
+          "startTime": 28.8,
+          "endTime": 31.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 13,
+          "label": "第 14 小节",
+          "startTime": 31.2,
+          "endTime": 33.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 14,
+          "label": "第 15 小节",
+          "startTime": 33.6,
+          "endTime": 36,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m14_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 1.35,
+              "beat": 2.25,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 77,
+              "confidence": 0.6063,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m14_n1",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 15,
+          "label": "第 16 小节",
+          "startTime": 36,
+          "endTime": 38.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m15_n0",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m15_n1",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.75,
+              "beat": 1.25,
+              "durationSec": 0.1977,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 53,
+              "confidence": 0.4173,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 16,
+          "label": "第 17 小节",
+          "startTime": 38.4,
+          "endTime": 40.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m16_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.2545,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 65,
+              "confidence": 0.5118,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 17,
+          "label": "第 18 小节",
+          "startTime": 40.8,
+          "endTime": 43.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 18,
+          "label": "第 19 小节",
+          "startTime": 43.2,
+          "endTime": 45.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m18_n0",
+              "string": 1,
+              "fret": 5,
+              "midi": 69,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 88,
+              "confidence": 0.6929,
+              "chordName": null,
+              "finger": 1,
+              "position": 5
+            },
+            {
+              "id": "piano_m18_n1",
+              "string": 1,
+              "fret": 8,
+              "midi": 72,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 4,
+              "position": 5
+            }
+          ],
+          "position": 5
+        },
+        {
+          "index": 19,
+          "label": "第 20 小节",
+          "startTime": 45.6,
+          "endTime": 48,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m19_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "position": 3
+        },
+        {
+          "index": 20,
+          "label": "第 21 小节",
+          "startTime": 48,
+          "endTime": 50.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m20_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 68,
+              "confidence": 0.5354,
+              "chordName": null,
+              "finger": 1,
+              "position": 2
+            }
+          ],
+          "position": 2
+        },
+        {
+          "index": 21,
+          "label": "第 22 小节",
+          "startTime": 50.4,
+          "endTime": 52.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m21_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 92,
+              "confidence": 0.7244,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m21_n1",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.2795,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 55,
+              "confidence": 0.4331,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 22,
+          "label": "第 23 小节",
+          "startTime": 52.8,
+          "endTime": 55.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m22_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1295,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 81,
+              "confidence": 0.6378,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 23,
+          "label": "第 24 小节",
+          "startTime": 55.2,
+          "endTime": 57.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 24,
+          "label": "第 25 小节",
+          "startTime": 57.6,
+          "endTime": 60,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m24_n0",
+              "string": 6,
+              "fret": 7,
+              "midi": 33,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.1841,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 77,
+              "confidence": 0.6063,
+              "chordName": null,
+              "finger": 4,
+              "position": 4
+            }
+          ],
+          "position": 4
+        },
+        {
+          "index": 25,
+          "label": "第 26 小节",
+          "startTime": 60,
+          "endTime": 62.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m25_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 0.1295,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 71,
+              "confidence": 0.5591,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            },
+            {
+              "id": "piano_m25_n1",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 1,
+              "position": 3
+            }
+          ],
+          "position": 3
+        },
+        {
+          "index": 26,
+          "label": "第 27 小节",
+          "startTime": 62.4,
+          "endTime": 64.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m26_n0",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1409,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 27,
+          "label": "第 28 小节",
+          "startTime": 64.8,
+          "endTime": 67.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 28,
+          "label": "第 29 小节",
+          "startTime": 67.2,
+          "endTime": 69.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m28_n0",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1727,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 92,
+              "confidence": 0.7244,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m28_n1",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 29,
+          "label": "第 30 小节",
+          "startTime": 69.6,
+          "endTime": 72,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m29_n0",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m29_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.35,
+              "beat": 2.25,
+              "durationSec": 0.7227,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m29_n2",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1295,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 63,
+              "confidence": 0.4961,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m29_n3",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1977,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 61,
+              "confidence": 0.4803,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "G5",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4477
+            }
+          ]
+        },
+        {
+          "index": 30,
+          "label": "第 31 小节",
+          "startTime": 72,
+          "endTime": 74.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m30_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.2318,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 31,
+          "label": "第 32 小节",
+          "startTime": 74.4,
+          "endTime": 76.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m31_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.2205,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 54,
+              "confidence": 0.4252,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 32,
+          "label": "第 33 小节",
+          "startTime": 76.8,
+          "endTime": 79.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m32_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 0.2795,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 60,
+              "confidence": 0.4724,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m32_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m32_n2",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1727,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 74,
+              "confidence": 0.5827,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Dm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4227
+            }
+          ]
+        },
+        {
+          "index": 33,
+          "label": "第 34 小节",
+          "startTime": 79.2,
+          "endTime": 81.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m33_n0",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 0.2795,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 34,
+          "label": "第 35 小节",
+          "startTime": 81.6,
+          "endTime": 84,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m34_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 35,
+          "label": "第 36 小节",
+          "startTime": 84,
+          "endTime": 86.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 36,
+          "label": "第 37 小节",
+          "startTime": 86.4,
+          "endTime": 88.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m36_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 81,
+              "confidence": 0.6378,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m36_n1",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 84,
+              "confidence": 0.6614,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 37,
+          "label": "第 38 小节",
+          "startTime": 88.8,
+          "endTime": 91.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 38,
+          "label": "第 39 小节",
+          "startTime": 91.2,
+          "endTime": 93.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 39,
+          "label": "第 40 小节",
+          "startTime": 93.6,
+          "endTime": 96,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 40,
+          "label": "第 41 小节",
+          "startTime": 96,
+          "endTime": 98.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m40_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 60,
+              "confidence": 0.4724,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 41,
+          "label": "第 42 小节",
+          "startTime": 98.4,
+          "endTime": 100.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m41_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 62,
+              "confidence": 0.4882,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 42,
+          "label": "第 43 小节",
+          "startTime": 100.8,
+          "endTime": 103.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 43,
+          "label": "第 44 小节",
+          "startTime": 103.2,
+          "endTime": 105.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 44,
+          "label": "第 45 小节",
+          "startTime": 105.6,
+          "endTime": 108,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m44_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.3023,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 91,
+              "confidence": 0.7165,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 45,
+          "label": "第 46 小节",
+          "startTime": 108,
+          "endTime": 110.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 46,
+          "label": "第 47 小节",
+          "startTime": 110.4,
+          "endTime": 112.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m46_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.175,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 64,
+              "confidence": 0.5039,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 47,
+          "label": "第 48 小节",
+          "startTime": 112.8,
+          "endTime": 115.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 48,
+          "label": "第 49 小节",
+          "startTime": 115.2,
+          "endTime": 117.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m48_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1977,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 66,
+              "confidence": 0.5197,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 49,
+          "label": "第 50 小节",
+          "startTime": 117.6,
+          "endTime": 120,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 50,
+          "label": "第 51 小节",
+          "startTime": 120,
+          "endTime": 122.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 51,
+          "label": "第 52 小节",
+          "startTime": 122.4,
+          "endTime": 124.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 52,
+          "label": "第 53 小节",
+          "startTime": 124.8,
+          "endTime": 127.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 53,
+          "label": "第 54 小节",
+          "startTime": 127.2,
+          "endTime": 129.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m53_n0",
+              "string": 2,
+              "fret": 1,
+              "midi": 60,
+              "offsetSec": 1.35,
+              "beat": 2.25,
+              "durationSec": 0.1977,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 68,
+              "confidence": 0.5354,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 54,
+          "label": "第 55 小节",
+          "startTime": 129.6,
+          "endTime": 132,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 55,
+          "label": "第 56 小节",
+          "startTime": 132,
+          "endTime": 134.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m55_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.2568,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 91,
+              "confidence": 0.7165,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 56,
+          "label": "第 57 小节",
+          "startTime": 134.4,
+          "endTime": 136.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 57,
+          "label": "第 58 小节",
+          "startTime": 136.8,
+          "endTime": 139.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m57_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 66,
+              "confidence": 0.5197,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 58,
+          "label": "第 59 小节",
+          "startTime": 139.2,
+          "endTime": 141.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 59,
+          "label": "第 60 小节",
+          "startTime": 141.6,
+          "endTime": 144,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 60,
+          "label": "第 61 小节",
+          "startTime": 144,
+          "endTime": 146.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 61,
+          "label": "第 62 小节",
+          "startTime": 146.4,
+          "endTime": 148.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m61_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 67,
+              "confidence": 0.5276,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 62,
+          "label": "第 63 小节",
+          "startTime": 148.8,
+          "endTime": 151.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 63,
+          "label": "第 64 小节",
+          "startTime": 151.2,
+          "endTime": 153.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m63_n0",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 77,
+              "confidence": 0.6063,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 64,
+          "label": "第 65 小节",
+          "startTime": 153.6,
+          "endTime": 156,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m64_n0",
+              "string": 2,
+              "fret": 0,
+              "midi": 59,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1295,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 65,
+          "label": "第 66 小节",
+          "startTime": 156,
+          "endTime": 158.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m65_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 79,
+              "confidence": 0.622,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 66,
+          "label": "第 67 小节",
+          "startTime": 158.4,
+          "endTime": 160.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 67,
+          "label": "第 68 小节",
+          "startTime": 160.8,
+          "endTime": 163.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m67_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 65,
+              "confidence": 0.5118,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 68,
+          "label": "第 69 小节",
+          "startTime": 163.2,
+          "endTime": 165.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m68_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 65,
+              "confidence": 0.5118,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m68_n1",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 69,
+          "label": "第 70 小节",
+          "startTime": 165.6,
+          "endTime": 168,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 70,
+          "label": "第 71 小节",
+          "startTime": 168,
+          "endTime": 170.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m70_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 80,
+              "confidence": 0.6299,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 71,
+          "label": "第 72 小节",
+          "startTime": 170.4,
+          "endTime": 172.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 72,
+          "label": "第 73 小节",
+          "startTime": 172.8,
+          "endTime": 175.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 73,
+          "label": "第 74 小节",
+          "startTime": 175.2,
+          "endTime": 177.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 74,
+          "label": "第 75 小节",
+          "startTime": 177.6,
+          "endTime": 180,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m74_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.3932,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 75,
+          "label": "第 76 小节",
+          "startTime": 180,
+          "endTime": 182.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m75_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.5,
+              "beat": 2.5,
+              "durationSec": 0.1636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 52,
+              "confidence": 0.4094,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 76,
+          "label": "第 77 小节",
+          "startTime": 182.4,
+          "endTime": 184.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 77,
+          "label": "第 78 小节",
+          "startTime": 184.8,
+          "endTime": 187.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 78,
+          "label": "第 79 小节",
+          "startTime": 187.2,
+          "endTime": 189.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m78_n0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 56,
+              "confidence": 0.4409,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 79,
+          "label": "第 80 小节",
+          "startTime": 189.6,
+          "endTime": 192,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m79_n0",
+              "string": 6,
+              "fret": 3,
+              "midi": 43,
+              "offsetSec": 0.45,
+              "beat": 0.75,
+              "durationSec": 0.2318,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 79,
+              "confidence": 0.622,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 80,
+          "label": "第 81 小节",
+          "startTime": 192,
+          "endTime": 194.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 81,
+          "label": "第 82 小节",
+          "startTime": 194.4,
+          "endTime": 196.8,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 82,
+          "label": "第 83 小节",
+          "startTime": 196.8,
+          "endTime": 199.2,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 83,
+          "label": "第 84 小节",
+          "startTime": 199.2,
+          "endTime": 201.6,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 84,
+          "label": "第 85 小节",
+          "startTime": 201.6,
+          "endTime": 204,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m84_n0",
+              "string": 3,
+              "fret": 2,
+              "midi": 57,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.1523,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 85,
+          "label": "第 86 小节",
+          "startTime": 204,
+          "endTime": 206.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 86,
+          "label": "第 87 小节",
+          "startTime": 206.4,
+          "endTime": 208.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m86_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.1636,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 61,
+              "confidence": 0.4803,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 87,
+          "label": "第 88 小节",
+          "startTime": 208.8,
+          "endTime": 211.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m87_n0",
+              "string": 2,
+              "fret": 3,
+              "midi": 62,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 79,
+              "confidence": 0.622,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m87_n1",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.6045,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 88,
+              "confidence": 0.6929,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m87_n2",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.6045,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 78,
+              "confidence": 0.6142,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "G5",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 88,
+          "label": "第 89 小节",
+          "startTime": 211.2,
+          "endTime": 213.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m88_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.75,
+              "beat": 1.25,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m88_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.3023,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 66,
+              "confidence": 0.5197,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 89,
+          "label": "第 90 小节",
+          "startTime": 213.6,
+          "endTime": 216,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m89_n0",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.1273,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m89_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1614,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 83,
+              "confidence": 0.6535,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m89_n2",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.4659,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 88,
+              "confidence": 0.6929,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 90,
+          "label": "第 91 小节",
+          "startTime": 216,
+          "endTime": 218.4,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m90_n0",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.4182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 91,
+          "label": "第 92 小节",
+          "startTime": 218.4,
+          "endTime": 220.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m91_n0",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.2091,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m91_n1",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.325,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 89,
+              "confidence": 0.7008,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m91_n2",
+              "string": 3,
+              "fret": 3,
+              "midi": 58,
+              "offsetSec": 2.1,
+              "beat": 3.5,
+              "durationSec": 0.1182,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 65,
+              "confidence": 0.5118,
+              "chordName": null,
+              "finger": 3,
+              "position": 1
+            },
+            {
+              "id": "piano_m91_n3",
+              "string": 1,
+              "fret": 0,
+              "midi": 64,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Bbm",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 92,
+          "label": "第 93 小节",
+          "startTime": 220.8,
+          "endTime": 223.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m92_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.1864,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 75,
+              "confidence": 0.5906,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m92_n1",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1841,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 70,
+              "confidence": 0.5512,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 93,
+          "label": "第 94 小节",
+          "startTime": 223.2,
+          "endTime": 225.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m93_n0",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.2682,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 66,
+              "confidence": 0.5197,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m93_n1",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.65,
+              "beat": 2.75,
+              "durationSec": 0.2455,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 63,
+              "confidence": 0.4961,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m93_n2",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.95,
+              "beat": 3.25,
+              "durationSec": 0.4409,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 82,
+              "confidence": 0.6457,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m93_n3",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 63,
+              "confidence": 0.4961,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m93_n4",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 2.4,
+              "beat": 4,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 71,
+              "confidence": 0.5591,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "A5",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.5386
+            }
+          ]
+        },
+        {
+          "index": 94,
+          "label": "第 95 小节",
+          "startTime": 225.6,
+          "endTime": 228,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m94_n0",
+              "string": 4,
+              "fret": 2,
+              "midi": 52,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 63,
+              "confidence": 0.4961,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n1",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 71,
+              "confidence": 0.5591,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n2",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.2205,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n3",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.2682,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 86,
+              "confidence": 0.6772,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n4",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.1955,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 73,
+              "confidence": 0.5748,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n5",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 0.75,
+              "beat": 1.25,
+              "durationSec": 0.2114,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 64,
+              "confidence": 0.5039,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n6",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.3364,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 80,
+              "confidence": 0.6299,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m94_n7",
+              "string": 5,
+              "fret": 0,
+              "midi": 45,
+              "offsetSec": 1.35,
+              "beat": 2.25,
+              "durationSec": 0.5932,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 79,
+              "confidence": 0.622,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 95,
+          "label": "第 96 小节",
+          "startTime": 228,
+          "endTime": 230.4,
+          "beats": 4,
+          "notes": [],
+          "position": 1
+        },
+        {
+          "index": 96,
+          "label": "第 97 小节",
+          "startTime": 230.4,
+          "endTime": 232.8,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m96_n0",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 0.6,
+              "beat": 1,
+              "durationSec": 0.1614,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 85,
+              "confidence": 0.6693,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            },
+            {
+              "id": "piano_m96_n1",
+              "string": 3,
+              "fret": 0,
+              "midi": 55,
+              "offsetSec": 1.2,
+              "beat": 2,
+              "durationSec": 0.15,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 76,
+              "confidence": 0.5984,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 97,
+          "label": "第 98 小节",
+          "startTime": 232.8,
+          "endTime": 235.2,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m97_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.15,
+              "beat": 0.25,
+              "durationSec": 0.2091,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 80,
+              "confidence": 0.6299,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m97_n1",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 0.9,
+              "beat": 1.5,
+              "durationSec": 0.2205,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 77,
+              "confidence": 0.6063,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            },
+            {
+              "id": "piano_m97_n2",
+              "string": 2,
+              "fret": 2,
+              "midi": 61,
+              "offsetSec": 1.05,
+              "beat": 1.75,
+              "durationSec": 0.1159,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 89,
+              "confidence": 0.7008,
+              "chordName": null,
+              "finger": 2,
+              "position": 1
+            },
+            {
+              "id": "piano_m97_n3",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 2.25,
+              "beat": 3.75,
+              "durationSec": 0.1295,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 60,
+              "confidence": 0.4724,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1,
+          "chords": [
+            {
+              "name": "Db",
+              "offsetSec": 0,
+              "beat": 0,
+              "durationSec": 2.4
+            }
+          ]
+        },
+        {
+          "index": 98,
+          "label": "第 99 小节",
+          "startTime": 235.2,
+          "endTime": 237.6,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m98_n0",
+              "string": 1,
+              "fret": 1,
+              "midi": 65,
+              "offsetSec": 1.8,
+              "beat": 3,
+              "durationSec": 0.3364,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 69,
+              "confidence": 0.5433,
+              "chordName": null,
+              "finger": 1,
+              "position": 1
+            }
+          ],
+          "position": 1
+        },
+        {
+          "index": 99,
+          "label": "第 100 小节",
+          "startTime": 237.6,
+          "endTime": 238.0386,
+          "beats": 4,
+          "notes": [
+            {
+              "id": "piano_m99_n0",
+              "string": 1,
+              "fret": 0,
+              "midi": 64,
+              "offsetSec": 0.3,
+              "beat": 0.5,
+              "durationSec": 0.1386,
+              "rhythm": null,
+              "technique": "normal",
+              "velocity": 78,
+              "confidence": 0.6142,
+              "chordName": null,
+              "finger": 0,
+              "position": 1
+            }
+          ],
+          "position": 1
+        }
+      ]
+    }
+  ],
+  "source": {
+    "kind": "solo-trace",
+    "fileName": null,
+    "site": "GuitarMate 转录流水线",
+    "rights": "user-submission",
+    "rightsNote": "basic-pitch MIDI → 内置 Tayuya 兼容转换器（网格 1/16，capo 0）",
+    "parsedAt": "2026-09-27T08:05:43.996141+00:00",
+    "parserVersion": "1.0.0"
+  },
+  "warnings": [
+    {
+      "level": "info",
+      "code": "rhythm-quantized",
+      "message": "音符起点已量化到 1/16 网格（可用 --no-quantize 关闭）。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-derived",
+      "message": "已按「最低把位优先 + 同帧整体出手型」推定 69 个音符的左手手指（0=空弦 / 1=食指 / 2=中指 / 3=无名指 / 4=小指），并为 100 个小节标注把位。自动指法只是建议值，可在复核工作台逐音符修改。"
+    },
+    {
+      "level": "info",
+      "code": "fingering-position-shift",
+      "message": "小节 1, 3, 19, 20, 21, 22, 25, 26 等 需要换把（已按最近的可覆盖手位标注）。"
+    }
+  ],
+  "stats": {
+    "measureCount": 100,
+    "noteCount": 98,
+    "chordCount": 0,
+    "barreCount": 0,
+    "approximateRhythmMeasures": 0,
+    "timeSignatureChanges": 0,
+    "durationSec": 238.0386
+  }
+}

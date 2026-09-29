@@ -1,6 +1,18 @@
 # GuitarMate 音频转录 Worker 依赖
 # ================================
 #
+# ── 系统依赖（pip 装不出来的，必须先具备）────────────────────────
+#   demucs 读音频时会直接 spawn 子进程：
+#     ffprobe  → 读流信息（demucs/audio.py::_read_info）
+#     ffmpeg   → 解码成 f32le PCM（demucs/audio.py::__read_audio）
+#   ⚠️ **两个都要有**。Windows 上 npm 的 `ffmpeg-static` 只带 ffmpeg.exe，
+#      所以后端额外依赖 npm 包 `ffprobe-static`，并由
+#      `python-runner.service.ts#workerEnv()` 把两者所在目录塞进 worker 的 PATH。
+#      缺 ffprobe 的报错极具误导性：
+#        「读取音频失败（请确认是有效的 mp3/wav/flac）：[WinError 2] 系统找不到指定的文件。」
+#      —— 看着像音频坏了，其实是找不到 ffprobe。
+#   Docker：`apt-get install ffmpeg`（自带 ffprobe）即可，见根目录 Dockerfile。
+#
 # 分两档安装，避免为了「只想跑通链路」的开发者装 2GB 的 TensorFlow：
 #
 # ── 档位 A：完整真实转录（推荐生产环境）────────────────────────────
@@ -23,6 +35,14 @@ torch>=2.0.0             # Demucs 与 Basic Pitch 共用；CPU 版即可跑通
 torchaudio>=2.0.0
 
 # ── 音频 → MIDI 转录 ──
+# ⚠️ basic-pitch 有两条硬约束（实测）：
+#   1. **Python 必须 ≤3.11**：它依赖 `tensorflow<2.15.1`，TF 2.15 只出到 cp311 wheel，
+#      3.12/3.13/3.14 都没有 → pip 会退化去源码构建 numpy 并失败。
+#      推荐做法：单独建一个 3.11 venv，把 demucs + basic-pitch 都装进去，
+#      再用 `PYTHON_BIN=<venv>\Scripts\python.exe` 指给后端（见 .env.example）。
+#   2. **setuptools 必须 <81**：basic-pitch 至今 `import pkg_resources`，
+#      而 setuptools>=81 已移除该模块 → 运行时报 `No module named 'pkg_resources'`。
+#      所以装完要补一句：  python -m pip install -U "setuptools<81"
 basic-pitch>=0.3.0       # Spotify Basic Pitch（依赖 tensorflow / librosa / pretty_midi）
 pretty_midi>=0.2.10
 librosa>=0.10.0          # 也被 transcribe.py 用于 BPM 估计

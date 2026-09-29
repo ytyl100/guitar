@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "GuitarMate Cookie Exporter",
+  "version": "1.0.0",
+  "description": "把 youtube / google 的 cookie 导出到本机 127.0.0.1 的接收器（仅本地，不上传任何服务器）",
+  "permissions": ["cookies"],
+  "host_permissions": [
+    "https://*.youtube.com/*",
+    "https://*.google.com/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "sw.js"
+  }
+}

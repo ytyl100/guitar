@@ -406,3 +406,61 @@ npx tsc --noEmit && npm run verify:contract   # 小程序消费层契约校验
 3. **同一份契约**：新流水线产出的 `PracticePackage` 与既有端点结构一致，
    小程序端 `validatePracticePackage` 无需任何改动；
 4. **不污染旧数据**：转录产物默认只写新表，回写旧链路需显式开启 `mirrorToScorePipeline`。
+
+---
+
+## 十一、URL 导入的两条通道（方案 A：本机下载代理）
+
+### 为什么要两条通道
+
+YouTube 会把「**机房/云服务器出口 IP** + **非浏览器客户端**」的请求拦在人机校验前
+（`Sign in to confirm you're not a bot`），而且新建 profile 的会话会被作废
+（实测 headful 打开 watch 页也是 `LOGIN_REQUIRED / signedIn:false`）。
+**换部署地域（比如服务器搬到新加坡）解决不了这个问题** —— 决定因素是出口 IP 的声誉与会话可信度，不是国家。
+
+因此把「下载」这一步留在**用户自己的电脑**上（住宅 IP + 日常浏览器的受信任会话），
+服务器只负责重活（分离 / 转录 / 转谱 / 发布）：
+
+```
+本机：yt-dlp 取音频 → 转 mp3 → base64
+   ↓ POST /api/transcription/projects/:id/audio
+服务器：落盘 → separate → transcribe → convert → 待人工复核
+```
+
+### 两条通道对比
+
+| | `downloadDriver=server`（默认） | `downloadDriver=client`（方案 A） |
+|---|---|---|
+| 谁下载 | 服务器跑 yt-dlp | 本机跑 `npm run agent` |
+| 前提 | 服务器能访问源站 + **健康 cookies** | 本机有 yt-dlp（+ 本机网络/代理） |
+| 项目状态 | 直接 `downloading` | 先 `awaiting_audio`（progress 5%） |
+| 适用 | 自建直链、B 站等 | YouTube（国内网络 / 机房 IP） |
+
+默认执行方可用环境变量切换：`YTDLP_DRIVER=client`（`YTDLP_DRIVER=server` 可切回），
+也可以在 CMS 导入区的「下载方式」下拉里逐个项目选择。
+`GET /api/transcription/capabilities` 的 `download` 段会下发
+`{driverDefault, serverCanDownload, cookies, agentCommand}`，CMS 据此给出提示。
+
+### 本机代理怎么用
+
+```bash
+cd guitarmate-audio-backend
+npm run agent              # 常驻：每 10s 轮询「等待回传音频」的项目
+npm run agent -- --once    # 只跑一轮
+npm run agent -- --rescue  # 连「服务器下载失败」的项目一起接管
+npm run agent -- --only <projectId>   # 只处理指定项目
+```
+
+代理脚本与服务器**共用同一份参数组装**（`src/transcription/ytdlp-args.ts`，含
+`--cookies` / `--js-runtimes node` / `--remote-components ejs:github`），
+避免出现「服务器能下、代理不能下」的诡异差异。回传后服务器自动从 `separate` 续跑，
+CMS 里的项目页会自动接着刷新（`awaiting_audio` 也在轮询状态里）。
+
+### 验证
+
+- `npm run agent:e2e`（`scripts/e2e-client-download.mjs`）：用**本地 HTTP 音频**当"视频源"，
+  把 client / server 两条通道各跑一遍到 `review`，并校验幂等（重复回传 400）与 TabProject 产物。
+  实测 **29/29 通过**（A 通道 46 音符 / 11 小节 / 51 入谱；B 通道同结果）。
+- 真实 YouTube 仍需要**健康的 cookies**（含 `SID`/`HSID`/`LOGIN_INFO`）：
+  完全退出浏览器后跑 `npm run youtube:cookies`，再用
+  `python scripts/export-cookies-via-chrome.py --check` 自检。

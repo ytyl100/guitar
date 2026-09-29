@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { TabKey, SongItem, Course } from './types';
 import {
-  INITIAL_SONGS,
   INITIAL_COURSES,
   INITIAL_USER_PROFILE,
   INITIAL_PAYMENT_RECORDS,
@@ -15,6 +14,12 @@ import { MiniProgramNavBar } from './components/MiniProgramNavBar';
 import { ArchitectureModal } from './components/ArchitectureModal';
 import { useTheme } from './contexts/ThemeContext';
 import { useLanguage } from './contexts/LanguageContext';
+import { api } from './services/api';
+import { fetchCurriculumCourses } from './services/curriculum';
+import { toLibrarySongs } from './utils/cloudSongs';
+
+/** 曲库加载状态（列表完全由后端决定，所以必须有显式的加载 / 失败态） */
+export type SongsStatus = 'loading' | 'ready' | 'error';
 import {
   Music2,
   GraduationCap,
@@ -33,8 +38,77 @@ export default function App() {
   const { language, toggleLanguage, t } = useLanguage();
 
   const [activeTab, setActiveTab] = useState<TabKey>('songs');
-  const [songs, setSongs] = useState<SongItem[]>(INITIAL_SONGS);
+
+  // ── 曲库：**唯一数据源 = 后端已发布内容** ─────────────────────────────
+  // 不再注入前端硬编码的示例曲目：那些曲目在 CMS 里根本不存在，
+  // 会造成「前后端曲库不同步」；而且后端删掉的曲目在前端也删不掉。
+  // 现在后端删掉 / 改为 draft → 下次刷新（切回本页或点刷新）即消失。
+  const [songs, setSongs] = useState<SongItem[]>([]);
+  const [songsStatus, setSongsStatus] = useState<SongsStatus>('loading');
+  const [songsError, setSongsError] = useState<string | null>(null);
+  /**
+   * 收藏是**纯客户端状态**（后端没有账号体系），单独存 id 集合，
+   * 这样重新拉取曲库不会把收藏状态冲掉。
+   *
+   * ⚠️ 用 **ref** 而不是 state：`loadSongs` 是 `useCallback([], …)`，
+   * 若读 state 会拿到首次渲染的**空集合**（闭包过期），刷新后收藏全部丢失
+   * —— 实测踩过这个坑。列表的视觉状态由 `songs` 自身承载，不需要额外 state。
+   */
+  const favoriteSongIdsRef = useRef<Set<string>>(new Set());
+
+  const loadSongs = useCallback(async () => {
+    setSongsStatus((prev) => (prev === 'ready' ? 'ready' : 'loading'));
+    setSongsError(null);
+    try {
+      // library = 两条发布链路（旧 Score / 转录 PracticePackage）合并后的列表
+      const published = await api.getPublishedLibrary();
+      setSongs(toLibrarySongs(published, favoriteSongIdsRef.current));
+      setSongsStatus('ready');
+    } catch (err: any) {
+      setSongsError(
+        err?.message || '无法连接后端曲库，请确认 guitarmate-audio-backend 已启动。',
+      );
+      setSongsStatus('error');
+    }
+  }, []);
+
+  // 进入 Songs 页就同步一次（含首次）→ 后台发布/删除后切回本页即可看到最新曲库
+  useEffect(() => {
+    if (activeTab === 'songs') void loadSongs();
+  }, [activeTab, loadSongs]);
+
+  /**
+   * 课程大纲（Learn 页）。
+   *
+   * ⚠️ 2026-09-26 起**以服务端为准**：`GET /api/curriculum/learn` —— 就是 CMS「课程大纲」
+   * 工作台里维护的那棵真树（阶段→课程→章节→课时），经 `services/curriculum.ts` 适配成
+   * CourseTab 一直在用的 `Course` 形状。
+   * `INITIAL_COURSES` 降级为**后端连不上时的离线回退**（保留原设计样式，不删）。
+   */
   const [courses, setCourses] = useState<Course[]>(INITIAL_COURSES);
+  const [coursesSource, setCoursesSource] = useState<'backend' | 'fallback' | 'loading'>('loading');
+  const [coursesRevision, setCoursesRevision] = useState<number | null>(null);
+
+  const loadCourses = useCallback(async () => {
+    try {
+      const { courses: list, revision } = await fetchCurriculumCourses();
+      if (list.length > 0) {
+        setCourses(list);
+        setCoursesRevision(revision);
+        setCoursesSource('backend');
+        return;
+      }
+      /** 后端课程树为空（还没在 CMS 里建课）→ 不算失败，但要让界面能说明原因 */
+      setCoursesSource('fallback');
+    } catch {
+      setCoursesSource('fallback');
+    }
+  }, []);
+
+  // 进入 Learn 页就同步一次（与曲库同一套做法：后台调整完切回本页即可看到）
+  useEffect(() => {
+    if (activeTab === 'learn') void loadCourses();
+  }, [activeTab, loadCourses]);
   const [userProfile, setUserProfile] = useState(INITIAL_USER_PROFILE);
   const [paymentRecords] = useState(INITIAL_PAYMENT_RECORDS);
 
@@ -50,11 +124,15 @@ export default function App() {
   // Trigger to reset Learn tab to Guitar courses list whenever Learn tab is clicked
   const [learnResetTrigger, setLearnResetTrigger] = useState(0);
 
-  // Toggle favorite & pin to top
+  // Toggle favorite & pin to top（同时写入 ref，刷新曲库不丢）
   const handleToggleFavorite = (songId: string) => {
     setSongs((prev) =>
       prev.map((s) => (s.id === songId ? { ...s, isFavorite: !s.isFavorite } : s))
     );
+    const next = new Set(favoriteSongIdsRef.current);
+    if (next.has(songId)) next.delete(songId);
+    else next.add(songId);
+    favoriteSongIdsRef.current = next;
   };
 
   // Update lesson step completion
@@ -203,6 +281,9 @@ export default function App() {
           {activeTab === 'songs' && (
             <MusicTab
               songs={songs}
+              songsStatus={songsStatus}
+              songsError={songsError}
+              onRefreshSongs={loadSongs}
               onToggleFavorite={handleToggleFavorite}
               onSelectSongForPractice={handleSelectSongForPractice}
             />

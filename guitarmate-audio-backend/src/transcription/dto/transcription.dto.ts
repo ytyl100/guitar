@@ -81,6 +81,29 @@ export class CreateUploadProjectDto {
   license?: string;
 }
 
+/** 本机下载代理回传音频（base64） */
+export class AttachAudioDto {
+  @ApiProperty({ description: '音频 base64（mp3 / wav / flac）' })
+  @IsString()
+  @IsNotEmpty()
+  base64!: string;
+
+  @ApiPropertyOptional({ description: '文件名（决定扩展名）', example: 'agent-audio.mp3' })
+  @IsOptional()
+  @IsString()
+  fileName?: string;
+
+  @ApiPropertyOptional({ description: '视频/曲目标题（用于给「未命名转录项目」命名）' })
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiPropertyOptional({ description: '代理实测的时长（秒），作为探测失败时的兜底' })
+  @IsOptional()
+  @IsNumber()
+  durationSec?: number;
+}
+
 /** 通过 URL 创建项目（yt-dlp 下载；直链音频走 HTTP） */
 export class CreateUrlProjectDto {
   @ApiProperty({ description: '音频 / 视频链接', example: 'https://example.com/song.mp3' })
@@ -126,6 +149,16 @@ export class CreateUrlProjectDto {
   @IsOptional()
   @IsString()
   license?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '下载执行方：server（服务器跑 yt-dlp，默认）；' +
+      'client（服务器不下载，等本机下载代理回传音频 —— 国内 / 服务器访问不了 YouTube 时用）',
+    enum: ['server', 'client'],
+  })
+  @IsOptional()
+  @IsString()
+  downloadDriver?: 'server' | 'client';
 
   @ApiPropertyOptional({
     description: '跳过 yt-dlp，直接把 URL 当直链音频下载（仅 .mp3/.wav/.flac 有效）',
@@ -250,6 +283,17 @@ export class PublishProjectDto {
   @IsOptional()
   @IsString()
   mirrorScoreId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      '镜像后是否把 Score 置为 published（默认 **true**）。C 端列表 /api/published/scores ' +
+      '只返回 published —— 留成 draft 会出现「界面提示已发布、C 端却查不到」。' +
+      '只想用镜像做草稿预览时显式传 false。',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  publishMirroredScore?: boolean;
 
   @ApiPropertyOptional({
     description: '限制最多发布多少个小节（超长曲目调试用）。0 = 不限制。',

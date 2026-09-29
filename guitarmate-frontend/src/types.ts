@@ -48,7 +48,7 @@ export interface SongItem {
   coverUrl: string;
   rating: number;
   ratingCount: string;
-  tags: ('CRD' | 'TAB' | 'Book')[];
+  tags: ('CRD' | 'TAB' | 'Book' | '云端')[];
   isFavorite: boolean;
   capo: string;
   chords: string[];
@@ -58,6 +58,17 @@ export interface SongItem {
   audioUrl?: string; // Uploaded master/backing audio file URL (MP3/WAV/AAC)
   audioWaveform?: number[]; // Audio peak array for waveform rendering
   audioSourceType?: 'uploaded_audio' | 'web_synth'; // Audio playback engine
+  /**
+   * 后端已发布曲目 id（来自 guitarmate-studio-cms 发布流程 → guitarmate-audio-backend）。
+   *
+   * 有值时详情页的「六线谱小节练习」直接绑定这首曲目，**不再需要曲目下拉选择**；
+   * 为空表示本地示例曲目（后端可能没有对应数据，按标题匹配兜底）。
+   */
+  scoreId?: string;
+  /** 是否来自 CMS 已发布的云端曲库（用于列表标注与「同步一致」判断） */
+  isCloud?: boolean;
+  /** 云端来源链路：旧 Score 链路 / 转录 PracticePackage 链路 */
+  cloudSource?: 'score' | 'transcription';
   lyrics: LyricLine[];
 }
 
@@ -182,6 +193,11 @@ export interface Course {
   subtitle: string;
   description: string;
   coverImage: string;
+  /**
+   * 课封色的 Tailwind 渐变 token（如 `from-amber-600 to-orange-700`）。
+   * ⚠️ 这是 CMS「课程大纲」里的原始字段，后端没有课封图（`coverImage` 为空）时用它渲染渐变块。
+   */
+  coverColor?: string;
   level: string;
   stageId?: string;
   totalSteps: number;

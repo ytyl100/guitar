@@ -42,13 +42,14 @@ import {
   Layers,
 } from 'lucide-react';
 import { AudioTabSyncConfig, TabNote, MusicTrack, MusicStatus, MusicVersion } from '../../types';
-import { audioEngine } from '../../utils/audioEngine';
+import { audioEngine, downsamplePeaks } from '../../utils/audioEngine';
 import { detectBarres, extractChordMarkers, type DetectedBarre } from '../../utils/barreDetector';
 import { importSoloTraceFile, SoloTraceParseError } from '../../utils/soloTraceImporter';
 import { NoteOverlay, type NoteOverlayMarker } from './tablature/NoteOverlay';
 import { ChordPanel } from './tablature/ChordPanel';
 import { MeasureSlicer } from './tablature/MeasureSlicer';
 import { TabRenderer } from './tablature/TabRenderer';
+import { TabEditorPanel } from './tablature/TabEditorPanel';
 import { api, ApiError, type ApiScore, type PublishMeasuresPayload } from '../../services/api';
 
 interface AudioTabSyncStudioProps {
@@ -63,6 +64,15 @@ interface AudioTabSyncStudioProps {
    * 管理员只需填音频路径即可发布（不用手工复制 Score ID / Track ID）。
    */
   initialRemoteScoreId?: string;
+  /**
+   * 从「① 音频导入与六线谱校正」跳转过来时的**副作用种子**（见 `review/reviewToAudioSync.ts`）。
+   *
+   * ⚠️ 配置本身的合并**不在**这里做 —— App 在切页前已把谱面（小节 / 音符 / 和弦 / BPM / 音频路径）
+   * 一次性写进 `config`，保证首屏就是对的。这里只补两件必须联网 / 计算的事：
+   * 1. 从项目音频提取真实波形（否则起音线与对齐诊断没有意义）；
+   * 2. 按 30ms 容差重新识别横按（复核阶段没有横按数据）。
+   */
+  initialSeed?: { token: string; waveformUrl?: string | null; autoDetectBarres?: boolean } | null;
 }
 
 /**
@@ -99,6 +109,7 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
   onUpdateTrack,
   onReturnToLibrary,
   initialRemoteScoreId,
+  initialSeed,
 }) => {
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -132,7 +143,7 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
   const [autoDetectBarres, setAutoDetectBarres] = useState<DetectedBarre[]>([]);
   const [chordMarkers, setChordMarkers] = useState<
     Array<{ id: string; chordName: string; startTime: number }>
-  >([]);
+  >(() => config.chordMarkers ?? []);
   const [confidenceFocusId, setConfidenceFocusId] = useState<string | null>(null);
   const [showConfidenceOnly, setShowConfidenceOnly] = useState(false); // 只显示低置信度节点
   const [remoteScores, setRemoteScores] = useState<ApiScore[]>([]);
@@ -147,6 +158,14 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
   const [renderingAudio, setRenderingAudio] = useState(false);
   /** 正在按标注合成原声（含贝斯/鼓） */
   const [renderingBandAudio, setRenderingBandAudio] = useState(false);
+  /**
+   * 高分辨率能量峰值（只用于**起音点检测**，不进 config）。
+   *
+   * `config.waveformPeaks` 固定 128 点（波形条的显示口径）；而 206s 的曲子均分 128 点
+   * 等于 ±1.6s 的粒度，根本没法对齐。从「①」带过来的项目音频会额外算一份 1024 点，
+   * 显示时压回 128、检测时用原精度（见 `downsamplePeaks` 的注释）。
+   */
+  const [onsetPeaks, setOnsetPeaks] = useState<number[]>([]);
 
   // Animation & Audio references
   const animFrameRef = useRef<number | null>(null);
@@ -157,6 +176,25 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
   const soloTraceInputRef = useRef<HTMLInputElement | null>(null);
   const publishingRef = useRef<boolean>(false);
   const metronomeLastBeatRef = useRef<number>(-1);
+  /**
+   * 最新配置的镜像 —— 异步回调（波形提取 / 搜索）里必须用它，
+   * 不能用闭包里的 `config`：那些回调可能在用户已经改了几轮之后才 resolve，
+   * 拿旧快照回写会把中间改动全部吞掉。
+   */
+  const configRef = useRef<AudioTabSyncConfig>(config);
+  configRef.current = config;
+  /**
+   * 已处理过的种子 token：
+   * - `seedSyncRef` 守卫**同步**部分（局部 state 对齐 / 横按检测）—— 只做一次；
+   * - `seedWaveformRef` 守卫**异步**波形提取，且**成功之后才写**。
+   *
+   * ⚠️ 两者必须分开。React StrictMode（开发期）是「挂载 → 清理 → 再挂载」：
+   * 若在 fetch **之前**就把同一个 ref 写掉，第二次挂载会命中守卫直接 return，
+   * 而第一次的请求已被 cleanup 标记为 cancelled → 波形永远提不出来。
+   * （`guitarmate-frontend` 的分段练习面板踩过同一个坑，见仓库记忆。）
+   */
+  const seedSyncRef = useRef<string>('');
+  const seedWaveformRef = useRef<string>('');
 
   // Show quick toast notification
   const showToast = (msg: string) => {
@@ -171,6 +209,92 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
     // initialize synthetic background preview if needed
     audioEngine.createSyntheticDemoAudioBuffer(config.audioDurationSec, config.bpm || 80);
   }, [config.audioDurationSec, config.bpm]);
+
+  /**
+   * 切曲目 / 换音频时，把和弦标注重置成该曲目配置里的那一份。
+   * ⚠️ 依赖只能是 `config.audioId`：若依赖整个 `config`，本页任何一次音符编辑
+   * （新编辑器每拖一下都会 `onChangeConfig`）都会把刚加的和弦标记冲掉。
+   */
+  useEffect(() => {
+    setChordMarkers(configRef.current.chordMarkers ?? []);
+    // 换了音频 → 旧的细粒度峰值不再对应这段音频（否则起音线会画在错误的位置）
+    setOnsetPeaks([]);
+  }, [config.audioId]);
+
+  /**
+   * 「① 音频导入与六线谱校正 → 对齐工作台」的种子副作用。
+   * 配置已由 App 合并，这里只做异步补充 + 局部 state 对齐。
+   */
+  useEffect(() => {
+    const seed = initialSeed;
+    if (!seed?.token) return;
+
+    // ── 同步部分：只做一次 ──────────────────────────────────────────────
+    if (seedSyncRef.current !== seed.token) {
+      seedSyncRef.current = seed.token;
+      const current = configRef.current;
+      setChordMarkers(current.chordMarkers ?? []);
+      setSelectedNoteId(null);
+      setSelectedMeasureIndex(current.measureTimestamps.length > 0 ? 0 : null);
+      setCurrentTimeSec(0);
+      setIsPlaying(false);
+
+      // 横按：复核阶段没有这份数据，但可以按 30ms 容差重新识别（与「横按检测」按钮同一口径）
+      if (seed.autoDetectBarres) {
+        const notes = current.noteTimestamps;
+        setAutoDetectBarres(
+          notes.length > 0
+            ? detectBarres(notes, {
+                toleranceMs: 30,
+                measureStartTime: 0,
+                measureDuration: current.audioDurationSec,
+              })
+            : [],
+        );
+      }
+    }
+
+    // ── 异步部分：真实波形（完成后才写守卫，见上方说明） ────────────────
+    const waveformUrl = seed.waveformUrl;
+    if (!waveformUrl || seedWaveformRef.current === seed.token) {
+      if (!waveformUrl && seedSyncRef.current === seed.token) {
+        showToast('⚠️ 该项目没有可访问的音频地址 —— 请用「音频直传」上传音频后再对齐');
+      }
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      showToast('正在从项目音频提取波形…（大文件可能要几秒）');
+      try {
+        const res = await fetch(waveformUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const buf = await res.arrayBuffer();
+        // 1024 点拿精度 → 显示压回 128 点（波形条的布局就是按 128 点设计的）
+        const hiRes = await audioEngine.extractWaveformPeaks(buf, 1024);
+        if (cancelled) return;
+        seedWaveformRef.current = seed.token;
+        setOnsetPeaks(hiRes.peaks);
+        onChangeConfig({
+          ...configRef.current,
+          waveformPeaks: downsamplePeaks(hiRes.peaks, 128),
+          audioDurationSec: Number(hiRes.duration.toFixed(2)) || configRef.current.audioDurationSec,
+        });
+        showToast(
+          `✅ 已提取真实波形（${hiRes.duration.toFixed(1)}s，显示 128 点 / 起音检测 1024 点）—— 起音线与对齐诊断已可用`,
+        );
+      } catch (err: any) {
+        if (cancelled) return;
+        showToast(
+          `⚠️ 波形提取失败（${err?.message || '未知原因'}）—— 可改用「音频直传」上传音频，或忽略（发布仍可用）`,
+        );
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSeed]);
 
   // Main 60 FPS RequestAnimationFrame clock
   const updatePlayback = useCallback(
@@ -515,6 +639,8 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
         noteTimestamps: result.notes,
         transcriptionFileName: result.fileName || file.name,
         lowConfidenceCount: result.lowConfidenceCount,
+        // 导入的是一份**全新的**转录结果 → 旧的和弦标注对不上任何音符，一并清掉
+        chordMarkers: [],
       });
       setAutoDetectBarres(result.barres);
       setChordMarkers([]);
@@ -568,21 +694,24 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
     }
     const shouldTagNote = nearest !== null && Math.abs(nearest.timestampSec - startTime) <= 1.0;
 
-    setChordMarkers((prev) => [...prev, marker].sort((a, b) => a.startTime - b.startTime));
-    if (shouldTagNote && nearest) {
-      const targetId = (nearest as TabNote).id;
-      onChangeConfig({
-        ...config,
-        noteTimestamps: config.noteTimestamps.map((n) =>
-          n.id === targetId ? { ...n, chordName } : n,
-        ),
-      });
-    }
+    const nextMarkers = [...chordMarkers, marker].sort((a, b) => a.startTime - b.startTime);
+    setChordMarkers(nextMarkers);
+    // 同时写进配置：切走再回来还在，发布时也能照常写进 ChordMarker 表
+    onChangeConfig({
+      ...config,
+      chordMarkers: nextMarkers,
+      noteTimestamps:
+        shouldTagNote && nearest
+          ? config.noteTimestamps.map((n) => (n.id === (nearest as TabNote).id ? { ...n, chordName } : n))
+          : config.noteTimestamps,
+    });
     showToast(`已在 ${startTime.toFixed(2)}s 标注和弦 ${chordName}`);
   };
 
   const handleRemoveChordMarker = (id: string) => {
-    setChordMarkers((prev) => prev.filter((c) => c.id !== id));
+    const nextMarkers = chordMarkers.filter((c) => c.id !== id);
+    setChordMarkers(nextMarkers);
+    onChangeConfig({ ...config, chordMarkers: nextMarkers });
     showToast('和弦标记已删除');
   };
 
@@ -1291,7 +1420,11 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
             title="A-B 片段循环标记（用于圈定 Solo 或难点小节）"
           >
             <Bookmark className="w-3.5 h-3.5 text-purple-400" />
-            <span>A-B 循环 [{config.loopRegion?.startSec.toFixed(1)}s ~ {config.loopRegion?.endSec.toFixed(1)}s]</span>
+            <span>
+              {config.loopRegion
+                ? `A-B 循环 [${config.loopRegion.startSec.toFixed(1)}s ~ ${config.loopRegion.endSec.toFixed(1)}s]`
+                : 'A-B 循环（未设置）'}
+            </span>
           </button>
 
           {/* Upload Real Audio */}
@@ -1783,6 +1916,23 @@ export const AudioTabSyncStudio: React.FC<AudioTabSyncStudioProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Section 2b: 六线谱编辑器（节点级校正 / 属性面板 / 扫弦模式 / 对齐诊断）
+            新增区块，纯追加：上面两段的波形与谱面预览、下面的对齐表格与各弹窗全部保留。 */}
+        <TabEditorPanel
+          config={config}
+          onChangeConfig={onChangeConfig}
+          isDark={darkMode}
+          playheadSec={currentTimeSec}
+          isPlaying={isPlaying}
+          onsetPeaks={onsetPeaks}
+          onSeek={(sec) => setCurrentTimeSec(sec)}
+          onPluck={(note) => {
+            const freq = audioEngine.getGuitarFrequency(note.stringIndex, note.fret);
+            audioEngine.pluckString(freq, Math.max(0.4, note.durationSec || 0.8), (note.velocity ?? 90) / 127);
+          }}
+          onToast={showToast}
+        />
 
         {/* Section 3: Notes & Measures Alignment Inspector */}
         <div

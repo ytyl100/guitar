@@ -60,6 +60,10 @@ PITCH_RANGES = {
     "other": (21, 108),
 }
 
+# 音符内音高变化超过该半音数才判为推弦（bend）。1.5 半音 ≈ 全音，
+# 低于此值的轮廓波动视为音高追踪的量化抖动（详见 _bend_amount）。
+BEND_RANGE_SEMITONES = 1.5
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Basic Pitch 音频转录（GuitarMate）")
@@ -125,8 +129,17 @@ def main() -> None:
     notes: List[Dict[str, Any]] = []
     for event in note_events or []:
         # basic-pitch 的 note_events 元素形如 (start, end, pitch, amplitude, pitch_bend)
+        #
+        # ⚠️ **第 5 项的类型随版本变了**：
+        #   - basic-pitch 0.3.x：标量（float 或 None）
+        #   - basic-pitch 0.4.x：**列表**（每个音符可以有多个 bend，见 inference.py 里
+        #     `[int(b) for b in pitch_bends] if pitch_bends else None`）
+        # 早期代码直接 `float(event[4])` → 在 0.4.x 上抛
+        #   `TypeError: float() argument must be a string or a real number, not 'list'`
+        # 且**整个 worker 会崩掉**（实测 Macaroon 5 跑了 7 分钟才在解析阶段挂掉，
+        # 报错里没有 traceback，看起来像内存不足）。这里两种形态都兼容。
         start_sec, end_sec, pitch, amplitude = float(event[0]), float(event[1]), int(round(float(event[2]))), float(event[3])
-        bend = float(event[4]) if len(event) > 4 and event[4] is not None else 0.0
+        bend = _bend_amount(event[4] if len(event) > 4 else None)
         if pitch < min_pitch or pitch > max_pitch:
             continue
         fingering = assign_fingering(pitch, tuning, args.capo)
@@ -140,7 +153,9 @@ def main() -> None:
                 "durationSec": round4(max(0.02, end_sec - start_sec)),
                 "confidence": round4(min(1.0, max(0.0, amplitude))),
                 "velocity": int(min(127, max(1, round(amplitude * 100)))),
-                "technique": "bend" if abs(bend) > 0.5 else "normal",
+                # `bend` 现在是音符内的**音高变化量（半音）**（见 _bend_amount）：
+                # 变化超过一个全音才算推弦，避免把 basic-pitch 0.4.x 的量化抖动全标成 bend。
+                "technique": "bend" if bend > BEND_RANGE_SEMITONES else "normal",
             }
         )
 
@@ -190,6 +205,51 @@ def main() -> None:
         tuning=tuning,
         notes=notes,
     )
+
+
+def _bend_amount(value: Any) -> float:
+    """
+    把 basic-pitch 的 `pitch_bend` 字段统一成「音高偏移量（半音）」。
+
+    ⚠️ **该字段的形态跨版本不一致，且 0.4.x 直接 `float()` 会崩**：
+
+    - 0.3.x：标量 float（音符内的偏移量），或 None
+    - 0.4.x：**列表** —— 音符内等间隔采样的整半音偏移轮廓，例如 `[2,1,1,1,1,...]`，
+      见 `basic_pitch/inference.py`：`[int(b) for b in pitch_bends] if pitch_bends else None`
+
+    早期代码写的是 `float(event[4])`，在 0.4.x 上抛
+    `TypeError: float() argument must be a string or a real number, not 'list'`。
+    因为异常发生在「推理跑完之后的事件解析」阶段，表面上就是 worker 无 traceback 退出
+    （实测 Macaroon 5 跑满 7 分钟才挂，很容易被误判成内存不足）。
+
+    语义上也**不能取轮廓的第一个采样点**：0.4.x 的轮廓是「相对该音符估计音高的量化偏移」，
+    实测中位数就有 1 个半音（即几乎所有音符都会被误判成 bend）。吉他推弦的本质是
+    **音符内部的音高变化**，所以这里取轮廓的极差（max - min）：
+
+    - 轮廓恒定（如 `[1,1,1,...]`）→ 0 → normal
+    - 有爬升（如 `[0,0,1,1,2]`）→ 2 → bend
+
+    实测（Macaroon 5 吉他分轨 20s）：165 个音符中极差 0 有 121 个、1 有 33 个、≥2 有 11 个，
+    即约 7% 判为 bend —— 与真实演奏中推弦的占比相符。
+    """
+    if value is None:
+        return 0.0
+    if isinstance(value, (list, tuple)):
+        samples = [float(v) for v in value if v is not None]
+    elif hasattr(value, "__len__") and not isinstance(value, (str, bytes)):
+        try:
+            samples = [float(v) for v in list(value) if v is not None]
+        except (TypeError, ValueError):
+            return 0.0
+    else:
+        try:
+            # 0.3.x 标量语义 = 音符内的偏移量，直接当作极差用（`>1.5` 的阈值即「变化超过一个全音」）
+            return abs(float(value))
+        except (TypeError, ValueError):
+            return 0.0
+    if not samples:
+        return 0.0
+    return max(samples) - min(samples)
 
 
 def _pitch_to_freq(midi_pitch: float) -> float:

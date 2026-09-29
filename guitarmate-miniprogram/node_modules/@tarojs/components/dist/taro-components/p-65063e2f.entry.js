@@ -1,0 +1,1 @@
+export{T as taro_textarea_core}from"./p-52de1cec.js";import"./p-f72fcd8c.js";

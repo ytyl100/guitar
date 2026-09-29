@@ -25,11 +25,19 @@ async function bootstrap() {
   });
 
   // 确保 uploads 目录存在并开放静态访问
+  //
+  // ⚠️ 缓存头是**小节连续播放**的关键优化：切片文件名自带时间戳 + 随机后缀
+  // （`slice_<ts>_<rand>.mp3`），内容永不变更 → 可以放心长缓存 + `immutable`。
+  // 没有它时每次 `audio.src = ...` 都会重新下载整段音频，切小节有明显停顿。
   const uploadsDir = join(process.cwd(), 'uploads');
   if (!existsSync(uploadsDir)) {
     mkdirSync(uploadsDir, { recursive: true });
   }
-  app.useStaticAssets(uploadsDir, { prefix: '/uploads/' });
+  app.useStaticAssets(uploadsDir, {
+    prefix: '/uploads/',
+    maxAge: '7d',
+    immutable: true,
+  });
 
   // 全局参数校验与类型自动转换
   app.useGlobalPipes(

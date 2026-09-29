@@ -13,9 +13,10 @@ import {
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TranscribeService } from './transcribe.service';
 import { PublishService } from './publish.service';
-import { PythonRunnerService } from './python-runner.service';
+import { PythonRunnerService, inspectYtDlpCookieState } from './python-runner.service';
 import { TranscribeQueueService } from './queue/transcribe.queue';
 import {
+  AttachAudioDto,
   CreateUploadProjectDto,
   CreateUrlProjectDto,
   PublishProjectDto,
@@ -23,6 +24,8 @@ import {
   UpdateProjectDto,
 } from './dto/transcription.dto';
 import { PROJECT_STATUSES, STAGE_PROGRESS } from './transcription.types';
+import { probeYoutubeSession } from './youtube-session';
+import { buildSessionHint } from './youtube-session-hint';
 
 /**
  * 音频转录流水线（Transcription）
@@ -67,11 +70,25 @@ export class TranscriptionController {
   @ApiQuery({ name: 'force', required: false, description: '强制重新探测（默认使用进程内缓存）', example: false })
   async capabilities(@Query('force') force?: string) {
     const caps = await this.python.probe(force === 'true' || force === '1');
+    const cookieState = inspectYtDlpCookieState();
+    const envDriver = (process.env.YTDLP_DRIVER || '').trim().toLowerCase();
     return {
       success: true,
       capabilities: caps,
       /** 缺失依赖时给出的安装指引，可直接贴到终端 */
       installHints: buildInstallHints(caps),
+      /**
+       * 下载策略（方案 A：下载留在本机、服务器只做重活）
+       * - `serverCanDownload`：服务器自身能否下载（要有 yt-dlp + **健康** cookies）；
+       * - `driverDefault`：不显式指定时新建 URL 项目的执行方；
+       * - `agentCommand`：本机代理的启动命令。
+       */
+      download: {
+        driverDefault: envDriver === 'client' ? 'client' : 'server',
+        serverCanDownload: caps.ytDlp.available && cookieState.strongAuth && cookieState.hasLoginInfo,
+        cookies: cookieState,
+        agentCommand: 'npm run agent',
+      },
       pipeline: {
         stages: Object.keys(STAGE_PROGRESS),
         progressBaseline: STAGE_PROGRESS,
@@ -90,6 +107,34 @@ export class TranscriptionController {
   async queueStatus() {
     const [counts, describe] = await Promise.all([this.queue.counts(), this.queue.describe()]);
     return { success: true, counts, driver: describe };
+  }
+
+  /**
+   * YouTube 登录态**实测**（不是检查文件里有几行 cookie，而是真的去问 YouTube）。
+   *
+   * 为什么单独给个接口：yt-dlp 只在部分失败分支打印「cookies are no longer valid」，
+   * 同一份 cookies 连跑两次结论可能不同；而「youtube.com 是否认得这份 cookies」
+   * 是可以直接问出来的（页面里的 `LOGGED_IN`）。用户重新导出 cookies 后点一下即可确认。
+   */
+  @Get('youtube-session')
+  @ApiOperation({
+    summary: '实测 YouTube 是否认得当前 cookies（返回 signed-in / signed-out）',
+    description:
+      '带 cookies 请求一次 youtube.com，读取 YouTube 自己写入页面的 `LOGGED_IN`。' +
+      '`signed-out` = cookies 已失效或被浏览器轮换，必须重新导出（换 IP 无效）；' +
+      '`unreachable` = 网络层没通，不能据此判定 cookies 有问题。',
+  })
+  async youtubeSession() {
+    const cookieState = inspectYtDlpCookieState();
+    const probe = await probeYoutubeSession();
+    return {
+      success: true,
+      /** 文件层面的体检结果（有几条、像不像登录态） */
+      cookies: cookieState,
+      /** 网络层面的实测结果（YouTube 认不认）—— 以这个为准 */
+      session: probe,
+      hint: buildSessionHint(probe.state),
+    };
   }
 
   // ───────────────────────────────────────────
@@ -136,6 +181,7 @@ export class TranscriptionController {
       artist: dto.artist,
       sourceType: 'url',
       url: dto.url,
+      downloadDriver: dto.downloadDriver,
       bpm: dto.bpm,
       timeSignature: dto.timeSignature,
       capo: dto.capo,
@@ -144,6 +190,40 @@ export class TranscriptionController {
     });
     const started = await this.transcribe.startProject(project.id);
     return { success: true, project: await this.transcribe.getProject(project.id), started };
+  }
+
+  // ───────────────────────────────────────────
+  // 本机下载代理（方案 A：服务器不下载，代理回传音频）
+  // ───────────────────────────────────────────
+
+  @Get('download-tasks')
+  @ApiOperation({
+    summary: '本机下载代理的任务清单（等待回传音频的项目 + 服务器下载失败的项目）',
+    description:
+      '配合 `scripts/download-agent.mjs`：代理在本机用 yt-dlp 取音频，再 POST 回 `/projects/:id/audio`。' +
+      '`failedDownload` 供 `--rescue` 模式接管服务器下不动的任务。',
+  })
+  async downloadTasks() {
+    return { success: true, ...(await this.transcribe.listDownloadTasks()) };
+  }
+
+  @Post('projects/:id/audio')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({
+    summary: '本机代理回传音频（base64）→ 从 separate 阶段继续流水线',
+    description:
+      '用于「服务器无法访问 YouTube / 国内网络」的部署：URL 项目以 `downloadDriver=client` 创建后，' +
+      '由本机代理取音频并回传，服务器只负责分离/转录/发布。',
+  })
+  @ApiParam({ name: 'id', description: 'Project ID' })
+  @ApiResponse({ status: 400, description: '已有音频 / 缺少 base64 / 格式不支持' })
+  async attachAudio(@Param('id') id: string, @Body() dto: AttachAudioDto) {
+    return this.transcribe.attachAudio(id, {
+      base64: dto.base64,
+      fileName: dto.fileName,
+      title: dto.title,
+      durationSec: dto.durationSec,
+    });
   }
 
   // ───────────────────────────────────────────
@@ -229,11 +309,13 @@ export class TranscriptionController {
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: '失败后重试：自动定位「第一个未完成的阶段」并从该阶段恢复',
-    description: '例如 Demucs 成功但 Basic Pitch 失败，只会重跑 transcribe，不会重复跑分离。',
+    description:
+      '默认自动定位；也可用 body 里的 `from` 显式指定起点阶段。' +
+      '`from: "transcribe"` 用于**用新版识别算法重新转录已有项目**（会重置分轨状态）。',
   })
   @ApiParam({ name: 'id', description: 'Project ID' })
-  async retry(@Param('id') id: string) {
-    return this.transcribe.retryProject(id);
+  async retry(@Param('id') id: string, @Body() dto: { from?: 'download' | 'separate' | 'transcribe' | 'convert' }) {
+    return this.transcribe.retryProject(id, dto?.from);
   }
 
   // ───────────────────────────────────────────
@@ -261,6 +343,7 @@ export class TranscriptionController {
       audioFallback: dto.audioFallback,
       allowMissingAudio: dto.allowMissingAudio,
       mirrorToScorePipeline: dto.mirrorToScorePipeline,
+      publishMirroredScore: dto.publishMirroredScore,
       mirrorScoreId: dto.mirrorScoreId,
       maxMeasures: dto.maxMeasures,
     });
@@ -313,6 +396,22 @@ function buildInstallHints(caps: Awaited<ReturnType<PythonRunnerService['probe']
     hints.push('# Tayuya（MIDI → 六线谱）：按上游 README 安装，或设置 TAYUYA_BIN 指向可执行文件');
   }
   if (!caps.ytDlp.available) hints.push('pip install -U yt-dlp');
+  else if (!caps.ytDlp.cookies) {
+    hints.push(
+      'YouTube 下载需要 cookies（否则报 Sign in to confirm you\'re not a bot）：在后端目录执行 ' +
+        '`npm run youtube:login` 会弹出 Edge 登录窗口并自动写出 cookies.txt；' +
+        '也可手动把导出的 cookies.txt 放到后端根目录，或设 YTDLP_COOKIES / YTDLP_COOKIES_FROM_BROWSER=firefox。',
+    );
+  } else {
+    const state = inspectYtDlpCookieState();
+    if (!state.usable) {
+      hints.push(
+        `已找到 cookies 文件（${state.source}，${state.count} 条），但其中**没有登录 cookie**` +
+          '（SID / HSID / SSID / SAPISID …）—— 说明导出时并未登录 YouTube，等于没配。' +
+          '在后端目录执行 `npm run youtube:login` 重新获取即可。',
+      );
+    }
+  }
   if (!caps.ffmpeg.available) hints.push('# ffmpeg-static 缺失：npm i ffmpeg-static');
   return hints;
 }

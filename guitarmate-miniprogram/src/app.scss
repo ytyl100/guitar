@@ -1,0 +1,2892 @@
+/**
+ * 全局样式（WXSS）
+ *
+ * ⚠️ 小程序里 Tailwind 不能直接用（Tailwind 4 不产出 WXSS），所以这里用
+ * 与 Web 版**同一套配色**手写少量基础类，保证两端观感一致：
+ *   背景 #0b1220（= 谱面 PNG 的底色，必须一致，否则「挖空弦线」处会出现色块）
+ *   卡片 zinc-900 / 描边 zinc-800 / 主色 emerald-500 / 强调 amber-500
+ */
+page {
+  background-color: #0b1220;
+  color: #e2e8f0;
+  font-size: 28px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial,
+    sans-serif;
+}
+
+.gm-page {
+  min-height: 100vh;
+  padding: 24px 24px 160px;
+  box-sizing: border-box;
+}
+
+.gm-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.gm-subtitle {
+  font-size: 24px;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.gm-card {
+  background-color: #18181b;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  border-radius: 28px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.gm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gm-song-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.gm-meta {
+  font-size: 24px;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.gm-tag {
+  display: inline-block;
+  font-size: 20px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  margin-left: 12px;
+}
+
+.gm-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 28px;
+  padding: 20px 0;
+}
+
+.gm-btn--primary {
+  background-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+}
+
+.gm-btn--ghost {
+  background-color: rgba(39, 39, 42, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+}
+
+.gm-chip {
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 26px;
+  color: #cbd5e1;
+  background-color: rgba(39, 39, 42, 0.6);
+  margin-right: 12px;
+}
+
+.gm-chip--active {
+  background-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+}
+
+.gm-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gm-muted {
+  color: #94a3b8;
+  font-size: 26px;
+}
+
+/* 谱面卡片：底色必须与 PNG 的 surface 色一致（见 tab-svg.ts 的 theme） */
+.gm-tab-card {
+  background-color: #0b1220;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.gm-tab-img {
+  width: 100%;
+  display: block;
+}
+
+/* 谱面舞台：尺寸与图片逐像素一致，高亮层以它为原点（坐标来自 tab.json） */
+.gm-tab-stage {
+  position: relative;
+}
+
+/* 高亮层：绝对定位覆盖在谱图上，坐标用契约里的归一化 x/y */
+.gm-tab-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.gm-note-dot {
+  position: absolute;
+  border-radius: 50%;
+  background-color: rgba(244, 63, 94, 0.8);
+}
+
+.gm-note-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  box-sizing: border-box;
+}
+
+.gm-playhead {
+  position: absolute;
+  width: 3px;
+  background-color: rgba(244, 63, 94, 0.9);
+}
+
+.gm-progress-track {
+  position: absolute;
+  height: 6px;
+  border-radius: 999px;
+  background-color: #1e293b;
+}
+
+.gm-progress-fill {
+  position: absolute;
+  height: 6px;
+  border-radius: 999px;
+  background-color: #10b981;
+}
+
+.gm-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20px 24px calc(20px + env(safe-area-inset-bottom));
+  background-color: rgba(9, 9, 11, 0.96);
+  border-top: 1px solid rgba(39, 39, 42, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gm-seg-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.gm-seg-label {
+  font-size: 26px;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.gm-play-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gm-play-btn--on {
+  background-color: #10b981;
+  color: #04231a;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   设计语言对齐（覆盖上面的早期值）
+   ──────────────────────────────────────────────────────────────
+   目的：详情页 / 练习页仍在用 `gm-*` 类，这里把它们的取值改成与
+   `guitarmate-frontend`（Tailwind）一致的那一套，**两页同时生效**，
+   不必重写两个页面的 JSX（那种大改更容易出错）。
+
+   对应关系（Web 类名 → 这里）：
+     `p-4 rounded-2xl border bg-zinc-900/60 border-zinc-800/70` → .gm-card
+     `px-3 py-1.5 rounded-full text-xs` → .gm-chip（选中 .gm-chip--active）
+     `px-4 py-2 rounded-full bg-emerald-500` → .gm-btn--primary
+     `text-xs text-zinc-200 font-bold` → .gm-seg-label
+     `text-[11px] text-zinc-400` → .gm-meta
+   ⚠️ 放在文件末尾靠**级联顺序**生效（同权重后者胜），不改上面的原始定义。
+   ══════════════════════════════════════════════════════════════ */
+page,
+.gm-page {
+  background-color: #0b1220;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Tailwind 主题变量的 rpx 化（**尺寸/字体不一致的根因修复**）
+   ──────────────────────────────────────────────────────────────
+   Tailwind 4 把尺寸都发成 CSS 变量，值用 `rem`：`--spacing: 0.25rem`、`--text-lg: 1.125rem`…
+   - Taro 的 H5：Taro 会按 750 设计宽**动态设置 root font-size** → rem 正常缩放（Web 版看着是对的）；
+   - 小程序：没有这套机制，rem 按 WebView 默认 16px 解析 → 内边距/间距/字号全部偏小，
+     与 Web 版明显不一致（用户反馈的"字体跟大小不一样"就是这个）。
+
+   ⚠️ 为什么不靠 `weapp-tailwindcss` 的 `rem2rpx`：它只改写**工具类声明**，
+   不会改写 `theme.css` 里那些**变量定义**（实测变量仍是 rem）。所以这里直接覆盖变量。
+   换算基准：设计宽 750 → `1rem = 32rpx`，即 `px × 2 = rpx`（375pt 屏上 32rpx = 16px）。
+   本文件在 `tailwind.css` **之后**导入，同权重后者生效，可靠覆盖。
+   ══════════════════════════════════════════════════════════════ */
+page {
+  --spacing: 8rpx; /* 0.25rem */
+  --text-xs: 24rpx; /* 0.75rem = 12px */
+  --text-xs--line-height: 32rpx;
+  --text-sm: 28rpx; /* 0.875rem = 14px */
+  --text-sm--line-height: 40rpx;
+  --text-base: 32rpx; /* 1rem = 16px */
+  --text-base--line-height: 48rpx;
+  --text-lg: 36rpx; /* 1.125rem = 18px */
+  --text-lg--line-height: 56rpx;
+  --text-xl: 40rpx;
+  --text-xl--line-height: 56rpx;
+  /**
+   * ⚠️ `2xl` 以上必须补上：Tailwind 4 把字号发成 CSS 变量（`1.5rem` 这类），
+   * 小程序里 rem 的参照（根字号）与设计不一致，不覆盖就会**明显偏大**
+   * （实测详情页 Hero 标题 30px，Web 版是 24px）。
+   */
+  --text-2xl: 48rpx; /* 1.5rem = 24px */
+  --text-2xl--line-height: 64rpx;
+  --text-3xl: 60rpx; /* 1.875rem = 30px */
+  --text-3xl--line-height: 72rpx;
+  --text-4xl: 72rpx; /* 2.25rem = 36px */
+  --text-4xl--line-height: 80rpx;
+}
+
+/*
+ * 页边距
+ * ------
+ * ⚠️ weapp 上 Taro/weapp-tailwindcss 会给页面根注入 `page{padding:24rpx 24rpx 160rpx}`
+ * （H5 没有 `<page>` 元素，所以只有 weapp 有这一层）。
+ * 想用 `page{padding:0}` 清掉它**不行**：构建期同选择器规则会被合并，且**保留先出现的那条** ——
+ * 实测 `padding:0`（无论加不加 `!important`）在产物里直接消失了。
+ * 所以改成「少给一点」：weapp 那层 12px + 这里的 4px = 16px（与 Web 详情页的 `px-4` 一致）；
+ * H5 没有那层，所以补回完整的 16px。
+ */
+.gm-page {
+  padding: 8px 8px 160px;
+}
+
+/* H5（我的本地验证环境）没有 page 内边距，用 Taro H5 的容器类补回真正的 16px */
+.taro_page .gm-page {
+  padding: 32px 32px 160px;
+}
+
+/* 卡片 16 CSS px 内边距 + 16px 圆角（对齐 Web 的 `p-4 rounded-2xl border`） */
+.gm-card {
+  background-color: rgba(24, 24, 27, 0.6);
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  border-radius: 32px;
+  padding: 32px;
+  margin-bottom: 20px;
+}
+
+.gm-seg-label {
+  font-size: 26px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+
+.gm-meta {
+  font-size: 22px;
+  color: #a1a1aa;
+}
+
+.gm-chip {
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 24px;
+  color: #d4d4d8;
+  background-color: rgba(39, 39, 42, 0.6);
+  margin-right: 12px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+}
+
+.gm-chip--active {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+}
+
+/**
+ * 紧凑档小 chip（工具条的「每段小节数 1/2/3」与底部条的「速度 0.75x/1x/1.25x」）。
+ * Web 版这两个位置都是 `text-[10px]` 小档，而 `.gm-chip` 是给头部 Simplified/Original 那种大档用的。
+ */
+.gm-chip--tight {
+  padding: 4px 20px;
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.gm-play-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  font-size: 28px;
+}
+
+.gm-play-btn--on {
+  background-color: #10b981;
+  color: #04231a;
+}
+
+.gm-btn--primary {
+  background-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+  font-size: 26px;
+  padding: 16px 0;
+}
+
+.gm-btn--ghost {
+  background-color: rgba(39, 39, 42, 0.6);
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  color: #d4d4d8;
+  font-size: 24px;
+  padding: 16px 0;
+}
+
+.gm-tab-card {
+  background-color: #0b1220;
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.gm-bar {
+  background-color: rgba(9, 9, 11, 0.96);
+  border-top: 1px solid rgba(39, 39, 42, 0.7);
+}
+
+/* ------------------------------------------------------------------
+ * 底部主导航高度（唯一定义处）
+ * ------------------------------------------------------------------
+ * `.gm-nav` 与 `.gm-bar` 都要用到这个高度：导航要有固定高度，控制条要**正好抬到它上面**。
+ * 写成两个地方一定会漂移（字体/内边距一改就重叠或留缝），所以共用一个变量。
+ * 安全区只算一次（由导航承担），所以 `.gm-bar` 的 padding 不再重复加 `env(safe-area-inset-bottom)`。
+ */
+page,
+.gm-page {
+  --gm-nav-h: 110rpx;
+}
+
+.gm-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  height: var(--gm-nav-h);
+  padding-bottom: env(safe-area-inset-bottom);
+  /** 与 Web 深色底栏一致：bg-[#12141a]/95 + border-zinc-800/80 */
+  background-color: rgba(18, 20, 26, 0.95);
+  border-top: 1px solid rgba(39, 39, 42, 0.8);
+}
+
+/*
+ * 导航文字**必须不折行**：5 个 tab 平分 375px，每个只有 75px，
+ * 「Profile 我的」这类稍长就会被挤成两行（H5 预览里字号偏大 25%，一定会折）。
+ * ⚠️ 不折行还不算完：总宽超过屏幕时**最后一个 tab 会被直接切掉**（实测「Profile 我的」变「Profil」），
+ * 所以每项还要 `flex:1 + min-width:0` 平均分配宽度，并允许在极端宽度下省略号而不是溢出。
+ */
+.gm-nav-item {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /** Web 端每项是 `py-1`（4px） */
+  padding: 8rpx 0;
+}
+
+.gm-nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  /**
+   * ⚠️⚠️ 字号/行高/间距**必须写在这里**（app.scss 是普通 CSS，选择器不会被动）。
+   * 不能交给 JSX 里的 `text-[20rpx] mt-[4rpx]` 这类 **Tailwind 任意值类名**：
+   * 小程序端 WXSS 里那些选择器被 weapp-tailwindcss 转义成 `.text-_b20rpx_B`，
+   * 而 JS 里的 class 字符串还是原文 `text-[20rpx]` → **永远匹配不上，等于没写**
+   * （实测症状：字号回落到 Text 默认值 16px，用户看到的就是「菜单字号偏大」）。
+   * 数值口径：本文件是 rpx，写「Web 的 CSS px × 2」。
+   */
+  font-size: 20px; /* Web text-[10px] */
+  line-height: 30px; /* Web 实测行高 15px */
+  margin-top: 4px; /* Web mt-0.5 = 2px */
+  letter-spacing: -0.025em; /* Web tracking-tight */
+  /** 与 guitarmate-frontend 对齐：未激活 zinc-500（浅色主题下是 zinc-400） */
+  color: #71717a;
+  font-weight: 400;
+}
+
+/** 激活态：Web 是 `text-emerald-500 font-bold`（字号同为 10px，只是字重与颜色不同） */
+.gm-nav-label--on {
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* ⚠️ 浅色主题的覆盖**写在文件末尾的 .gm-light 区块里**（同一选择器写两处会按「后写的赢」拼运气）*/
+
+/* ------------------------------------------------------------------
+ * 底部导航图标（与 guitarmate-frontend 的 lucide 线性图标逐字对齐）
+ * ------------------------------------------------------------------
+ * Web 端是 `<Music2 size={20} />` 这样的 lucide 组件（24 格 viewBox、stroke-width 2，
+ * 激活时 `stroke-[2.5]`）；小程序不引图标库、WXSS 也不能写本地图片路径，
+ * 所以图标内联成 **base64 的 PNG data URI** 当 background-image。
+ *
+ * ⚠️ 为什么是 PNG 而不是 SVG：SVG data URI 在 WXSS 里的支持度在不同基础库/工具版本上并存疑，
+ *    而 base64 PNG 是小程序里人人都在用的写法（形状仍取自上面那套 lucide path，
+ *    用 resvg 栅格化成 80×80 = 显示 20px 的 4 倍图，高分屏不糊）。
+ * ⚠️ data URI 里的图**拿不到外部颜色**（不能写 `currentColor`），
+ *    所以「未激活 #71717a / 激活 #10b981」各自生成一张图：
+ *    - 尺寸与 Web 完全一致（24×24 viewBox → 40rpx = 20px 显示）
+ *    - 颜色变化靠 `.gm-nav-item--on` 覆盖 background-image，而不是 WXML 里换图
+ *
+ * 生成/更新：`node scripts/gen-nav-icons.mjs`（会重写下面标记之间的内容）
+ */
+.gm-nav-icon {
+  width: 40rpx; /* = 20px，与 Web 的 size={20} 一致 */
+  height: 40rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  flex-shrink: 0;
+}
+
+/* >>> NAV-ICONS:START（由 scripts/gen-nav-icons.mjs 生成，勿手改） >>> */
+/* 由 scripts/gen-nav-icons.mjs 生成（PNG 80×80 base64）—— 形状取自 lucide-react@0.546.0 */
+.gm-nav-icon--songs {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAFC0lEQVR4nO2cz24aRxzHf7Ns8M24TxAq9W7yBKGnnirTJzCcewg4QUVOpAyqbaUiManUu9dPUEfqoTfjJyg99xDyBAXfDITtd2BXQWXZP8wCs8t8pNH8NkK72Q8zv5lhZ81II4UWKIkWKImyAl+8eFWcTOwjIvvAMIzrt2/POqQgSgo8OXlZtW27jXAO1jFNu9ZqXXRxoAzKCWw0eP7hYfgRoSeMkbW/n61xzvs43DrKCRRd9/PnyS1CP/oQ+f7y8qKJeKswFKUIKdClh/xYe/fu7AbxVki6QIft5ceUCJyBbr3x/JgqgQ4bzY8MRSliEOiykfyYNIEfUIpElEMJyXrzY6IEZjLGt6Zp9h4eRhwrlGOKALr1WvJj4gS6Szrnc5yInqKEJfb8yFCUwhFzi3CBeYEuJyenZdsmTkSPUcISW35MvEAB5/zg/n6I9TNVcbjR/JgKgS6zdfSIR82PoNpuX/yKOjKpEujinINThPwY9tz/J5UCXaLkRwwuTQwunCKSaoECHjo/sut2+7xMEUm9QJeg/LjquXdGoItzfk5z+ZExVru8PH+PMDI7J9ClXj8t2LZxIFY2b97wHq3IzgqMCy1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QEi1QkrUJdJ6CPWXMztOMAi7Xw1OxPh4x9k2T7ry2VOy0QD57BvsMgko4LKAE0cMD7Y4x9yLNTgrkX8RVcXiAEhmItLLZbHM8Hud3SqB4PDge0+8I8xQDEPkLvoifEC6QOoHPn78qTSaTK4QrtbqopEqgs3FHyNsYqRHodNu/EG6UVAhsTKcnQyEvqNt+wuk7yGldw2BdceNC/GRi5G17UrBtVsKU5hCfC00qBNZqLy3c+DH5wq5zuUdVjM59HCzFea2Vk++2sy8kXqBoQWP/rjvAnK4cZfN2Y9aiLZrbLbWMxAus1U6FmCMUT0yTnnitLoLgmEcOBqMOWvYh+ZBogXx6k8N/EXqCXLfSFlmXenDrTrZA/2kL+7vdPi8gkALX4LjGa4SeJFqg3+CBvPdDlLznB9KEjcqThAs87dCSRL+3l/1aZpfnPPii/sEX9Q3CBUzT+L7VOvsDoTJEEfgRVZ48aLcvGKpYQDf+E934O4QLyOxlXhehbxwCbVRe3EFgkWICAn+DwB8RLqAFhiDNAnu05I0fCAx9niCQAy3kwGPyQA8iIcB1xFywgLJALpf9CvPRPkJliCBwecvY0DRmgJZ+gFopQgtEbiojN10h9KKLm3uCWgpcg+MarxF68QHXKKFWitAC+ZaXcjh/Bee3SDFCCxSge92gOkLxxJT6MWF4i7CA4sUgl8vmuWL5TxBJYD2glYA+8mElSj5sTH/OGl0hvxZpCWh9TbQ+TgoSSaDAbzBxwQ3f7O9nK0EtBi36GSpO/r9uK9v6BJEF8ll36xFmFSh+9CCyg0GhixkcBpmf7+rTFswOxW4F/HsJnymg+IJzVND6LFKUyAIFMxG+XTkWIK8JeZwUZiWBAkw5ymhFVwjXxGqv4G+alQUKnAfrFgV354gkQ55ASqDA6c43CB+jSINuW0G3tSghSAsUcAws96H+MoYf7Hpv7xGPa029KWIR6MKnIkciN5Yx1TmkYD7hv9DJZJil2q8sYWEoa6GBCfJwOCwSUZ4ApBbQPbsIAetnMnantcKqRTUYikYCLVASLVCS/wCAZ2V+Q2vucgAAAABJRU5ErkJggg==");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--songs {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAE8klEQVR4nO2bwVLbRhjHv89g9xIScesN+gTQJ8DMpCGHzoQce4rzBMCxkwmWYTo9Yp6g5tTeINMLJp3BeYKavgDuqUdE2xMBb/4r7IR4kLXSruSVs7+Zb/TJA5L2J+nbtbRmcmjhBGpirUDv5KdlousVEuQRz74Jnrzq4mPrsFKg197ZIxKbSD/B3KFy+WWw+mOPLMI6gV674RNRHREBN6ky1whWtwKsTBwbBQos4ghw5H7wpL6PfKJYJdA7/XmRrq7OkarSo1LpZfDd6w5NCLsEvt2tUr9/ijQZE6yPjLCG1AI/kn99ZIQ16AsMybU+MsIaDAkckkt9ZIQ1GBZ4S8b1kRHWkInAj2RTHxlhDdkKDDFeHxlhDWoCS8+J+utIXiDS0jNVHxlhDUoCS6VV2fDwYYO4buKTFUQ6DNRHRlhDEoE0wGvvrpPoN9GSBaymhJvB2vYWksQwwhrSCByC79A+EW0iHiGSw7SP2ij/PxGMsAYdgRLvdM+jq3+bSF8gklOpfJP0dmaENegKHJK6PgreCp5uy/9ThhHWYErgkMT10Qm8H+X66G7haBTq40GwVq9RQhhhDVkKHHJPfbxEYBhT9ykFjLCGPATeRe5Pd1uMsAbZoDwFmoAR1uAEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEauIEjuCd7KxgAQQeo5OHBHvkDknKc2ejM6W+eIGDFzfPsNl1SKsSPkKMo4sjaFG58ka+DfuiBXonjQ1cZT4hRSRHcItnqS1uxK9Yi2baBA7ech0iXSRNmOh/QfQAaTTTJBA1rkZC/II0P6ZF4L2/Z8uDaRDoHe9sEgsInABFFxhO2KH+IdLJUGSBg2HKuUwRyRD0N/a2gEyPQgtsN1oUPTnnc6Qw4ibNcPdug8Nem27Qc4safZqfok5RBSb6JSXTPpUf+qPfNEYZ1FKf4qad3aWwApWvvtLzYO31ERIlBidG/v0SIp4CC7yQC8Q4GmmmiYW3tbj+E2k8RRSo2MAzyFvGMhU4QT6N/an/gEIKVGmcgYbNtxv/CKKvkUZjYD8mURN40miiV91AGgmuPqVtjWP+uHEsmNaQRlNIge1Gh8YPOd5BYJU0wX5aFNdRTaVADFvS/MpnFO8thjV9sYc0Ep7hHy4eb/+G1AqsEjj/x+734qb/O9JIeGZ26eLxq7+QWoEZgeZuYZ9iOivsR+mY80LpYPLqRCDwCItniEhM7MckSgeDhvkUc2WYKO7YzzkWixSN1lgzCxgRi+JAuovGfYtlKiDPp7iTZKjWmkRJoAQNDLB4hBhHAxJ9SojiCTJylZsmicAWxY3RQlI9TDhEuowYxyVOjoelVagLvG3oOdJ48IqSvprbin2clexVaKqrO2uUBUrUr8KQHrbeJOLu3VkIg9t1iZhreKhaJRXwcDZ4Wl8kC0km8PaRfo/ia+F9SIEeIgXJykKeJBIoUZp+YZYD3Lo1shRGJGbwKH4Pada8g7wqWUwqgRJ0AE3Upg2kWXFGlYfVYe20ldQCJRlO7TiAvE3b5UkYoUXYq/avj7ClBazqcolo4rb1qSBoCxwyqIs+peuhJbjqKr6cJ0gFwphASTjMef/fOm7rdaxWKV7m2e2gu3xUNHFDjAocJRzySG7EMq5ODxmGdKUOSWYfdItQ4+JghEMDJ1CTD3Ya32/WycItAAAAAElFTkSuQmCC");
+}
+.gm-nav-icon--learn {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--learn {
+  background-image: url("data:image/png;base64,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");
+}
+.gm-nav-icon--tune {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--tune {
+  background-image: url("data:image/png;base64,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");
+}
+.gm-nav-icon--tools {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAFDElEQVR4nO2cT2sbRxiHZ62Nc5S/QRRoz3E/QdRTe4t9aguFpqcWWmjkP2Bsh2xwYgJ2ohRaaE9JodD2FOfWniJ/gjrnFiJ/A/sYR9LbZxXJaLXvymOvVpqSeWDye020aPbZ2dmR8Dgwnlx4gTnxAnPiBebEC8yJF5gTK4G12u3rxNio17f2ibEzjX4GNJWVlc1qu915QlkxxdAMgmBPxDTq9fvP+fnc1GobN4LAVEVkgR8rphiaYWgWd3a2D6hTBLQUS0vrdzixyEyOJl2JEPmLsQBxXxgjkTGmYiYEFyp69Gj7LmWCgJZgeXlzodPpPKOcAkEjDKWWdbVXV9fnW62gjryqmQIzMzOLDx/e26M8JSEwiqK54+OTV5RztGlxVCrNLO7u3muYAXpTyjPKqfatXJ69iqcj6i4JgdMdfUm4Zb7klnlqgCnlJlPKE8qpMzwKEwLpaERH71A6ASPxQ8Iw8l4QTsCFvcuFjUyPgHZKrbbeMMZcp6Xon0weGN1VLtA8Zdyu0M7iiBYzRzuLQ9oBJ3jAKGmYnIy4aM/r9e0FsktAO2WUQA5KvDYva2tR5fXrk6cm4/3Owf7ly7M3HzyImmaM4EIIjX1cVE2PhBQOapiME+KgxGvHxdLSxi2R7pKkTDsPx6wjWVrcf0w9dnAhhIZbAmNWu8sT0zD2Eo/D0FR3MpY74wAXQmi4JzCmNxLrlGfCyKsVNfL64EIIDTcFxox6/wESJ1AU9EUIjcT7J6RwUMNknAAHJV5bBGtvHyyvKDPhgXF13A8MDVwIoeGuwBj60DTZS5xD+lExE4B+CKGxTx+qpkdCCgc1zPQF7hE3aBqJNViR0A8hNNwWyKehn1hsf0WZgkXyz3wK+JqycHAhhIbbApeXNzY7HdmiTDGJp28fXAih4bbAlZXbn7bb7d8oU5RKpc92d7d+pywcXAih4brA7tdWLyhTxJ/Hh7/mKgpcCKHhBdqACyE0vEAbcCGEhhdoAy6E0PACbcCFEBpeoA24EELDC7QBF0JoeIE24EIIDS/QBlwIoeEF2oALITS8QBtwIYSGF2gDLoTQ8AJtwIUQGl6gDbgQQsMLtAEXQmh4gTbgQggNL9AGXAih4QXagAshNLxAG3AhhIYXaAMuhNDwAm3AhRAaXqANuBBCwwu0ARdCaHiBNuBCCA0v0AZcCKHhBdqACyE0vEAbcCGEhhdoAy6E0PACbcCFEBpeoA24EELDC7QBF0JoXEwg3a+aAiiXSy+jgd2P5xEYdXeXtq9RFkC7YXQSv2Yc0E5Zmt5mw2YQBHuzs5e+b7ValVECwzBsnpy8+U6K3aWeSTBqs6EL210R+SdyPqZMMer/JsXMqO2uUfeWOGka7iyaJ81xuTxbiQamnITAGBdGoasMj76YlMCYKc6FzjI89/VRBcasvt1BGdu+QnuXOQxDs7CTsTM0U+Ag8dLCjJlOR+YZ5fOUNLlGXoDgJf/0dqkHB9RjZXDJlIWVwKK5yJTBE3lim25G4YTAmN6U8TflmXBLfZB1S00aZwTG2IxEV0ZeH6cExiDxHyS+R5mCue5fnoTvUzqDiwL5tGE+okyBwL8QONVPIsO4KPAHBH5DmQKBPyLwW0pncFBg9h+fcG3+i3FOYAxfq70hQtogLb5GukQ6hZMCGYWfMAp/pQxpMS1G3+eMvj+oncJJgX0QeYswiHtMOInTAv8PeIE58QJz4gXmxAvMiReYk/8AwRnvflp3K10AAAAASUVORK5CYII=");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--tools {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAEeklEQVR4nO2cT24jRRTGv3LibAClZ8Uy4QRjTjCO0GSQWBB2sCJHcCRYIJRJdyLEAiQPJyCsWE7YICYDyssJxnOD5ATTEbAgdrr5qhPHifHf6m67LN5Peq6XKLaff+5XVbG6baDkQgXmRAXmRAXmRAXmZCKBwUkzQPvPh0zzUX3ndbyxEzMrjVnXOlRgcPxNDenVHpDW+OM6iiWGMS0+9hGqK7/EG1+dwYHg5Nt1tC8/5svYQprVGTCK5IyP3YJZiuLNr1sYgGH8h+BFRHEIMTtaqFR24se7ggkIXh7UkSRNpjXGrAjjJ3sRx3sYxj2C3/Z/hEm3MQ+MEWBpZ9i7nXUFrpo82uqYBwY/xJt7DWa33BMYvDjYApLnTOdJTJE78ebTQ9whON7fprimTRlzpPJJ/GT3iEmGYdzC1n1jB4YP3LYM65r1lDKKmHU94JhhGBlZe6SdV0x9ImJYrEB/WFl5r7vwGUaGJ+27IPTa+I7AKIRv77S/RGzjEGQaga+51WhwdCex82tSY1bH9RZklVEEF4wWQ3h0cEvEhSgPSfKMtw8Zw3ASeMo71VEQ2Sb48vIQwCNGHk45J21356QioAvB6LoiughB5iawC/edDe47Q0x/NF4gNWH84VN7tBQKXQgWRaDlRmKT6eSk3CuWIM9CF4JFEmjh8wtGF32XedcS8flDEH8EXs+JLaarjFFccM6rFTnn9UMXgkUTaGENgtGFW3yoI2INIYhvAkOMrsESsY4QJcI6BIsp8GCLm7DnTEfQ+y+gLOhCsIgCH/y+/2l6lf7MdCjGVD56s7n7K9PSoAvBIgq8+aD0hOlwKpWNST94dYUuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EKgAt2hC4EKdIcuBCrQHboQqEB36EJQgsAWjGlwLIZq9bz/PGdXgdn51e32GtNiSNNnvK0xhuEksETMEas+Mkvmn7EnWC6Zz9IkfRepqfM+W5gPgwQesJhxp9cq1/ROM+4J9PNyVz8ZdLmrhW0cc1hlKMO5YPsGHDP6BGobj6fXvpZ7Ai08Cg8BfM5Q+hn3pRNdKDHE3FZkb7ldee8yUKDlZlEJkaLGv1rjr/5/pDjna2/BLIfDvorFMMaSfZ1S568a02JJkjqQXb3+iOHCKUO4uRYUzfLbrVxf/TRLHK4XLu1i62nxQqBlKoklXmw9Ld4ItATH0SvOOzWmw+GcxJXwfWZe4JfAybZQP3E13IYn+CXw5X4DyZg2rrB9H/vRvha/BP7x/Ro6f59hFMtvrccffHHOzAsMwyvYxm0Oy4xBdNi+VY7e4J/AUW3sWftavBNouZH4HdPukdihvC99k2fxUmCXbE4kPs15/RiGkgMVmBMVmBMVmBMVmJN/AffXw35r+oy7AAAAAElFTkSuQmCC");
+}
+.gm-nav-icon--profile {
+  background-image: url("data:image/png;base64,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");
+}
+/** 激活：换一张 emerald-500 + stroke 2.5 的同形状图 */
+.gm-nav-item--on .gm-nav-icon--profile {
+  background-image: url("data:image/png;base64,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");
+}
+/* <<< NAV-ICONS:END <<< */
+
+/* 昵称过长要截断（Web 是 `text-lg font-black truncate`），否则会把会员徽标挤到下一行 */
+.gm-profile-name {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------------------------
+ * 「我的」页面（对齐 Web `ProfileTab`；数值 = CSS px × 2）
+ * ------------------------------------------------------------------ */
+
+/* 用户卡：Web 是 `bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-zinc-950` */
+.gm-profile-hero {
+  background-image: linear-gradient(135deg, #18181b, rgba(24, 24, 27, 0.9), #09090b);
+  border-radius: 48px;
+}
+
+.gm-avatar-wrap {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  flex-shrink: 0;
+}
+
+/* w-16 h-16 = 64 CSS px，border-2 emerald-500 */
+.gm-avatar {
+  width: 128px;
+  height: 128px;
+  border-radius: 999px;
+  border: 4px solid #10b981;
+}
+
+/* 在线点：w-4 h-4 = 16 CSS px，边框取卡片底色形成挖空感 */
+.gm-avatar-dot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background-color: #10b981;
+  border: 4px solid #09090b;
+}
+
+/* text-lg font-black */
+.gm-profile-name {
+  font-size: 36px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* 会员徽标：text-[10px] px-2 py-0.5 rounded-full amber */
+.gm-profile-vip {
+  margin-left: 12px;
+  padding: 4px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* 指标行：Web 是 `grid-cols-4 gap-2 mt-5 pt-4 border-t` */
+.gm-metrics {
+  display: flex;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(39, 39, 42, 0.8);
+}
+
+.gm-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* text-xl font-black font-mono */
+.gm-metric-value {
+  font-size: 40px;
+  font-weight: 900;
+  font-family: monospace;
+}
+
+/* text-[10px] */
+.gm-metric-label {
+  margin-top: 4px;
+  font-size: 20px;
+  color: #a1a1aa;
+}
+
+/* 小标题：text-xs font-bold uppercase tracking-wider */
+.gm-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #a1a1aa;
+}
+
+/* 1 / 13 */
+.gm-progress-num {
+  font-size: 24px;
+  font-family: monospace;
+  font-weight: 700;
+  color: #10b981;
+}
+
+/* 课程封面 w-14 h-14 rounded-xl = 56 CSS px / 12px 圆角 */
+.gm-course-cover {
+  width: 112px;
+  height: 112px;
+  border-radius: 24px;
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  flex-shrink: 0;
+}
+
+.gm-course-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* 进度条 h-1.5 = 6 CSS px */
+.gm-inline-track {
+  margin-top: 16px;
+  height: 12px;
+  border-radius: 999px;
+  background-color: #27272a;
+  overflow: hidden;
+}
+
+.gm-inline-fill {
+  height: 100%;
+  background-color: #10b981;
+}
+
+/* 订单行：p-3 rounded-xl */
+.gm-order-row {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  background-color: rgba(9, 9, 11, 0.6);
+  margin-bottom: 20px;
+}
+
+.gm-order-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.gm-order-meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+  font-family: monospace;
+  color: #a1a1aa;
+}
+
+.gm-order-amount {
+  font-size: 28px;
+  font-weight: 900;
+  font-family: monospace;
+  color: #ffffff;
+}
+
+.gm-order-status {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* 弹窗：fixed 全屏遮罩 + 居中卡片 */
+.gm-modal-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 60;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.gm-modal-card {
+  width: 100%;
+  max-width: 560px;
+  border-radius: 48px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: #18181b;
+  padding: 40px;
+}
+
+.gm-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #27272a;
+}
+
+.gm-modal-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.gm-modal-close {
+  color: #a1a1aa;
+  font-size: 28px;
+}
+
+/* text-3xl = 30 CSS px */
+.gm-modal-amount {
+  display: block;
+  margin-top: 8px;
+  font-size: 60px;
+  font-weight: 900;
+  font-family: monospace;
+  color: #ffffff;
+}
+
+.gm-modal-badge {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 4px 20px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.gm-modal-rows {
+  padding: 28px;
+  border-radius: 32px;
+  background-color: #09090b;
+}
+
+.gm-modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.gm-modal-value {
+  font-size: 22px;
+  font-family: monospace;
+  color: #d4d4d8;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------------
+ * 和弦库（「Tools 工具」tab，对齐 Web `ChordLibraryTab`；数值 = CSS px × 2）
+ * ------------------------------------------------------------------ */
+.gm-tools-page {
+  min-height: 100vh;
+  padding-bottom: 200px;
+  background-color: #0b1220;
+}
+
+/* 顶行：♭/♯ 记号切换（Web 的返回键与标题已由原生导航栏承担） */
+.gm-tools-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-bottom: 1px solid #27272a;
+}
+
+/* w-9 h-9 rounded-xl */
+.gm-accidental {
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-family: serif;
+  font-style: italic;
+  color: #a1a1aa;
+}
+
+.gm-accidental--on {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* 两行横向选择器 */
+.gm-picker-row {
+  border-bottom: 1px solid rgba(39, 39, 42, 0.8);
+  background-color: rgba(22, 24, 32, 0.9);
+}
+
+.gm-picker-row--types {
+  border-bottom-color: rgba(39, 39, 42, 0.7);
+  background-color: rgba(19, 21, 28, 0.9);
+}
+
+.gm-picker-scroll {
+  width: 100%;
+  white-space: nowrap;
+  padding: 20px 24px;
+  box-sizing: border-box;
+}
+
+/* 根音：选中 text-2xl font-black 放大，未选中 text-lg 小一号变灰 */
+.gm-root {
+  display: inline-block;
+  margin-right: 32px;
+  padding: 4px 8px;
+  font-size: 36px;
+  font-weight: 700;
+  color: #71717a;
+}
+
+.gm-root--on {
+  font-size: 48px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* 和弦类型：选中 text-sm font-black，未选中 text-xs */
+.gm-chordtype {
+  display: inline-block;
+  margin-right: 28px;
+  padding: 4px 8px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #71717a;
+}
+
+.gm-chordtype--on {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* 指法图区 */
+.gm-fb-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0 40px;
+}
+
+.gm-fb-title {
+  font-size: 24px;
+  color: #a1a1aa;
+}
+
+/**
+ * ⚠️ 和弦图（fretboard）的几何**不在这里**，全部写在 `ChordFretboard.tsx` 的行内 style 里。
+ * 原因：这里的 `px` 会被 Taro 当「设计 px」再缩一半，而和弦图的数值本身就是 CSS px
+ * （原 SVG viewBox 就是按 260×330 px 显示的）→ 实测会导致琴颈缩一半、而行内定位的点没缩，整图错位。
+ * 行内 `px` 不参与转换，所以那边才是唯一可信的来源。
+ */
+.gm-fretboard {
+  position: relative;
+  margin-top: 8px;
+}
+
+/* 和弦图里所有绝对定位元素的公共部分 */
+.gm-fb-abs {
+  position: absolute;
+}
+
+/* 底部条：w-12 h-12 = 48 CSS px */
+.gm-tools-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 48px;
+}
+
+.gm-sound-btn,
+.gm-hand-btn {
+  width: 96px;
+  height: 96px;
+  border-radius: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background-color: rgba(39, 39, 42, 0.9);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+}
+
+.gm-sound-btn--on {
+  background-color: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.6);
+}
+
+/* 把位圆点：选中 w-3 h-3 = 12 CSS px，未选中 w-2.5 = 10 CSS px */
+.gm-pos-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background-color: #52525b;
+  margin: 0 8px;
+}
+
+.gm-pos-dot--on {
+  width: 24px;
+  height: 24px;
+  background-color: #ffffff;
+}
+
+/* 指法颜色对照表 */
+.gm-finger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-radius: 24px;
+  background-color: rgba(39, 39, 42, 0.6);
+  margin-bottom: 20px;
+}
+
+/* w-4 h-4 = 16 CSS px */
+.gm-finger-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.gm-finger-name {
+  margin-left: 20px;
+  font-size: 24px;
+  font-weight: 500;
+  color: #e4e4e7;
+}
+
+.gm-finger-color {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------
+ * 课程（Learn tab）—— 数据来自后端 /api/curriculum/learn；数值 = CSS px × 2
+ * ------------------------------------------------------------------ */
+.gm-learn-page {
+  min-height: 100vh;
+  padding-top: 32px;
+  padding-bottom: 200px;
+  background-color: #0b1220;
+}
+
+.gm-learn-head {
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  margin-bottom: 16px;
+}
+
+.gm-learn-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.gm-learn-refresh {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  border: 1px solid #27272a;
+  background-color: #18181b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4d4d8;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.gm-learn-state {
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gm-learn-error {
+  margin: 0 32px 24px;
+  padding: 24px;
+  border-radius: 32px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gm-learn-retry {
+  padding: 4px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  flex-shrink: 0;
+}
+
+/* 阶段筛选 chips */
+.gm-learn-filter {
+  display: flex;
+  align-items: center;
+  padding: 0 32px 24px;
+}
+
+.gm-learn-chip {
+  padding: 8px 24px;
+  margin-right: 16px;
+  border-radius: 999px;
+  border: 1px solid #27272a;
+  background-color: #18181b;
+  color: #a1a1aa;
+  font-size: 24px;
+}
+
+.gm-learn-chip--on {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+}
+
+.gm-learn-stage {
+  margin-bottom: 32px;
+}
+
+.gm-learn-stage-head {
+  display: flex;
+  align-items: center;
+  padding: 0 32px 16px;
+}
+
+/* 阶段编码（L1/L2…） */
+.gm-learn-stage-code {
+  min-width: 72px;
+  padding: 4px 16px;
+  margin-right: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.gm-learn-stage-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* 课程卡（= Web `CourseTab` 的封面 Banner 卡：图 + 叠加文字 + 底栏） */
+.gm-learn-course {
+  display: block;
+  margin: 0 32px 20px;
+  border-radius: 32px;
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  background-color: rgba(24, 24, 27, 0.6);
+  overflow: hidden;
+}
+
+/* Banner：Web 是 `h-44`（176 CSS px）= 352 设计 px */
+.gm-learn-cover {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 352px;
+}
+
+/*
+ * ⚠️ 高度写**设计 px**而不是 100%：Taro 的 `<Image>` 在 H5 下渲染成 `taro-image-core`，
+ * 宿主元素默认 `display:inline`，百分比高度解析不出值（实测 computed height = 0 → 封面那块白）。
+ * 给成和父级一样的绝对值（352px）就两端都稳（weapp → 352rpx）。
+ */
+.gm-learn-cover-img {
+  display: block;
+  width: 100%;
+  height: 352px;
+}
+
+/* Web 的 `bg-gradient-to-t from-black/85 via-black/35 to-transparent` */
+.gm-learn-cover-scrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85),
+    rgba(0, 0, 0, 0.35),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+/* Web 的右上难度徽标：`top-3 right-3 px-2.5 py-1 rounded-full bg-black/60` */
+.gm-learn-cover-level {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  padding: 8px 20px;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Web 的 `bottom-3 left-4 right-4` */
+.gm-learn-cover-text {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 24px;
+}
+
+.gm-learn-cover-title {
+  display: block;
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 800;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gm-learn-cover-sub {
+  display: block;
+  margin-top: 4px;
+  color: #e4e4e7;
+  font-size: 24px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Web 的底部信息条：`px-4 py-3 flex items-center justify-between border-t` */
+.gm-learn-course-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  border-top: 1px solid rgba(39, 39, 42, 0.8);
+  background-color: rgba(24, 24, 27, 0.9);
+}
+
+.gm-learn-course-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.gm-learn-course-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.gm-learn-tag {
+  padding: 2px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(39, 39, 42, 0.8);
+  color: #d4d4d8;
+  font-size: 20px;
+}
+
+.gm-learn-arrow {
+  margin-left: 16px;
+  color: #52525b;
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+/* 课时动作区（按课时类型跳到已有页面） */
+.gm-learn-actions {
+  display: block;
+  margin-top: 16px;
+}
+
+/* ── AI 跟弹评测 ───────────────────────────── */
+.gm-eval-head {
+  display: flex;
+  align-items: center;
+  padding: 24px 32px 16px;
+}
+
+.gm-eval-card {
+  display: block;
+  margin: 0 32px 20px;
+  padding: 24px 28px;
+  border-radius: 28px;
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  background-color: rgba(24, 24, 27, 0.6);
+}
+
+.gm-eval-title {
+  display: block;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.gm-eval-actions {
+  display: block;
+  padding: 0 32px 20px;
+}
+
+.gm-eval-btn {
+  display: block;
+  padding: 26px 28px;
+  border-radius: 24px;
+  text-align: center;
+  background-color: #10b981;
+  color: #04231a;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.gm-eval-btn--stop {
+  background-color: #f59e0b;
+  color: #2a1a02;
+}
+
+.gm-eval-metrics {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.gm-eval-metric {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.gm-eval-metric-value {
+  display: block;
+  color: #ffffff;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.gm-eval-legend {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.gm-eval-legend-item {
+  margin-right: 24px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.gm-eval-note-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.gm-eval-note {
+  display: block;
+  margin: 0 12px 12px 0;
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  color: #a1a1aa;
+}
+
+.gm-eval-note-text {
+  display: block;
+  font-size: 22px;
+  font-family: monospace;
+}
+
+.gm-eval-note-verdict {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 曲目信息卡里的评测入口（新功能） */
+.gm-eval-entry {
+  display: block;
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  background-color: rgba(16, 185, 129, 0.12);
+}
+
+.gm-eval-entry-title {
+  display: block;
+  color: #6ee7b7;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.gm-eval-entry-sub {
+  display: block;
+  margin-top: 6px;
+  color: #a1a1aa;
+  font-size: 20px;
+}
+
+.gm-learn-jump {
+  display: block;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.gm-learn-back {
+  padding: 8px 32px 16px;
+  color: #34d399;
+  font-size: 26px;
+}
+
+/* 章节 */
+.gm-learn-chapter {
+  margin: 0 32px 28px;
+  padding: 28px;
+  border-radius: 32px;
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  background-color: rgba(24, 24, 27, 0.35);
+}
+
+.gm-learn-chapter-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #34d399;
+}
+
+/* 课时行：p-3 rounded-2xl */
+.gm-learn-lesson {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  margin-bottom: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(39, 39, 42, 0.8);
+  background-color: rgba(24, 24, 27, 0.6);
+}
+
+.gm-learn-lesson-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #f4f4f5;
+}
+
+.gm-learn-lesson-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+/* 课时类型徽标（text-[10px] px-1.5 py-0.5 rounded border） */
+.gm-learn-type {
+  padding: 2px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.gm-learn-song {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+  color: #34d399;
+}
+
+/* ------------------------------------------------------------------
+ * 调音器（Tune tab）—— 视觉照 Web `GuitarHeadstockTuner`；数值 = CSS px × 2
+ * ------------------------------------------------------------------ */
+.gm-tune-page {
+  min-height: 100vh;
+  padding-top: 32px;
+  padding-bottom: 200px;
+  background-color: #0b1220;
+}
+
+/* 表盘：深底 + 24px 蓝图网格（Web 用两层 linear-gradient + background-size 做的同一效果） */
+.gm-gauge {
+  position: relative;
+  margin: 0 32px 24px;
+  padding: 32px 0 40px;
+  border-radius: 48px;
+  border: 1px solid rgba(39, 39, 42, 0.8);
+  background-color: #12151b;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gm-gauge-grid {
+  display: none;
+}
+
+/* 中心参考线 */
+.gm-gauge-centerline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background-color: rgba(63, 63, 70, 0.5);
+}
+
+.gm-gauge-scale {
+  width: 100%;
+  padding: 0 48px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+/* ♭ / #：偏了就变琥珀色并放大（与 Web 同一套条件：|cents| > 4） */
+.gm-gauge-accidental {
+  font-size: 56px;
+  font-weight: 700;
+  color: #52525b;
+}
+
+.gm-gauge-accidental--hot {
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+}
+
+.gm-gauge-target-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* w-14 h-14 = 56 CSS px 的圆 */
+.gm-gauge-target {
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  border: 4px solid #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gm-gauge-target--in {
+  border-color: #34d399;
+  background-color: #34d399;
+  box-shadow: 0 0 28px rgba(52, 211, 153, 0.9);
+}
+
+.gm-gauge-note {
+  font-size: 40px;
+  font-weight: 900;
+  font-family: monospace;
+  color: #ffffff;
+}
+
+.gm-gauge-check {
+  font-size: 48px;
+  font-weight: 900;
+  color: #04231a;
+}
+
+/* 水滴尖（CSS 三角形） */
+.gm-gauge-tip {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 16px solid #a1a1aa;
+}
+
+.gm-gauge-tip--in {
+  border-top-color: #34d399;
+}
+
+/* 状态提示胶囊 */
+.gm-gauge-pill {
+  margin-top: 20px;
+  padding: 12px 32px;
+  border-radius: 32px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(24, 29, 38, 0.9);
+  color: #d4d4d8;
+  font-size: 24px;
+  text-align: center;
+}
+
+.gm-gauge-in {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.gm-gauge-low,
+.gm-gauge-high {
+  color: #fcd34d;
+  font-weight: 600;
+}
+
+/* 环境/权限提示 */
+.gm-tune-warn {
+  margin: 0 32px 24px;
+  padding: 24px;
+  border-radius: 32px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  font-size: 22px;
+  line-height: 1.5;
+}
+
+/* 六弦参考音 */
+.gm-tune-strings {
+  margin: 0 32px 24px;
+  padding: 28px;
+  border-radius: 32px;
+  border: 1px solid rgba(39, 39, 42, 0.7);
+  background-color: rgba(24, 24, 27, 0.5);
+}
+
+/**
+ * 琴头 + 六弦选择
+ * ----------------
+ * 照 Web 版 `GuitarHeadstockTuner.tsx` 的 **side + photo** 模式搬过来：
+ * 左边一列 6 个圆形音名按钮（上=1弦 E4，下=6弦 E2），右边琴头实拍图，
+ * 选中那根弦的**卷弦柱**上打一层白色高光（Web 版同款光斑）。
+ *
+ * ⚠️ 图片用 `<Image>`（weapp 支持本地图片；H5 端 Taro 的 Image 不渲染，属已知限制）。
+ * ⚠️ 显示尺寸必须给**绝对数值 + 两边都定死**：weapp 里 `<Image>` 宿主是 inline，
+ *    百分比高度会退化成 0（本项目踩过）。宽高比 = 原图 896:1200 → 440:590 不拉伸。
+ * ⚠️ 本文件里的长度是 **rpx 口径**（`config/index.js` designWidth=750，写 40 渲染出来是 20px，
+ *    导航图标那轮在开发者工具里量过）。下面括号里的 px 是 Web 版对照值，已 ×2 换算。
+ */
+.gm-tune-head {
+  position: relative;
+  width: 100%;
+  height: 590px; /* Web 琴头显示高度 295px */
+  margin-top: 40px;
+}
+
+.gm-tune-head-notes {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 0;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.gm-tune-note {
+  width: 88px; /* Web w-11 = 44px */
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(24, 28, 37, 0.9);
+  color: #e4e4e7;
+  font-size: 32px; /* Web text-base 16px */
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+/* 选中态与 Web 版一致：白底黑字 + 翠绿外环 + 放大字号 */
+.gm-tune-note--on {
+  border-color: #34d399;
+  background-color: #ffffff;
+  color: #09090b;
+  font-size: 40px; /* Web text-xl 20px */
+  font-weight: 900;
+  box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.55); /* Web ring-4 */
+}
+
+.gm-tune-head-stock {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 440px; /* Web 琴头宽 220px（原图 896:1200 → 高 295px） */
+  height: 590px;
+}
+
+.gm-tune-head-img {
+  width: 440px;
+  height: 590px;
+  display: block;
+  /* 图片自带纯黑底，圆角一下跟卡片衔接更自然（Web 版是 rounded-xl） */
+  border-radius: 24px;
+}
+
+/**
+ * 卷弦柱高光：用**百分比**定位（相对琴头图的定位盒），换机型/换尺寸都不漂。
+ * 坐标是把原图 896×1200 按 10% 网格叠出来后，一个个量出来的 6 个卷弦柱中心。
+ */
+.gm-tune-peg-glow {
+  position: absolute;
+  width: 60px; /* Web w-8 = 32px，略微收一点更贴合旋钮 */
+  height: 60px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 44px 16px rgba(255, 255, 255, 0.85); /* Web 0 0 25px 8px */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.gm-tune-peg-glow--1 { left: 58%; top: 14.5%; }
+.gm-tune-peg-glow--2 { left: 56%; top: 24.5%; }
+.gm-tune-peg-glow--3 { left: 55%; top: 35%; }
+.gm-tune-peg-glow--4 { left: 52%; top: 46%; }
+.gm-tune-peg-glow--5 { left: 47%; top: 57%; }
+.gm-tune-peg-glow--6 { left: 43%; top: 68.5%; }
+
+/* 琴头下面那一行：当前选中弦的读数（原来的芯片行删掉了，信息量保留在这） */
+.gm-tune-head-cap {
+  display: block;
+  margin-top: 32px;
+  text-align: center;
+  font-size: 24px;
+  font-family: monospace;
+  color: #a1a1aa;
+}
+
+/* 麦克风开关 */
+.gm-tune-mic {
+  margin: 0 32px;
+  padding: 28px 0;
+  border-radius: 32px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(24, 24, 27, 0.8);
+  color: #e4e4e7;
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.gm-tune-mic--on {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.gm-tune-mic--off {
+  opacity: 0.6;
+}
+
+/* 详情页的控制条：抬到底部导航之上 */
+.gm-bar {
+  bottom: calc(var(--gm-nav-h) + env(safe-area-inset-bottom));
+  padding-bottom: 20px;
+}
+
+/* ------------------------------------------------------------------
+ * 段落卡片（对齐 Web `MeasurePracticePanel.renderSegment`）
+ * ------------------------------------------------------------------
+ * Web 版：`p-4 rounded-2xl border`；**选中段**是 emerald 边框 + 同色 ring、背景更亮，
+ * **未选中段**整张卡片降成 70% 不透明度。这两个状态是很强的「我在练哪一段」信号，不能省。
+ */
+.gm-seg-card {
+  background-color: rgba(24, 24, 27, 0.4);
+  border: 1px solid rgba(39, 39, 42, 0.6);
+  border-radius: 32px;
+  padding: 32px;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+.gm-seg-card--active {
+  background-color: rgba(24, 24, 27, 0.95);
+  border-color: rgba(16, 185, 129, 0.8);
+  /* ring-1 ring-emerald-500/40 */
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4);
+  opacity: 1;
+}
+
+/* 段落 ▶：w-6 h-6 = 24 CSS px → 设计 48 */
+.gm-seg-play {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background-color: #10b981;
+  color: #04231a;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.gm-seg-play--on {
+  background-color: #34d399;
+  /* ring-2 ring-emerald-500/40 */
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.4);
+}
+
+/* 段编号徽标：text-[10px] px-2 py-0.5 rounded font-mono font-bold */
+.gm-seg-badge {
+  margin-left: 16px;
+  padding: 4px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(63, 63, 70, 0.6);
+  background-color: rgba(39, 39, 42, 0.9);
+  color: #34d399;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* 「反复练习中」 */
+.gm-seg-loop {
+  margin-left: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  font-size: 20px;
+}
+
+/* 右侧：0.00s ~ 4.80s · 103 BPM · 4/4 */
+.gm-seg-time {
+  color: #71717a;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * 设置卡（「我的」页：语言 / 主题）
+ * ════════════════════════════════════════════════════════════════════ */
+.gm-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid rgba(39, 39, 42, 0.7);
+}
+
+.gm-setting-label {
+  color: #e4e4e7;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* 曲库列表页的底色（原来是行内 `background-color:#0b1220`，改成类才能跟随主题） */
+.gm-songs-page {
+  background-color: #0b1220;
+}
+
+/* ── 架构方案页（课程体系规划） ─────────────── */
+.gm-arch-head {
+  display: block;
+  padding: 24px 32px 16px;
+}
+
+.gm-arch-title {
+  display: block;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.gm-arch-tabs {
+  white-space: nowrap;
+  padding: 0 32px 16px;
+}
+
+.gm-arch-tab {
+  display: inline-block;
+  margin-right: 12px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(24, 24, 27, 0.7);
+  color: #a1a1aa;
+  font-size: 22px;
+}
+
+.gm-arch-tab--on {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+  font-weight: 700;
+}
+
+.gm-arch-badge {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background-color: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.gm-arch-section-title {
+  display: block;
+  margin-top: 16px;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.gm-arch-summary {
+  display: block;
+  margin-top: 12px;
+  color: #a1a1aa;
+  font-size: 24px;
+  line-height: 1.75;
+}
+
+.gm-arch-p {
+  display: block;
+  margin-top: 16px;
+  color: #d4d4d8;
+  font-size: 24px;
+  line-height: 1.8;
+}
+
+.gm-arch-sub {
+  display: block;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(39, 39, 42, 0.8);
+}
+
+.gm-arch-sub-title {
+  display: block;
+  color: #34d399;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.gm-arch-item {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 14px;
+}
+
+.gm-arch-dot {
+  flex-shrink: 0;
+  margin-right: 12px;
+  color: #34d399;
+  font-size: 24px;
+}
+
+.gm-arch-item-text {
+  flex: 1;
+  min-width: 0;
+  color: #d4d4d8;
+  font-size: 24px;
+  line-height: 1.75;
+}
+
+/* 表格：必须能横滑（方案里的表有 5 列） */
+.gm-arch-table-wrap {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.gm-arch-table {
+  display: block;
+  min-width: 1200px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+}
+
+.gm-arch-tr {
+  display: flex;
+  border-bottom: 1px solid rgba(63, 63, 70, 0.6);
+}
+
+.gm-arch-tr--head {
+  background-color: rgba(39, 39, 42, 0.9);
+}
+
+.gm-arch-th {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  color: #e4e4e7;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.gm-arch-td {
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
+  color: #a1a1aa;
+  font-size: 22px;
+  line-height: 1.7;
+}
+
+.gm-arch-code-wrap {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.gm-arch-code {
+  display: block;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(9, 9, 11, 0.9);
+  color: #a5f3fc;
+  font-size: 22px;
+  font-family: monospace;
+  line-height: 1.7;
+}
+
+/* ── 架构方案 · 页签 2：课程教务工作台演示 ───────── */
+.gm-studio-h {
+  display: block;
+  color: #10b981;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.gm-studio-cloud {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+.gm-studio-kicker {
+  display: block;
+  color: #a1a1aa;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.gm-studio-chapter {
+  display: block;
+  margin-top: 16px;
+  color: #a1a1aa;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.gm-studio-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(24, 24, 27, 0.8);
+  color: #a1a1aa;
+  font-size: 24px;
+}
+
+.gm-studio-step--on {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-weight: 700;
+}
+
+.gm-studio-step-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gm-studio-step-mins {
+  flex-shrink: 0;
+  margin-left: 12px;
+  opacity: 0.7;
+  font-family: monospace;
+}
+
+.gm-studio-step-head {
+  display: block;
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.gm-studio-type-badge {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  font-size: 22px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.gm-studio-section {
+  display: block;
+  margin-top: 32px;
+}
+
+.gm-studio-section-title {
+  display: block;
+  color: #d4d4d8;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.gm-studio-panel {
+  display: block;
+  margin-top: 12px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(24, 24, 27, 0.8);
+}
+
+.gm-studio-kp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(9, 9, 11, 0.8);
+}
+
+.gm-studio-kp-time {
+  margin-right: 12px;
+  color: #10b981;
+  font-size: 22px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.gm-studio-kp-title {
+  color: #d4d4d8;
+  font-size: 22px;
+}
+
+.gm-studio-kp-chord {
+  flex-shrink: 0;
+  margin-left: 12px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  font-size: 18px;
+  font-family: monospace;
+}
+
+.gm-studio-addrow {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.gm-studio-input {
+  flex: 1;
+  min-width: 0;
+  margin-right: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(9, 9, 11, 0.9);
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.gm-studio-input--time {
+  flex: 0 0 140px;
+  margin-right: 12px;
+  font-family: monospace;
+  text-align: center;
+}
+
+.gm-studio-addbtn {
+  flex-shrink: 0;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: #10b981;
+  color: #04231a;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.gm-studio-chips {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.gm-studio-chip {
+  margin: 0 12px 12px 0;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background-color: rgba(39, 39, 42, 0.9);
+  color: #a1a1aa;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.gm-studio-chip--on {
+  background-color: #f59e0b;
+  color: #1f1300;
+}
+
+.gm-studio-strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.gm-studio-pair {
+  color: #34d399;
+  font-size: 24px;
+  font-family: monospace;
+  font-weight: 800;
+}
+
+.gm-studio-total {
+  flex-shrink: 0;
+  margin-left: 12px;
+  padding: 4px 14px;
+  border-radius: 10px;
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  font-size: 20px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.gm-studio-total--ok {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.gm-studio-bar {
+  display: flex;
+  margin-top: 16px;
+  height: 20px;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: rgba(39, 39, 42, 0.9);
+}
+
+.gm-studio-bar-seg {
+  height: 100%;
+}
+
+.gm-studio-slices {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.gm-studio-slice {
+  width: 128px;
+  margin: 0 12px 12px 0;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  text-align: center;
+}
+
+.gm-studio-slice-label {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.gm-studio-slice-value {
+  display: block;
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+.gm-studio-slice-btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.gm-studio-slice-btn {
+  width: 48px;
+  height: 40px;
+  line-height: 40px;
+  margin: 0 6px;
+  border-radius: 10px;
+  background-color: rgba(63, 63, 70, 0.9);
+  color: #ffffff;
+  font-size: 24px;
+  text-align: center;
+}
+
+/* 数值步进器（替代 Web 的 range 滑块） */
+.gm-studio-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.gm-studio-stepper-hint {
+  margin: 0 16px;
+  color: #71717a;
+  font-size: 18px;
+  font-family: monospace;
+}
+
+/* ── 架构方案 · 页签 3：音频上传与挂进度条 ───────── */
+.gm-async-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  padding: 32px 24px;
+  border-radius: 24px;
+  border: 2px dashed rgba(63, 63, 70, 0.9);
+  background-color: rgba(24, 24, 27, 0.4);
+  text-align: center;
+}
+
+.gm-async-drop-icon {
+  width: 72px;
+  height: 72px;
+  line-height: 72px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.12);
+  font-size: 32px;
+  text-align: center;
+}
+
+.gm-async-drop-name {
+  color: #e4e4e7;
+  font-size: 24px;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.gm-async-drop-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  background-color: #10b981;
+  color: #04231a;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.gm-async-tiles {
+  display: flex;
+  margin-top: 20px;
+}
+
+.gm-async-tile {
+  flex: 1;
+  min-width: 0;
+  margin-right: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  background-color: rgba(24, 24, 27, 0.7);
+}
+
+.gm-async-tile-label {
+  display: block;
+  color: #a1a1aa;
+  font-size: 18px;
+}
+
+.gm-async-tile-value {
+  display: block;
+  margin-top: 4px;
+  font-size: 26px;
+  font-family: monospace;
+  font-weight: 800;
+}
+
+.gm-async-tile-sub {
+  display: block;
+  margin-top: 4px;
+  color: #71717a;
+  font-size: 16px;
+}
+
+.gm-async-clock {
+  color: #a1a1aa;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+/* 波形（点它 Seek） */
+.gm-async-wave {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  height: 128px;
+  padding: 0 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  background-color: rgba(24, 24, 27, 0.9);
+  overflow: hidden;
+}
+
+.gm-async-wave-bars {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.gm-async-wave-bar {
+  flex: 1;
+  min-width: 0;
+  margin-right: 1px;
+  border-radius: 999px;
+}
+
+.gm-async-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #ffffff;
+  z-index: 20;
+}
+
+.gm-async-playhead-dot {
+  width: 16px;
+  height: 16px;
+  margin-left: -7px;
+  border-radius: 999px;
+  background-color: #34d399;
+  border: 1px solid #ffffff;
+}
+
+.gm-async-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px solid rgba(82, 82, 91, 0.6);
+  z-index: 10;
+}
+
+.gm-async-marker-label {
+  display: inline-block;
+  margin-left: 2px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background-color: rgba(9, 9, 11, 0.8);
+  color: #a1a1aa;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+/* 六线谱（View 拼：6 条弦 + 音符 + 游标） */
+.gm-async-tab {
+  display: block;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  background-color: rgba(9, 9, 11, 0.9);
+}
+
+.gm-async-tab-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-size: 18px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.gm-async-tab-playhead {
+  color: #fbbf24;
+  font-size: 18px;
+  font-family: monospace;
+}
+
+.gm-async-staff {
+  position: relative;
+  width: 100%;
+  height: 192px;
+  margin-top: 16px;
+  border-radius: 12px;
+  background-color: rgba(24, 24, 27, 0.8);
+  overflow: hidden;
+}
+
+.gm-async-string {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #52525b;
+}
+
+.gm-async-string-label {
+  position: absolute;
+  left: 8px;
+  top: -14px;
+  color: #a1a1aa;
+  font-size: 16px;
+  font-family: monospace;
+}
+
+.gm-async-note {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  margin-top: -14px;
+  border-radius: 999px;
+  background-color: #10b981;
+  text-align: center;
+}
+
+.gm-async-note-text {
+  display: block;
+  line-height: 28px;
+  color: #000000;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.gm-async-tab-cursor {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  background-color: #10b981;
+}
+
+.gm-async-controls {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(39, 39, 42, 0.9);
+}
+
+.gm-async-play {
+  padding: 12px 24px;
+  border-radius: 14px;
+  background-color: #10b981;
+  color: #04231a;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.gm-async-play--on {
+  background-color: #fbbf24;
+}
+
+.gm-async-reset {
+  margin-left: 16px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  background-color: rgba(39, 39, 42, 0.9);
+  color: #d4d4d8;
+  font-size: 22px;
+}
+
+.gm-async-steps {
+  display: block;
+  margin-top: 16px;
+}
+
+.gm-async-step {
+  display: block;
+  margin-bottom: 14px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  background-color: rgba(24, 24, 27, 0.6);
+}
+
+.gm-async-step-title {
+  display: block;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.gm-async-step-text {
+  display: block;
+  margin-top: 8px;
+  color: #a1a1aa;
+  font-size: 22px;
+  line-height: 1.7;
+}
+
+/* ── 架构方案 · 页签 4：数据模型与数据库规范 ───────── */
+.gm-schema-title {
+  color: #34d399;
+  font-size: 22px;
+  font-family: monospace;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.gm-schema-source {
+  flex-shrink: 0;
+  margin-left: 12px;
+  color: #a1a1aa;
+  font-size: 18px;
+}
+
+/* SQL/TS 代码块：行很长，必须能横滑 */
+.gm-schema-code-wrap {
+  margin-top: 16px;
+  width: 100%;
+}
+
+.gm-schema-code {
+  display: block;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(9, 9, 11, 0.9);
+  color: #d4d4d8;
+  font-size: 20px;
+  font-family: monospace;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+/* 页脚的「复制完整 Markdown 全案」 */
+.gm-arch-copy {  display: block;
+  margin-top: 20px;
+  padding: 22px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.9);
+  background-color: rgba(39, 39, 42, 0.9);
+  color: #e4e4e7;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.gm-arch-copy--done {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+/* ── 课时视频播放页 ─────────────── */
+.gm-video-head {
+  display: block;
+  padding: 24px 32px 16px;
+}
+
+.gm-video-title {
+  display: block;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.gm-video-stage {
+  display: block;
+  margin: 0 32px 20px;
+  border-radius: 24px;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+.gm-video-el {
+  display: block;
+  width: 100%;
+  height: 420px;
+}
+
+.gm-video-kp {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(63, 63, 70, 0.8);
+  background-color: rgba(9, 9, 11, 0.6);
+}
+
+.gm-video-kp-time {
+  flex-shrink: 0;
+  margin-right: 16px;
+  color: #34d399;
+  font-size: 24px;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.gm-video-kp-title {
+  color: #e4e4e7;
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.gm-video-kp-chord {
+  flex-shrink: 0;
+  margin-left: 12px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  font-size: 20px;
+  font-family: monospace;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * 浅色主题（`.gm-light` 由 `utils/settings.ts#pageClass()` 加在页面根节点）
+ *
+ * ## 为什么是"叠加覆盖"而不是把上面全部改写成变量
+ *
+ * 上面所有 `gm-*` 规则都是**深色硬编码**，已经逐块与 Web 版对齐并验收过。
+ * 把它们批量改写成 `var(--gm-*)` 属于"顺手把已验收的东西全动一遍"，
+ * 一次失误就是全站错色。这里只**新增**一段覆盖规则：深色路径一行没碰，
+ * 想回退（删掉这段）也只影响浅色。
+ *
+ * ## 覆盖的是"表面 + 文字 + 描边"三类
+ *
+ * - 表面：页面底、卡片、导航条、弹窗、芯片
+ * - 文字：标题（白→近黑）、次要文字（灰→深灰）
+ * - 描边：卡片/芯片的分隔线
+ *
+ * ⚠️ **不跟随主题的**（各页注释里也写了）：
+ * 和弦图 `ChordFretboard`（几何与配色都是行内 SVG 坐标色）、谱面 PNG（后端渲染，自带 dark 主题）。
+ * ════════════════════════════════════════════════════════════════════ */
+.gm-light {
+  background-color: #f4f5f7;
+}
+
+/* 曲库页的类名与 `.gm-light` 同优先级 → 这条要写得比上面更具体才稳 */
+.gm-light.gm-songs-page {
+  background-color: #f4f5f7;
+}
+
+.gm-light .gm-card,
+.gm-light .gm-eval-card,
+.gm-light .gm-learn-course,
+.gm-light .gm-seg-card {
+  background-color: #ffffff;
+  border-color: #e4e4e7;
+}
+
+.gm-light .gm-seg-card--active {
+  background-color: #ffffff;
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.gm-light .gm-nav {
+  background-color: rgba(255, 255, 255, 0.96);
+  border-top-color: #e4e4e7;
+  /** Web 浅色导航是 `bg-white/95 ... shadow-lg`：补一道向上投影，别让底栏看着漂在内容上 */
+  box-shadow: 0 -6rpx 24rpx rgba(15, 23, 42, 0.06);
+}
+
+/* 与 Web 浅色一致：未激活 zinc-400；激活仍为 emerald-500（必须写在 .gm-nav-label 之后） */
+.gm-light .gm-nav-label {
+  color: #a1a1aa;
+}
+
+.gm-light .gm-nav-label--on {
+  color: #10b981;
+}
+
+.gm-light .gm-bar {
+  background-color: rgba(255, 255, 255, 0.96);
+  border-top-color: #e4e4e7;
+}
+
+.gm-light .gm-modal-card {
+  background-color: #ffffff;
+  border-color: #e4e4e7;
+}
+
+.gm-light .gm-modal-mask {
+  background-color: rgba(15, 23, 42, 0.45);
+}
+
+/* 文字：标题类（原白）→ 近黑；次要类（原浅灰）→ 深灰 */
+.gm-light .gm-learn-title,
+.gm-light .gm-learn-stage-name,
+.gm-light .gm-eval-title,
+.gm-light .gm-eval-metric-value,
+.gm-light .gm-profile-name,
+.gm-light .gm-course-title,
+.gm-light .gm-order-title,
+.gm-light .gm-modal-title,
+.gm-light .gm-modal-amount,
+.gm-light .gm-modal-value,
+.gm-light .gm-seg-badge,
+.gm-light .gm-learn-cover-title,
+.gm-light .gm-setting-label {
+  color: #18181b;
+}
+
+.gm-light .gm-meta,
+.gm-light .gm-order-meta,
+.gm-light .gm-seg-time,
+.gm-light .gm-learn-cover-sub,
+.gm-light .gm-metric-label {
+  color: #52525b;
+}
+
+.gm-light .gm-metric-value {
+  color: #18181b;
+}
+
+.gm-light .gm-section-title {
+  color: #27272a;
+}
+
+/* 芯片 / 行分隔线 / 输入类 */
+.gm-light .gm-chip {
+  border-color: #d4d4d8;
+  background-color: #ffffff;
+  color: #3f3f46;
+}
+
+.gm-light .gm-chip--active {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+}
+
+.gm-light .gm-learn-chip {
+  border-color: #d4d4d8;
+  background-color: #ffffff;
+  color: #3f3f46;
+}
+
+.gm-light .gm-learn-chip--on {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+}
+
+.gm-light .gm-setting-row {
+  border-bottom-color: #e4e4e7;
+}
+
+.gm-light .gm-order-row {
+  border-bottom-color: #e4e4e7;
+}
+
+.gm-light .gm-eval-note {
+  border-color: #e4e4e7;
+  background-color: #ffffff;
+}
+
+.gm-light .gm-learn-stage,
+.gm-light .gm-learn-head {
+  background-color: transparent;
+}
+
+/* 架构方案页 */
+.gm-light .gm-arch-title,
+.gm-light .gm-arch-section-title,
+.gm-light .gm-arch-th {
+  color: #18181b;
+}
+
+.gm-light .gm-arch-summary,
+.gm-light .gm-arch-p,
+.gm-light .gm-arch-item-text,
+.gm-light .gm-arch-td {
+  color: #3f3f46;
+}
+
+.gm-light .gm-arch-tab {
+  background-color: #ffffff;
+  border-color: #d4d4d8;
+  color: #3f3f46;
+}
+
+.gm-light .gm-arch-tab--on {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #04231a;
+}
+
+.gm-light .gm-arch-sub {
+  border-top-color: #e4e4e7;
+}
+
+.gm-light .gm-arch-table,
+.gm-light .gm-arch-tr {
+  border-color: #e4e4e7;
+}
+
+.gm-light .gm-arch-tr--head {
+  background-color: #f4f4f5;
+}
+

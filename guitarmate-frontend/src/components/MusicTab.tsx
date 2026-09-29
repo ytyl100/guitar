@@ -16,16 +16,28 @@ import {
   Pause,
   RotateCcw,
   Volume2,
+  RefreshCw,
+  Loader2,
+  AlertTriangle,
+  Music2,
 } from 'lucide-react';
 
 interface MusicTabProps {
   songs: SongItem[];
+  /** 曲库完全由后端决定 → 必须有显式加载 / 失败态 */
+  songsStatus?: 'loading' | 'ready' | 'error';
+  songsError?: string | null;
+  /** 手动重新同步后端曲库（后台发布 / 删除后立即生效） */
+  onRefreshSongs?: () => void;
   onToggleFavorite: (songId: string) => void;
   onSelectSongForPractice?: (chordList: string[]) => void;
 }
 
 export const MusicTab: React.FC<MusicTabProps> = ({
   songs,
+  songsStatus = 'ready',
+  songsError = null,
+  onRefreshSongs,
   onToggleFavorite,
   onSelectSongForPractice,
 }) => {
@@ -43,6 +55,12 @@ export const MusicTab: React.FC<MusicTabProps> = ({
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0); // 0.75x to 1.25x
   /** 递增后通知「云端六线谱小节练习」回到第 1 小节并滚回列表顶部 */
   const [practiceResetToken, setPracticeResetToken] = useState(0);
+  /**
+   * 已发布小节的**真实总时长**（由 MeasurePracticePanel 回传）。
+   * 列表接口的 `durationSec` 是按小节数估算的（转录链路 bpm 常为 null → 误差可达 30%），
+   * 所以拿到精确值后优先用它，避免底部计时器比实际内容长/短。
+   */
+  const [cloudDurationSec, setCloudDurationSec] = useState<number | null>(null);
 
   const timerRef = useRef<number | null>(null);
   /** 详情页滚动容器（原先用于歌词区自动滚动，现仅保留以备后续需要） */
@@ -57,6 +75,13 @@ export const MusicTab: React.FC<MusicTabProps> = ({
 
   const favoriteSongs = filteredSongs.filter((s) => s.isFavorite);
   const regularSongs = filteredSongs.filter((s) => !s.isFavorite);
+  const subText = isDark ? 'text-zinc-400' : 'text-zinc-500';
+
+  /** 计时器使用的时长：优先用云端小节真实总时长 */
+  const effectiveDurationSec =
+    cloudDurationSec && cloudDurationSec > 0
+      ? cloudDurationSec
+      : selectedSong?.durationSec ?? 0;
 
   // 播放时钟：仅推进歌曲时间轴
   // （音效统一由「云端六线谱小节练习」的小节音频播放，这里不再合成六线谱音符，
@@ -67,7 +92,7 @@ export const MusicTab: React.FC<MusicTabProps> = ({
       timerRef.current = window.setInterval(() => {
         setCurrentPlaySec((prev) => {
           const next = prev + (intervalMs / 1000) * playbackSpeed;
-          if (next >= selectedSong.durationSec) {
+          if (next >= effectiveDurationSec) {
             setIsPlaying(false);
             return 0;
           }
@@ -83,12 +108,13 @@ export const MusicTab: React.FC<MusicTabProps> = ({
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isPlaying, selectedSong, playbackSpeed]);
+  }, [isPlaying, selectedSong, playbackSpeed, effectiveDurationSec]);
 
   // 切换曲目时停止播放并回到开头
   useEffect(() => {
     setIsPlaying(false);
     setCurrentPlaySec(0);
+    setCloudDurationSec(null);
   }, [selectedSong]);
 
   // -------------------------------------------------------------
@@ -275,86 +301,99 @@ export const MusicTab: React.FC<MusicTabProps> = ({
             </div>
 
             {/* Chord Chips Bar - Show compact chord diagram picture right next to clicked chip without clipping */}
-            <div className="flex items-center gap-2 flex-wrap pt-0.5 relative">
-              <span
-                className={`text-xs mr-1 shrink-0 ${
-                  isDark ? 'text-zinc-400' : 'text-zinc-500'
-                }`}
-              >
-                和弦库:
-              </span>
-              {selectedSong.chords.map((chord, idx) => {
-                const popoverKey = `bar-${chord}`;
-                const isPopoverOpen = activeChordPopoverKey === popoverKey;
-                const isNearRight = idx >= selectedSong.chords.length - 2;
+            {selectedSong.chords.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap pt-0.5 relative">
+                <span
+                  className={`text-xs mr-1 shrink-0 ${
+                    isDark ? 'text-zinc-400' : 'text-zinc-500'
+                  }`}
+                >
+                  和弦库:
+                </span>
+                {selectedSong.chords.map((chord, idx) => {
+                  const popoverKey = `bar-${chord}`;
+                  const isPopoverOpen = activeChordPopoverKey === popoverKey;
+                  const isNearRight = idx >= selectedSong.chords.length - 2;
 
-                return (
-                  <div key={chord} className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        // (5) Stop music when selecting a chord
-                        setIsPlaying(false);
-                        audioEngine.playChord(chord);
-                        setActiveChordPopoverKey(isPopoverOpen ? null : popoverKey);
-                      }}
-                      className={`px-3 py-1 rounded-xl font-mono text-xs font-bold transition flex items-center gap-1 ${
-                        isPopoverOpen
-                          ? 'bg-zinc-700 text-emerald-400 border border-emerald-500/50'
-                          : isDark
-                          ? 'bg-zinc-800/90 text-zinc-200 hover:bg-zinc-750'
-                          : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-200'
-                      }`}
-                      title={`点击在旁边查看 ${chord} 和弦图片`}
-                    >
-                      <span>{chord}</span>
-                      <Volume2 size={11} className="opacity-60" />
-                    </button>
-
-                    {/* Compact Chord Picture Popover right below the clicked chip - fully visible, unclipped */}
-                    {isPopoverOpen && (
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className={`absolute top-full mt-2.5 ${
-                          isNearRight ? 'right-0' : 'left-0'
-                        } z-50 ${
-                          isDark
-                            ? 'bg-zinc-950/98 border-emerald-500/70 text-white'
-                            : 'bg-white border-emerald-500/70 text-zinc-900'
-                        } border rounded-2xl p-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.85),0_0_20px_rgba(16,185,129,0.25)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 min-w-[130px]`}
+                  return (
+                    <div key={chord} className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // (5) Stop music when selecting a chord
+                          setIsPlaying(false);
+                          audioEngine.playChord(chord);
+                          setActiveChordPopoverKey(isPopoverOpen ? null : popoverKey);
+                        }}
+                        className={`px-3 py-1 rounded-xl font-mono text-xs font-bold transition flex items-center gap-1 ${
+                          isPopoverOpen
+                            ? 'bg-zinc-700 text-emerald-400 border border-emerald-500/50'
+                            : isDark
+                            ? 'bg-zinc-800/90 text-zinc-200 hover:bg-zinc-750'
+                            : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 border border-zinc-200'
+                        }`}
+                        title={`点击在旁边查看 ${chord} 和弦图片`}
                       >
-                        <div className="flex items-center justify-between px-1 mb-1">
-                          <span className="text-xs font-mono font-bold text-emerald-500">
-                            {chord}
-                          </span>
-                          <button
-                            onClick={() => setActiveChordPopoverKey(null)}
-                            className="text-zinc-400 hover:text-zinc-600 p-0.5 text-xs ml-3"
-                            title="关闭"
-                          >
-                            ✕
-                          </button>
+                        <span>{chord}</span>
+                        <Volume2 size={11} className="opacity-60" />
+                      </button>
+
+                      {/* Compact Chord Picture Popover right below the clicked chip - fully visible, unclipped */}
+                      {isPopoverOpen && (
+                        <div
+                          onClick={(e) => e.stopPropagation()}
+                          className={`absolute top-full mt-2.5 ${
+                            isNearRight ? 'right-0' : 'left-0'
+                          } z-50 ${
+                            isDark
+                              ? 'bg-zinc-950/98 border-emerald-500/70 text-white'
+                              : 'bg-white border-emerald-500/70 text-zinc-900'
+                          } border rounded-2xl p-2.5 shadow-[0_12px_36px_rgba(0,0,0,0.85),0_0_20px_rgba(16,185,129,0.25)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-150 min-w-[130px]`}
+                        >
+                          <div className="flex items-center justify-between px-1 mb-1">
+                            <span className="text-xs font-mono font-bold text-emerald-500">
+                              {chord}
+                            </span>
+                            <button
+                              onClick={() => setActiveChordPopoverKey(null)}
+                              className="text-zinc-400 hover:text-zinc-600 p-0.5 text-xs ml-3"
+                              title="关闭"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                          <ChordDiagram
+                            chordName={chord}
+                            size="sm"
+                            showPlayButton={false}
+                            hideHint
+                          />
                         </div>
-                        <ChordDiagram
-                          chordName={chord}
-                          size="sm"
-                          showPlayButton={false}
-                          hideHint
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* 云端曲目暂无和弦标注：给出中性提示，避免出现空的「和弦库:」行 */}
+            {selectedSong.chords.length === 0 && (
+              <p className={`text-[11px] pt-0.5 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                该曲目为云端发布谱面，和弦标注请见下方分段练习
+              </p>
+            )}
           </div>
 
-          {/* Cloud Tablature Measure Loop Practice (来自 guitarmate-audio-backend 已发布小节数据)
-              一个小节一个栏目，播放 / 暂停 / 变速统一由底部 PLAY 按钮控制 */}
+          {/* Cloud Tablature Segment Practice (来自 guitarmate-audio-backend 已发布小节数据)
+              每段 1~3 个小节；段落上的 ▶ 反复练习本段，底部 PLAY 顺序练习全部段落。
+              云端曲目由曲库列表直接带入 scoreId —— 详情页不再需要选择曲目。 */}
           <MeasurePracticePanel
             songTitle={selectedSong.title}
+            scoreId={selectedSong.scoreId}
             isDark={isDark}
             isPlaying={isPlaying}
+            onPlayingChange={setIsPlaying}
+            onTotalDuration={setCloudDurationSec}
             playbackSpeed={playbackSpeed}
             resetToken={practiceResetToken}
             // 顶部 Simplified / Original 开关 → 切换练习声源
@@ -381,8 +420,8 @@ export const MusicTab: React.FC<MusicTabProps> = ({
             >
               {Math.floor(currentPlaySec / 60)}:
               {String(Math.floor(currentPlaySec % 60)).padStart(2, '0')} /{' '}
-              {Math.floor(selectedSong.durationSec / 60)}:
-              {String(Math.floor(selectedSong.durationSec % 60)).padStart(2, '0')}
+              {Math.floor(effectiveDurationSec / 60)}:
+              {String(Math.floor(effectiveDurationSec % 60)).padStart(2, '0')}
             </span>
             <div className="flex items-center gap-1.5">
               <span className={isDark ? 'text-zinc-500 text-[10px]' : 'text-zinc-400 text-[10px]'}>
@@ -524,14 +563,28 @@ export const MusicTab: React.FC<MusicTabProps> = ({
             {t('songs.subtitle')}
           </p>
         </div>
-        <div
-          className={`px-2.5 py-1 rounded-full text-[11px] font-mono ${
-            isDark
-              ? 'bg-zinc-850 text-zinc-300 border border-zinc-800'
-              : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
-          }`}
-        >
-          {songs.length} {t('songs.countSuffix')}
+        <div className="flex items-center gap-2">
+          <div
+            className={`px-2.5 py-1 rounded-full text-[11px] font-mono ${
+              isDark
+                ? 'bg-zinc-850 text-zinc-300 border border-zinc-800'
+                : 'bg-zinc-100 text-zinc-600 border border-zinc-200'
+            }`}
+          >
+            {songs.length} {t('songs.countSuffix')}
+          </div>
+          <button
+            onClick={() => onRefreshSongs?.()}
+            disabled={songsStatus === 'loading'}
+            title="重新同步后端曲库（CMS 发布 / 删除后点这里）"
+            className={`p-1.5 rounded-full border transition ${
+              isDark
+                ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800'
+                : 'bg-white border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
+            }`}
+          >
+            <RefreshCw size={13} className={songsStatus === 'loading' ? 'animate-spin' : ''} />
+          </button>
         </div>
       </div>
 
@@ -556,6 +609,54 @@ export const MusicTab: React.FC<MusicTabProps> = ({
           }`}
         />
       </div>
+
+      {/* 加载中（首次拉取，列表为空时才显示，避免刷新时闪屏） */}
+      {songsStatus === 'loading' && songs.length === 0 && (
+        <div
+          className={`h-[160px] flex flex-col items-center justify-center gap-2 text-xs ${subText}`}
+        >
+          <Loader2 size={20} className="animate-spin text-emerald-500" />
+          <span>正在同步后端曲库...</span>
+        </div>
+      )}
+
+      {/* 拉取失败（后端未启动 / 网络不可达） */}
+      {songsStatus === 'error' && (
+        <div className="mb-4 px-3 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] flex items-start gap-2">
+          <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+          <span className="flex-1">
+            {songsError || '无法连接后端曲库'}
+            <br />
+            <span className="opacity-75">
+              曲库以后端已发布内容为准（不再内置示例曲目），请确认 guitarmate-audio-backend 已在
+              localhost:3000 启动。
+            </span>
+          </span>
+          <button
+            onClick={() => onRefreshSongs?.()}
+            className="px-2 py-1 rounded-lg border border-amber-500/40 text-amber-300 hover:bg-amber-500/15 whitespace-nowrap"
+          >
+            重试
+          </button>
+        </div>
+      )}
+
+      {/* 后端暂无已发布曲目（或搜索无结果） */}
+      {songsStatus === 'ready' && songs.length === 0 && (
+        <div className={`h-[160px] flex flex-col items-center justify-center gap-1 text-xs ${subText}`}>
+          <Music2 size={22} className="opacity-50" />
+          <span>后端暂无已发布曲目</span>
+          <span className="opacity-70 text-center px-6">
+            在 guitarmate-studio-cms 中完成转录并「发布」后，曲目会自动出现在这里。
+          </span>
+        </div>
+      )}
+
+      {songsStatus === 'ready' && songs.length > 0 && filteredSongs.length === 0 && (
+        <div className={`h-[120px] flex items-center justify-center text-xs ${subText}`}>
+          没有找到匹配「{searchQuery}」的曲目
+        </div>
+      )}
 
       {/* Section 1: "Your songs" (Pinned Favorite Songs as requested) */}
       {favoriteSongs.length > 0 && (
@@ -595,6 +696,7 @@ export const MusicTab: React.FC<MusicTabProps> = ({
       )}
 
       {/* Section 2: "Top songs" */}
+      {filteredSongs.length > 0 && (
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2
@@ -627,6 +729,7 @@ export const MusicTab: React.FC<MusicTabProps> = ({
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

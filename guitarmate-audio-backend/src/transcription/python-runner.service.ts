@@ -1,13 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { execFile } from 'child_process';
-import { existsSync } from 'fs';
-import { isAbsolute, join, resolve } from 'path';
+import { existsSync, readFileSync } from 'fs';
+import { isAbsolute, join, resolve, dirname } from 'path';
 import { tmpdir } from 'os';
 import ffmpegStatic from 'ffmpeg-static';
+import ffprobeStatic from 'ffprobe-static';
+import { resolveYtDlpCookies, ytDlpEnv } from './ytdlp-args';
 import {
   WORKER_RESULT_PREFIX,
   type WorkerCapabilities,
   type WorkerResultBase,
+  type YtDlpCookieSource,
 } from './transcription.types';
 
 export interface ExecOutcome {
@@ -46,6 +49,8 @@ export interface WorkerOutcome<T extends WorkerResultBase> extends ExecOutcome {
  * |---|---|---|
  * | `PYTHON_BIN` | 自动探测 `python3` / `python` / `py -3` | 解释器 |
  * | `YTDLP_BIN` | 自动探测 `yt-dlp` / `python -m yt_dlp` | URL 下载 |
+ * | `YTDLP_COOKIES` | 自动探测 `<后端>/cookies.txt` | cookies.txt 路径（YouTube 反机器人校验必需） |
+ * | `YTDLP_COOKIES_FROM_BROWSER` | 空 | 从浏览器取 cookies，如 `firefox` / `edge:Default` |
  * | `WORKERS_DIR` | `<后端>/workers` | worker 脚本目录 |
  * | `WORKER_TIMEOUT_MS` | `1800000`（30 分钟） | 单个 worker 超时 |
  */
@@ -118,9 +123,20 @@ export class PythonRunnerService {
 
     const ffmpegOk = !!ffmpegStatic && existsSync(String(ffmpegStatic));
 
+    const cookies = resolveYtDlpCookies();
+    const ytDlpWithCookies: WorkerCapabilities['ytDlp'] = {
+      ...ytDlp,
+      cookies,
+      reason: cookies
+        ? `${ytDlp.reason || 'yt-dlp'}；cookies=${
+            cookies.mode === 'file' ? `文件 ${cookies.value}` : `浏览器 ${cookies.value}`
+          }`
+        : ytDlp.reason,
+    };
+
     const caps: WorkerCapabilities = {
       python,
-      ytDlp,
+      ytDlp: ytDlpWithCookies,
       demucs,
       basicPitch,
       tayuya,
@@ -135,7 +151,9 @@ export class PythonRunnerService {
     this.capabilities = caps;
     this.logger.log(
       `Worker 能力探测：python=${python.available ? python.bin : '缺失'} ` +
-        `yt-dlp=${ytDlp.available ? 'OK' : '缺失'} demucs=${demucs.available} ` +
+        `yt-dlp=${ytDlp.available ? 'OK' : '缺失'} ` +
+        `cookies=${cookies ? (cookies.mode === 'file' ? cookies.value : `browser:${cookies.value}`) : '未配置'} ` +
+        `demucs=${demucs.available} ` +
         `basic-pitch=${basicPitch.available} tayuya=${tayuya.available} ffmpeg=${ffmpegOk}`,
     );
     return caps;
@@ -144,6 +162,44 @@ export class PythonRunnerService {
   // ─────────────────────────────────────────
   // 基础执行能力
   // ─────────────────────────────────────────
+
+  /**
+   * Python worker 的运行环境。
+   *
+   * ⚠️ 关键：**把 `ffmpeg-static` / `ffprobe-static` 所在目录塞进 PATH**。
+   *
+   * Node 侧靠 `fluent-ffmpeg.setFfmpegPath(ffmpegStatic)`，yt-dlp 侧靠
+   * `--ffmpeg-location`（见 `buildYtDlpArgs`）—— 两者都不依赖 PATH。
+   * 但 Python 侧（demucs）是**直接 spawn 子进程**，只认 PATH：
+   *
+   * - `demucs/audio.py::_read_info()` → `subprocess.check_output(['ffprobe', ...])`
+   * - `demucs/audio.py::__read_audio()` → `subprocess.run(['ffmpeg', ...])`
+   *
+   * `ffmpeg-static` **只带 ffmpeg.exe，不带 ffprobe.exe** → 缺 ffprobe 时分离阶段会报：
+   *
+   * ```
+   * 读取音频失败（请确认是有效的 mp3/wav/flac）：[WinError 2] 系统找不到指定的文件。
+   * ```
+   *
+   * —— 报错看着像「音频文件坏了」，其实只是找不到 ffprobe（实测踩过，排查花了很久）。
+   * Docker 镜像里是 apt 装的 ffmpeg（自带 ffprobe），所以那条路径本来就正常。
+   */
+  private workerEnv(): NodeJS.ProcessEnv {
+    const env = { ...ytDlpEnv() };
+    const bins = [ffmpegStatic, ffprobeStatic?.path].filter(
+      (b): b is string => typeof b === 'string' && !!b && existsSync(b),
+    );
+    if (bins.length) {
+      const sep = process.platform === 'win32' ? ';' : ':';
+      const dirs = [...new Set(bins.map((b) => dirname(b)))];
+      const base = env.PATH || process.env.PATH || '';
+      env.PATH = base ? `${dirs.join(sep)}${sep}${base}` : dirs.join(sep);
+      // 供脚本自行取用（demucs 只认 PATH，这两个变量留给需要显式路径的场景）
+      if (typeof ffmpegStatic === 'string') env.FFMPEG_BIN = ffmpegStatic;
+      if (ffprobeStatic?.path) env.FFPROBE_BIN = ffprobeStatic.path;
+    }
+    return env;
+  }
 
   /** 执行任意命令（不解析结果） */
   run(command: string, args: string[], opts?: { cwd?: string; timeoutMs?: number }): Promise<ExecOutcome> {
@@ -157,7 +213,7 @@ export class PythonRunnerService {
           timeout: opts?.timeoutMs ?? this.timeoutMs,
           maxBuffer: 64 * 1024 * 1024,
           windowsHide: true,
-          env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+          env: this.workerEnv(),
         },
         (err: any, stdout, stderr) => {
           const durationMs = Date.now() - started;
@@ -374,4 +430,171 @@ function lastLines(text: string, count: number): string {
   if (!text) return '';
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
   return lines.slice(-count).join(' | ');
+}
+
+/**
+ * cookie 来源解析已移到 `ytdlp-args.ts`（与服务端下载 / 本机代理共用一份）。
+ * 这里保留 re-export，现有 `import { resolveYtDlpCookies } from './python-runner.service'` 不受影响。
+ */
+export { resolveYtDlpCookies };
+
+/** 能证明「已登录」的 cookie 名（只看名字，不看值） */
+export const AUTH_COOKIE_NAMES = [
+  'SID',
+  'HSID',
+  'SSID',
+  'SAPISID',
+  'APISID',
+  '__Secure-1PSID',
+  '__Secure-3PSID',
+  '__Secure-1PAPISID',
+  'LOGIN_INFO',
+];
+
+export interface YtDlpCookieState {
+  mode: 'file' | 'browser' | 'none';
+  source: string;
+  /** 文件模式下的 cookie 条数（含 `#HttpOnly_` 行） */
+  count: number;
+  authNames: string[];
+  /** 是否具备「已登录」的迹象（浏览器模式无法在服务端校验，乐观处理） */
+  usable: boolean;
+  /**
+   * 登录态是否可用 = 有 `LOGIN_INFO` **且**有任一会话 cookie（SID/SSID/LSID/`__Secure-*PSID`…）。
+   *
+   * ⚠️ 曾经要求 `SID` + `HSID` 才算健康 —— 那是**误判**：现代浏览器在 `youtube.com` 域上
+   * 通常不下发 SID/HSID（它们跟着 `google.com` 走），于是把一份**完全能用**的导出文件
+   * 判成「登录态不完整」并拒绝覆盖。已用 yt-dlp 实测：只要 LOGIN_INFO + 任一 PSID/SSID，
+   * 元数据与音频都能正常取到。
+   */
+  strongAuth: boolean;
+  /** 是否带 YouTube 侧的已登录标记 LOGIN_INFO */
+  hasLoginInfo: boolean;
+}
+
+/**
+ * 能证明「这个会话真的登录了」的 cookie（任一即可，配合 `LOGIN_INFO` 使用）。
+ * 注意：**故意不含 HSID/APISID/SAPISID** —— 它们在 youtube.com 上经常缺席。
+ */
+export const SESSION_COOKIE_NAMES = [
+  'SID',
+  'SSID',
+  'LSID',
+  '__Secure-1PSID',
+  '__Secure-3PSID',
+  '__Host-1PLSID',
+  '__Host-3PLSID',
+];
+
+/** 解析 Netscape cookies.txt 的 cookie 名（`#HttpOnly_` 前缀行必须算，否则会漏掉全部会话 cookie） */
+export function parseNetscapeCookieNames(text: string): string[] {
+  const names: string[] = [];
+  for (const raw of text.split(/\r?\n/)) {
+    let line = raw.trim();
+    if (!line) continue;
+    if (line.startsWith('#HttpOnly_')) line = line.slice('#HttpOnly_'.length);
+    else if (line.startsWith('#')) continue;
+    const cols = line.includes('\t') ? line.split('\t') : line.split(/\s+/);
+    if (cols.length >= 7 && cols[5]) names.push(cols[5]);
+  }
+  return names;
+}
+
+/**
+ * 实时检查本次下载会携带的 cookies（**不打印任何 cookie 值**）。
+ *
+ * 为什么需要：原来「Sign in to confirm you're not a bot」的文案无法区分
+ * 「根本没配 cookies」与「配了但没登录（导出的是访客 cookie）」，用户只能盲试。
+ */
+export function inspectYtDlpCookieState(): YtDlpCookieState {
+  const source = resolveYtDlpCookies();
+  if (!source)
+    return {
+      mode: 'none',
+      source: '',
+      count: 0,
+      authNames: [],
+      usable: false,
+      strongAuth: false,
+      hasLoginInfo: false,
+    };
+  if (source.mode === 'browser') {
+    return {
+      mode: 'browser',
+      source: source.value,
+      count: 0,
+      authNames: [],
+      usable: true,
+      strongAuth: false,
+      hasLoginInfo: false,
+    };
+  }
+
+  const path = existsSync(source.value) ? source.value : resolve(process.cwd(), source.value);
+  if (!existsSync(path)) {
+    return {
+      mode: 'none',
+      source: source.value,
+      count: 0,
+      authNames: [],
+      usable: false,
+      strongAuth: false,
+      hasLoginInfo: false,
+    };
+  }
+  try {
+    const names = parseNetscapeCookieNames(readFileSync(path, 'utf8'));
+    const authNames = AUTH_COOKIE_NAMES.filter((n) => names.includes(n));
+    const hasLoginInfo = names.includes('LOGIN_INFO');
+    const hasSession = SESSION_COOKIE_NAMES.some((n) => names.includes(n));
+    return {
+      mode: 'file',
+      source: path,
+      count: names.length,
+      authNames,
+      usable: authNames.length > 0,
+      strongAuth: hasLoginInfo && hasSession,
+      hasLoginInfo,
+    };
+  } catch {
+    return {
+      mode: 'file',
+      source: path,
+      count: 0,
+      authNames: [],
+      usable: false,
+      strongAuth: false,
+      hasLoginInfo: false,
+    };
+  }
+}
+
+/** cookies 状态 → 可读的几行（让用户一眼看出「这次到底带没带 cookies、带没带登录态」） */
+export function describeYtDlpCookieStateLines(state: YtDlpCookieState): string[] {
+  if (state.mode === 'none') {
+    return [
+      'cookies 状态：❌ 本次未携带 cookies',
+      `      （未找到 ${join(process.cwd(), 'cookies.txt')}，也未设置 YTDLP_COOKIES / YTDLP_COOKIES_FROM_BROWSER）`,
+      '',
+    ];
+  }
+  if (state.mode === 'browser') {
+    return [`cookies 状态：✅ 来自浏览器「${state.source}」`, ''];
+  }
+
+  const out = [`cookies 状态：✅ 文件 ${state.source}（${state.count} 条）`];
+  if (state.authNames.length) {
+    out.push(`      含登录 cookie：${state.authNames.join(', ')}`);
+  } else {
+    out.push('      ⚠️ 未发现 SID / SSID / SAPISID / LOGIN_INFO 等登录 cookie → 导出时很可能未登录 YouTube');
+  }
+  if (state.authNames.length && !state.strongAuth) {
+    out.push(
+      `      ⚠️ 登录态不完整：${state.hasLoginInfo ? '' : '缺 LOGIN_INFO '}` +
+        `${state.hasLoginInfo ? '缺会话 cookie（SID/SSID/__Secure-*PSID 任一）' : ''}` +
+        ' → YouTube 仍会当作未登录',
+    );
+  }
+  out.push('');
+  return out;
 }

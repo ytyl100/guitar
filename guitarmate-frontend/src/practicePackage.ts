@@ -379,6 +379,28 @@ export function validatePracticePackage(input: unknown): ValidationResult {
 }
 
 /**
+ * 按小节 `index` 去重（保留第一条，顺序不变）。
+ *
+ * 为什么消费侧要兜底：后端发布是 **append-only**（重复发布同一曲目不会覆盖旧小节），
+ * 而 `Measure.index` 没有唯一约束 → 历史数据里真的会出现「第 1 小节 ×2」，
+ * 在学员端表现为同一小节练两遍、谱面重复、React key 冲突。
+ * 这里不依赖后端清理数据，直接保证渲染层看到的是干净的小节序列。
+ */
+export function dedupeMeasuresByIndex(measures: PracticeMeasure[]): PracticeMeasure[] {
+  const seen = new Set<number>();
+  const out: PracticeMeasure[] = [];
+  for (const measure of measures) {
+    const key = Number(measure.index);
+    if (Number.isFinite(key)) {
+      if (seen.has(key)) continue;
+      seen.add(key);
+    }
+    out.push(measure);
+  }
+  return out;
+}
+
+/**
  * 兼容层：把**旧的** `GET /api/published/scores/:id/measures` 数组响应
  * 包装成 PracticePackage 结构。
  *

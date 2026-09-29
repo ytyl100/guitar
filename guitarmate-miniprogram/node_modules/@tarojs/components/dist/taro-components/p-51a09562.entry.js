@@ -1,0 +1,1 @@
+export{O as taro_open_embedded_atomicservice_core}from"./p-3534d37d.js";import"./p-f72fcd8c.js";import"./p-dbdb9de9.js";import"@tarojs/taro";
