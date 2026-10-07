@@ -1,3 +1,23 @@
+You are a sophisticate python developer, help me to complete the python code with following requirement:
+original requirement: "our users need to find the cheapest flight routes. Sometimes a connecting flight through a hub is cheaper than a direct flight, we need an algorithm that finds the optimal routes". The task: Implement a shortest path algorithm.
+current python sample script, functional signature:
+def find_shortest_path(graph_json,start_node,end_node):
+"""
+Returns: list of nodes [start,...,end] or [] if no path existes;
+Example:[0,2,3,4] for path 0->2->3->4
+
+"""
+requirements: complete above python script with following requirements
+(1) Find the minimum total weight path (cheapest route);
+(2) Return path as list of nodes, or empty list if no path exists;
+(3) Must work for directed and undirected graphs;
+
+Refer to Dijkstar's algorithm;
+test on samll graphs first (3-4 nodes) to verify it works;
+Explain Dijkstar's algorithm and hep me implement it;
+
+
+
 import json
 import heapq
 
