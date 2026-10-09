@@ -1,0 +1,680 @@
+import { Text, Video, View } from '@tarojs/components';
+import Taro from '@tarojs/taro';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { ScoreData, ScoreMeasure, ScoreNote } from '../services/api';
+import { CARD_PAD, PAGE_PAD, useWindowWidth } from '../hooks/useWindowWidth';
+
+/**
+ * 曲库曲谱的练习视图（**客户端渲染，单行行进**）
+ * ==============================================
+ *
+ * ## 为什么必须客户端渲染
+ *
+ * 曲库条目（`/api/library`，如 `macaroon-5`）在"已发布"那套管线里**没有 `tab.png`** ——
+ * 那条链路是"后端把谱面渲染成 PNG，前端只贴图 + 叠坐标"（见 `components/PracticeSegments.tsx`）。
+ * 所以曲库这条路只能拿 `scoreJson` **自己画**。
+ *
+ * ## 版式（对齐 Web 版 `ScoreViewer` 的手机模式，即 play.png）
+ *
+ * ```
+ * ┌────────────────────────────────────────────────────┐
+ * │ [1] Cm         │ [2] G7                            │ ← 小节号徽标 + 和弦名（左上角）
+ * │  ──────────────│──────────────  ← 五线谱（原位音符） │
+ * │   ♪   ♪   ♪    │   ♪    ♪    ♪                    │
+ * │  ──────────────│──────────────  ← 六线谱（品位数字） │
+ * │   3 (3) 6 3 6  │  3  3  4  4  3  1  3             │
+ * │      ║ ← 播放头（上下带端点）                        │
+ * └────────────────────────────────────────────────────┘
+ * [ ◀ Bar 7/12 ▶ ]  [▶]  [1x]  [每行 1|2|4]  [↺]
+ * ┌ 指板： Nut 1 2 3 4 5 6 7 + E4…E2 + 当前音标点 ┐
+ * ```
+ *
+ * ## 两处必须守住的约束（都是踩过的坑）
+ *
+ * 1. **几何走行内 px**：类名里的 `px` 会被 Taro 按设计单位换算，和内部坐标系打架
+ *    （`ChordFretboard.tsx` 里有完整解释）。
+ * 2. **宽度**不能写死 —— 必须由 `useWindowWidth` 现算，否则要么在小屏溢出、
+ *    要么在宽窗口里比例失衡。五线谱与六线谱**共用同一个 `staffW`**，两者永远对齐。
+ *
+ * ## 弦号方向（错了整张谱会镜像）
+ *
+ * `ScoreNote.string`：**1 = 最细的高音 E 弦，渲染在最上面那条线**
+ * （见 `guitarmate-audio-backend/src/published/tab-render/tab-layout.ts` 的
+ * `stringYs = staffTop + i * lineSpacing`）。
+ *
+ * ## 五线谱音高映射
+ *
+ * 用 `midi` 算**全音阶级数**（不是半音），因为五线谱的"线/间"是按音级走的：
+ * 每一格 = 一个音级，线上与间上交替。吉他按惯例**记谱比实际高八度**，
+ * 所以这里统一 `+7` 级（一个八度）——不然低音 E2 要画到谱表下方七条加线的位置。
+ *
+ * ## 关于"行进"与音频
+ *
+ * 曲库条目**自己没有音频**：`score.videoUrl` 是 YouTube 外链（小程序里播不了），
+ * 带 `scoreId` 的条目指向的是**另一份编配**（后端 86 小节 vs 曲库 12 小节）。
+ * 所以这里**不假装有参考音频**：播放键驱动的是**谱面光标**，按曲目速度行进。
+ */
+
+/* ── 谱面纵向尺度（CSS px）─────────────────────────────────────── */
+/** 小节头（小节号 + 和弦名）高度 */
+const HEADER_H = 18;
+/** 五线谱：4 个间隔 × 12 = 48 高；圆形音符头直径 */
+const STAFF_GAP = 12;
+const STAFF_H = STAFF_GAP * 4;
+/** 五线谱与六线谱之间的间隙 */
+const MID_GAP = 16;
+/** 六线谱弦距 */
+const TAB_GAP = 13;
+const TAB_H = TAB_GAP * 5;
+/** 谱面框内边距（弦线不要贴边框） */
+const BOX_PAD = 8;
+/** 整块谱面的高度 */
+const BOX_H = BOX_PAD * 2 + HEADER_H + STAFF_H + MID_GAP + TAB_H;
+/** 单行最多容纳的音符数（决定一行放几个小节） */
+const NOTES_PER_LINE = 18;
+/** 小节左右内边距 */
+const MEASURE_PAD = 8;
+/** 指板可视频位窗口（与参考图一致：7 品） */
+const FRET_WINDOW = 7;
+/** 指板左侧弦名槽 */
+const GUTTER = 26;
+
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+/** 半音 → 音级下标（C C# D D# E F F# G G# A A# B） */
+const LETTER_INDEX = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
+/** 弦名（1 弦 → 6 弦） */
+const STRING_LABELS = ['E4', 'B3', 'G3', 'D3', 'A2', 'E2'];
+
+function beatsPerMeasureOf(timeSignature?: string): number {
+  const m = (timeSignature || '').match(/^(\d+)\s*\/\s*(\d+)$/);
+  return m ? Number(m[1]) || 4 : 4;
+}
+
+function noteNameOf(midi: number): string {
+  return `${NOTE_NAMES[((midi % 12) + 12) % 12]}${Math.floor(midi / 12) - 1}`;
+}
+
+/** MIDI → 全音阶级数（C4=60 → 4×7+0=28；E4=64 → 4×7+2=30） */
+function diatonicStep(midi: number): number {
+  const pc = ((midi % 12) + 12) % 12;
+  const octave = Math.floor(midi / 12) - 1;
+  return octave * 7 + LETTER_INDEX[pc];
+}
+/** 五线谱最下线（高音谱号 E4）对应的级数 */
+const BOTTOM_LINE_STEP = diatonicStep(64);
+
+/** `'E2'` / `'E'` → MIDI（后端 `tuning` 带八度，别只拿字母查表） */
+function midiFromNoteName(name?: string): number | null {
+  const m = (name || '').trim().match(/^([A-Ga-g])([#b]?)(-?\d+)?$/);
+  if (!m) return null;
+  const letter = m[1].toUpperCase();
+  const accidental = m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0;
+  const octave = m[3] === undefined ? 3 : Number(m[3]);
+  const semitone = NOTE_NAMES.indexOf(letter);
+  return semitone === -1 ? null : semitone + accidental + (octave + 1) * 12;
+}
+
+function midiOf(string: number, fret: number, tuning: string[]): number | null {
+  const base = midiFromNoteName(tuning?.[string - 1]);
+  return base === null ? null : base + (fret || 0);
+}
+
+/**
+ * 技巧记号：**只给认得出的值画记号**。
+ * ⚠️ 数据里每个音都带 `technique: 'none'`，写成 `n.technique ? '˄' : ''` 会满谱噪声。
+ */
+const TECHNIQUE_MARK: Record<string, string> = {
+  hammer: 'h',
+  hammer_on: 'h',
+  pull: 'p',
+  pull_off: 'p',
+  slide: '/',
+  bend: 'b',
+  vibrato: '~',
+  harmonic: '◇',
+  tap: 't',
+  palm_mute: 'PM',
+};
+
+/** 小节内音符的落点（拍位 → 像素） */
+function noteX(measureLeft: number, beat: number, beatsPerMeasure: number, measureW: number): number {
+  const usable = measureW - MEASURE_PAD * 2;
+  return measureLeft + MEASURE_PAD + ((beat || 0) / beatsPerMeasure) * usable;
+}
+
+export default function ScorePractice({ score }: { score: ScoreData }) {
+  const winW = useWindowWidth();
+  /**
+   * 宽度分三层算，目的是**不留死边**（参考图里谱面是几乎满宽的）：
+   *
+   * ```
+   * cardW  卡片可用宽 = 窗宽 − 页面留白×2 − 卡片内边距×2
+   * lineW  弦线长度   = cardW − 谱面框内边距×2
+   * ```
+   * ⚠️ 一开始把「谱面框」当成额外一层往外撑，结果比卡片内宽多出 16px 直接溢出；
+   * 所以谱面框宽 = `cardW`，弦线在其内部再内缩 `BOX_PAD`。
+   */
+  const cardW = Math.max(240, winW - PAGE_PAD * 2 - CARD_PAD * 2);
+  const lineW = Math.max(200, cardW - BOX_PAD * 2);
+
+  const measures: ScoreMeasure[] = useMemo(() => score.measures || [], [score.measures]);
+  const beatsPerMeasure = useMemo(
+    () => beatsPerMeasureOf(score.timeSignature),
+    [score.timeSignature],
+  );
+
+  /** 一行放几个小节：在候选值里挑**装得下**的最多的那个（默认值总是选项之一） */
+  const densePerLine = useMemo(() => {
+    const maxNotes = measures.reduce((n, m) => Math.max(n, (m.notes || []).length), 1);
+    return [4, 2, 1].find((n) => n * Math.max(1, maxNotes) <= NOTES_PER_LINE) || 1;
+  }, [measures]);
+  const [perLine, setPerLine] = useState(densePerLine);
+  useEffect(() => setPerLine(densePerLine), [densePerLine]);
+
+  const [tempo, setTempo] = useState(score.tempo || 80);
+  useEffect(() => setTempo(score.tempo || 80), [score.tempo]);
+
+  const [playing, setPlaying] = useState(false);
+  const [beatPos, setBeatPos] = useState(0);
+  const [panel, setPanel] = useState<'fretboard' | 'video'>('fretboard');
+
+  const startAtRef = useRef(0);
+  const offsetRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const totalBeats = measures.length * beatsPerMeasure;
+
+  /** 播放：每 50ms 从时间戳重算光标（累加会随掉帧漂移） */
+  useEffect(() => {
+    if (!playing) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+    startAtRef.current = Date.now();
+    timerRef.current = setInterval(() => {
+      const beat =
+        offsetRef.current + (Date.now() - startAtRef.current) / (60000 / Math.max(20, tempo));
+      if (beat >= totalBeats) {
+        offsetRef.current = 0;
+        setBeatPos(0);
+        setPlaying(false);
+        return;
+      }
+      setBeatPos(beat);
+    }, 50);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+  }, [playing, tempo, totalBeats]);
+
+  const toggle = () => {
+    if (playing) {
+      offsetRef.current = beatPos;
+      setPlaying(false);
+      return;
+    }
+    offsetRef.current = beatPos >= totalBeats ? 0 : beatPos;
+    setPlaying(true);
+  };
+
+  const backToStart = useCallback(() => {
+    offsetRef.current = 0;
+    setBeatPos(0);
+  }, []);
+
+  const currentMeasureIdx = Math.min(
+    Math.max(0, Math.floor(beatPos / beatsPerMeasure)),
+    Math.max(0, measures.length - 1),
+  );
+  const beatInMeasure = beatPos - currentMeasureIdx * beatsPerMeasure;
+
+  const perLineSafe = Math.max(1, perLine);
+  /** 单行行进：走完这一行整体换下一行 */
+  const windowStart = Math.floor(currentMeasureIdx / perLineSafe) * perLineSafe;
+  const windowMeasures = measures.slice(windowStart, windowStart + perLine);
+  const measureW = lineW / Math.max(1, windowMeasures.length);
+
+  /** 当前小节里"已经走到的最后一个音"（指板/五线谱高亮它） */
+  const activeNote: ScoreNote | null = useMemo(() => {
+    const m = measures[currentMeasureIdx];
+    if (!m?.notes?.length) return null;
+    let hit: ScoreNote | null = null;
+    m.notes.forEach((n) => {
+      if ((n.beat || 0) <= beatInMeasure + 1e-6) hit = n;
+    });
+    return hit || m.notes[0];
+  }, [measures, currentMeasureIdx, beatInMeasure]);
+
+  const playableVideo = useMemo(() => {
+    const url = score.videoUrl || '';
+    if (!/^https?:\/\//i.test(url)) return '';
+    return /\.(mp4|m3u8|mov|webm)(\?|$)/i.test(url) ? url : '';
+  }, [score.videoUrl]);
+  const externalVideo = !!score.videoUrl && !playableVideo;
+
+  const jumpToMeasure = (idx: number) => {
+    const clamped = Math.min(Math.max(0, idx), Math.max(0, measures.length - 1));
+    const target = clamped * beatsPerMeasure;
+    offsetRef.current = target;
+    setBeatPos(target);
+  };
+
+  /* ══ 单行谱面（五线谱 + 六线谱）════════════════════════════════ */
+
+  const staffTop = BOX_PAD + HEADER_H;
+  const staffBottom = staffTop + STAFF_H;
+  const tabTop = staffBottom + MID_GAP;
+
+  const renderSystem = () => (
+    <View
+      className="relative rounded-xl border border-zinc-800"
+      style={`width:${cardW}px;height:${BOX_H}px;background:#101014`}
+    >
+      {/* ── 每个小节 ── */}
+      {windowMeasures.map((m, li) => {
+        const left = BOX_PAD + li * measureW;
+        const isCurrentLine = windowStart + li === currentMeasureIdx;
+        const beats = m.notes || [];
+        const cursorX = noteX(left, beatInMeasure, beatsPerMeasure, measureW);
+
+        return (
+          <View key={m.id || `w-${windowStart}-${li}`}>
+            {/* 当前小节底色 */}
+            {isCurrentLine && (
+              <View
+                style={`position:absolute;left:${left}px;top:${BOX_PAD - 2}px;width:${measureW}px;height:${
+                  BOX_H - BOX_PAD * 2 + 4
+                }px;background:rgba(16,185,129,0.07)`}
+              />
+            )}
+
+            {/* 小节线（左边界；最后一小节补右边界） */}
+            <View
+              style={`position:absolute;left:${left}px;top:${staffTop - 6}px;width:1px;height:${
+                STAFF_H + MID_GAP + TAB_H + 12
+              }px;background:${isCurrentLine ? '#34d399' : '#71717a'}`}
+            />
+
+            {/* 五线谱 5 条线 */}
+            {[0, 1, 2, 3, 4].map((i) => (
+              <View
+                key={`sl-${i}`}
+                style={`position:absolute;left:${left}px;top:${staffTop + i * STAFF_GAP}px;width:${measureW}px;height:1px;background:#71717a`}
+              />
+            ))}
+
+            {/* 六线谱 6 条线（1 弦在最上） */}
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <View
+                key={`tl-${i}`}
+                style={`position:absolute;left:${left}px;top:${tabTop + i * TAB_GAP}px;width:${measureW}px;height:1px;background:#a1a1aa`}
+              />
+            ))}
+
+            {/* 小节号徽标 + 和弦名（左上角，与参考图一致）
+                ⚠️ 顶部留白只用 1px 起（不是 BOX_PAD）：播放头的上端点在 `staffTop-9`，
+                徽标高 13 → 1..14，两者刚好不相撞；写 `BOX_PAD-2` 时实测会压在徽标上。 */}
+            <View
+              style={`position:absolute;left:${left + 4}px;top:1px;height:13px;padding:0 4px;border-radius:3px;background:${
+                isCurrentLine ? '#34d399' : '#3f3f46'
+              };display:flex;align-items:center`}
+            >
+              <Text
+                className="font-mono"
+                style={`font-size:9px;line-height:13px;font-weight:700;color:${
+                  isCurrentLine ? '#0a0a0a' : '#e4e4e7'
+                }`}
+              >
+                {m.number ?? windowStart + li + 1}
+              </Text>
+            </View>
+            {!!m.chord?.name && (
+              <Text
+                className="font-bold"
+                style={`position:absolute;left:${left + 26}px;top:1px;font-size:11px;line-height:13px;color:#e4e4e7`}
+              >
+                {m.chord.name}
+              </Text>
+            )}
+
+            {/* ── 五线谱音符（原位，按音级定位；记谱高八度）── */}
+            {beats.map((n, ni) => {
+              const midi = n.midi || midiOf(n.string, n.fret, score.tuning || []) || 60;
+              const step = diatonicStep(midi) + 7;
+              const y = staffBottom - (step - BOTTOM_LINE_STEP) * (STAFF_GAP / 2);
+              const x = noteX(left, n.beat, beatsPerMeasure, measureW);
+              const isNow = isCurrentLine && n === activeNote;
+              /** 加线：超出谱表的音级要补短横线 */
+              const ledgers: number[] = [];
+              for (let s = BOTTOM_LINE_STEP - 2; s >= step; s -= 2) ledgers.push(s);
+              for (let s = BOTTOM_LINE_STEP + 8; s <= step; s += 2) ledgers.push(s);
+              return (
+                <View key={`n-${n.id || ni}`}>
+                  {ledgers.map((s) => (
+                    <View
+                      key={`lg-${s}`}
+                      style={`position:absolute;left:${x - 7}px;top:${
+                        staffBottom - (s - BOTTOM_LINE_STEP) * (STAFF_GAP / 2)
+                      }px;width:14px;height:1px;background:#a1a1aa`}
+                    />
+                  ))}
+                  {/** 音符头（椭圆） */}
+                  <View
+                    style={`position:absolute;left:${x - 4}px;top:${y - 3}px;width:9px;height:7px;border-radius:50%;background:${
+                      isNow ? '#34d399' : '#e4e4e7'
+                    }`}
+                  />
+                  {/** 符干：中线以下朝上，以上朝下（与五线谱惯例一致） */}
+                  <View
+                    style={`position:absolute;left:${y > staffBottom - STAFF_GAP * 2 ? x + 4 : x - 5}px;top:${
+                      y > staffBottom - STAFF_GAP * 2 ? y - 20 : y
+                    }px;width:1px;height:20px;background:${isNow ? '#34d399' : '#e4e4e7'}`}
+                  />
+                </View>
+              );
+            })}
+
+            {/* ── 六线谱品位数字 ── */}
+            {beats.map((n, ni) => {
+              const x = noteX(left, n.beat, beatsPerMeasure, measureW);
+              const y = tabTop + (Math.min(6, Math.max(1, n.string)) - 1) * TAB_GAP;
+              const isNow = isCurrentLine && n === activeNote;
+              return (
+                <Text
+                  key={`t-${n.id || ni}`}
+                  className="font-mono font-bold"
+                  style={`position:absolute;left:${x - 4}px;top:${y - 6}px;width:10px;text-align:center;font-size:10px;line-height:12px;color:${
+                    isNow ? '#34d399' : '#e4e4e7'
+                  };background:#101014`}
+                >
+                  {n.fret}
+                  {TECHNIQUE_MARK[n.technique || ''] || ''}
+                </Text>
+              );
+            })}
+
+            {/* ── 播放头（贯通五线谱与六线谱，上下带端点）──
+                ⚠️ 上端从 `staffTop-5` 起而不是页顶：否则会盖到小节徽标与和弦名。 */}
+            {isCurrentLine && (
+              <View>
+                <View
+                  style={`position:absolute;left:${cursorX - 1}px;top:${staffTop - 5}px;width:2px;height:${
+                    STAFF_H + MID_GAP + TAB_H + 10
+                  }px;background:#38bdf8`}
+                />
+                <View
+                  style={`position:absolute;left:${cursorX - 4.5}px;top:${staffTop - 9}px;width:9px;height:9px;border-radius:4.5px;background:#38bdf8`}
+                />
+                <View
+                  style={`position:absolute;left:${cursorX - 4.5}px;top:${
+                    tabTop + TAB_H + 1
+                  }px;width:9px;height:9px;border-radius:4.5px;background:#38bdf8`}
+                />
+              </View>
+            )}
+          </View>
+        );
+      })}
+
+      {/** 收尾小节线 */}
+      <View
+        style={`position:absolute;left:${BOX_PAD + windowMeasures.length * measureW - 1}px;top:${
+          staffTop - 6
+        }px;width:1px;height:${STAFF_H + MID_GAP + TAB_H + 12}px;background:#a1a1aa`}
+      />
+    </View>
+  );
+
+  /* ══ 指板（Nut + 品位号 + 弦名 + 当前音）══════════════════════════ */
+
+  const renderFretboard = () => {
+    const currentString = activeNote?.string ?? 1;
+    const currentFret = activeNote?.fret ?? 0;
+    /** 品位窗口跟着当前音走（与 Web 版"自动平移品位窗"同义），默认 1~7 品 */
+    const fromFret = currentFret > FRET_WINDOW ? currentFret - 3 : 1;
+    const boardW = cardW - GUTTER;
+    const colW = boardW / FRET_WINDOW;
+    const stringGap = 15;
+    const boardH = stringGap * 5;
+    const midi = midiOf(currentString, currentFret, score.tuning || []);
+    /** 空弦画在琴枕左侧（第 0 "格"），有品则画在该品格中心 */
+    const dotX =
+      currentFret === 0 ? GUTTER + 2 : GUTTER + (Math.max(0, currentFret - fromFret) + 0.5) * colW;
+
+    return (
+      <View>
+        {/* 品位号行（Nut 在最左） */}
+        <View className="relative" style={`height:14px;width:${cardW}px`}>
+          <Text
+            className="font-mono text-[9px]"
+            style={`position:absolute;left:0;top:0;width:${GUTTER - 2}px;color:#a1a1aa`}
+          >
+            Nut
+          </Text>
+          {Array.from({ length: FRET_WINDOW }).map((_, i) => (
+            <Text
+              key={`fn-${i}`}
+              className="font-mono text-[9px]"
+              style={`position:absolute;left:${GUTTER + i * colW}px;top:0;width:${colW}px;text-align:center;color:#a1a1aa`}
+            >
+              {fromFret + i}
+            </Text>
+          ))}
+        </View>
+
+        <View className="relative" style={`height:${boardH + 6}px;width:${cardW}px`}>
+          {/* 指板底色（木色，与参考图一致） */}
+          <View
+            style={`position:absolute;left:${GUTTER}px;top:0;width:${boardW}px;height:${boardH}px;background:#2a1d12;border-radius:4px`}
+          />
+
+          {/* 弦名 + 六条弦 */}
+          {STRING_LABELS.map((label, i) => (
+            <View key={`s-${i}`}>
+              <Text
+                className="font-mono text-[9px]"
+                style={`position:absolute;left:0;top:${i * stringGap - 4}px;width:${GUTTER - 2}px;color:#a1a1aa`}
+              >
+                {label}
+              </Text>
+              <View
+                style={`position:absolute;left:${GUTTER}px;top:${i * stringGap}px;width:${boardW}px;height:${
+                  i >= 4 ? 2 : 1
+                }px;background:#d6b98c`}
+              />
+            </View>
+          ))}
+
+          {/* 品丝（第 0 格是琴枕，粗且亮） */}
+          {Array.from({ length: FRET_WINDOW + 1 }).map((_, i) => (
+            <View
+              key={`f-${i}`}
+              style={`position:absolute;left:${GUTTER + i * colW}px;top:0;height:${boardH}px;width:${
+                i === 0 ? 4 : 1
+              }px;background:${i === 0 ? '#e4e4e7' : '#8a6b45'}`}
+            />
+          ))}
+
+          {/* 当前音 */}
+          <View
+            style={`position:absolute;left:${dotX - 7}px;top:${
+              (currentString - 1) * stringGap - 7
+            }px;width:14px;height:14px;border-radius:7px;background:#34d399;border:1px solid #065f46`}
+          />
+        </View>
+
+        <View className="flex items-center justify-between mt-1">
+          <Text className="text-[10px] text-zinc-400">
+            {activeNote
+              ? `第 ${currentString} 弦 · ${currentFret === 0 ? '空弦' : `第 ${currentFret} 品`}${
+                  midi !== null ? ` · ${noteNameOf(midi)}` : ''
+                }`
+              : '移开光标即可看到指法位置'}
+          </Text>
+          <Text className="text-[10px] text-zinc-500 font-mono">弦 1（高音 E）→ 弦 6（低音 E）</Text>
+        </View>
+      </View>
+    );
+  };
+
+  const renderVideo = () =>
+    playableVideo ? (
+      <Video
+        id="gm-score-video"
+        className="w-full"
+        style={`height:${Math.round(lineW * 0.56)}px`}
+        src={playableVideo}
+        controls
+        showCenterPlayBtn
+        enableProgressGesture
+      />
+    ) : (
+      <View className="rounded-xl bg-zinc-900 border border-zinc-800 p-3">
+        <Text className="block text-[11px] text-amber-300 leading-relaxed">
+          ⚠ 源视频是外部页面链接
+          {score.videoUrl ? `（${score.videoUrl}）` : '（未填写）'}，小程序不能内嵌播放网页视频
+          —— 所以这里不给播放器（不摆一个点了没反应的按钮）。
+        </Text>
+        {externalVideo && (
+          <View
+            className="mt-2 px-3 py-1.5 rounded-lg bg-zinc-800"
+            style="align-self:flex-start"
+            onClick={() => {
+              void Taro.setClipboardData({ data: score.videoUrl || '' }).then(() =>
+                Taro.showToast({ title: '链接已复制，可用浏览器打开', icon: 'none' }),
+              );
+            }}
+          >
+            <Text className="text-[11px] text-zinc-200">📋 复制源视频链接</Text>
+          </View>
+        )}
+      </View>
+    );
+
+  /* ══ 整块 ═════════════════════════════════════════════════════ */
+
+  return (
+    <View className="rounded-2xl bg-zinc-900/60 border border-zinc-800 mb-3" style={`padding:${CARD_PAD}px`}>
+      {/** ── 谱面框（满卡片宽，不再层层套内边距）── */}
+      {renderSystem()}
+
+      {/** ── 控制条：小节导航 + 播放 + 速度（对齐参考图底栏的安排）── */}
+      <View className="flex items-center gap-2 mt-1" style="flex-wrap:wrap">
+        <View className="flex items-center gap-1 px-2 py-1.5 rounded-xl bg-zinc-800">
+          <Text
+            className="text-[13px] text-zinc-200 px-1"
+            onClick={() => jumpToMeasure(currentMeasureIdx - 1)}
+          >
+            ‹
+          </Text>
+          <Text className="text-[10px] text-zinc-300 font-mono">
+            Bar {currentMeasureIdx + 1}/{measures.length}
+          </Text>
+          <Text
+            className="text-[13px] text-zinc-200 px-1"
+            onClick={() => jumpToMeasure(currentMeasureIdx + 1)}
+          >
+            ›
+          </Text>
+        </View>
+
+        <View
+          className="flex items-center justify-center rounded-full bg-emerald-500"
+          style="width:38px;height:38px"
+          onClick={toggle}
+        >
+          <Text className="text-[15px] font-black text-zinc-950">{playing ? '❚❚' : '▶'}</Text>
+        </View>
+
+        <View className="px-3 py-2 rounded-xl bg-zinc-800" onClick={backToStart}>
+          <Text className="text-[11px] text-zinc-200">↺ 从头</Text>
+        </View>
+
+        <View className="flex items-center gap-1 px-2 py-1.5 rounded-xl bg-zinc-800">
+          <Text
+            className="text-[13px] text-zinc-200 px-1"
+            onClick={() => setTempo(Math.max(30, tempo - 5))}
+          >
+            −
+          </Text>
+          <Text className="text-[10px] text-zinc-300 font-mono">{tempo} BPM</Text>
+          <Text
+            className="text-[13px] text-zinc-200 px-1"
+            onClick={() => setTempo(Math.min(220, tempo + 5))}
+          >
+            ＋
+          </Text>
+        </View>
+      </View>
+
+      {/** ── 每行小节数 + 行跳转 ── */}
+      <View className="flex items-center gap-1.5 mt-2" style="flex-wrap:wrap">
+        <Text className="text-[10px] text-zinc-500">每行</Text>
+        {[1, 2, 4].map((n) => (
+          <Text
+            key={`pl-${n}`}
+            className={`px-2 py-0.5 rounded-lg text-[10px] border ${
+              perLine === n
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+            }`}
+            onClick={() => setPerLine(n)}
+          >
+            {n} 小节
+          </Text>
+        ))}
+        <Text className="text-[10px] text-zinc-600 px-1">|</Text>
+        {Array.from({ length: Math.ceil(measures.length / perLineSafe) }).map((_, i) => {
+          const active = Math.floor(currentMeasureIdx / perLineSafe) === i;
+          return (
+            <Text
+              key={`w-${i}`}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${
+                active
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                  : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+              }`}
+              onClick={() => jumpToMeasure(i * perLineSafe)}
+            >
+              {i * perLineSafe + 1}-{Math.min(measures.length, (i + 1) * perLineSafe)}
+            </Text>
+          );
+        })}
+      </View>
+
+      <Text className="block text-[10px] text-zinc-500 mt-2 leading-relaxed">
+        本条暂无参考音频（曲库条目只带谱面与源视频链接），播放键驱动的是谱面光标，按曲目速度行进。
+      </Text>
+
+      {/** ── 下半区：指板 / 视频 ── */}
+      <View className="flex items-center gap-2 mt-3">
+        <Text
+          className={`px-3 py-1.5 rounded-xl text-[11px] border ${
+            panel === 'fretboard'
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+              : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+          }`}
+          onClick={() => setPanel('fretboard')}
+        >
+          🎸 指板
+        </Text>
+        <Text
+          className={`px-3 py-1.5 rounded-xl text-[11px] border ${
+            panel === 'video'
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+              : 'bg-zinc-900 border-zinc-800 text-zinc-400'
+          }`}
+          onClick={() => setPanel('video')}
+        >
+          🎬 视频{playableVideo ? '' : score.videoUrl ? '（外链）' : '（无）'}
+        </Text>
+      </View>
+
+      <View className="mt-2">{panel === 'fretboard' ? renderFretboard() : renderVideo()}</View>
+    </View>
+  );
+}

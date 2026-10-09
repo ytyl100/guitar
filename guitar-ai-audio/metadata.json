@@ -1,0 +1,8 @@
+{
+  "name": "SongScript Guitar - AI Audio to Tab & Notation",
+  "description": "Professional guitar audio transcription, synchronized 5-line staff & 6-line tablature editor with interactive fretboard and multi-mode score viewer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

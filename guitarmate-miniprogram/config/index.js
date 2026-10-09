@@ -24,7 +24,22 @@ const config = {
    */
   outputRoot: process.env.TARO_ENV === 'h5' ? 'dist-h5' : 'dist',
   plugins: [],
-  defineConstants: {},
+  defineConstants: {
+    /**
+     * 「当前用户」—— 小程序还没有登录态（没有 `wx.login` + openid 绑定），
+     * `services/api.ts` 用一个**可配置的演示账号**顶着。
+     *
+     * ⚠️ 这里注入的是 `process.env.TARO_APP_USER_ID`（构建时静态替换），
+     * 想在不动代码的前提下换账号，只要在构建前设环境变量即可：
+     *   `$env:TARO_APP_USER_ID='usr_student_hua'; npm run build:h5`
+     * 默认 `usr_student_demo`（学员小明，与 Web 版演示登录账号同名）。
+     *
+     * 接真实登录后：删掉这个常量，改成从 `wx.login` 换来的 userId 即可 —— 只动一处。
+     */
+    'process.env.TARO_APP_USER_ID': JSON.stringify(process.env.TARO_APP_USER_ID || 'usr_student_demo'),
+    /** 后端基址（真机必须换成 HTTPS 白名单域名，见 DEPLOYMENT.md） */
+    'process.env.TARO_APP_API': JSON.stringify(process.env.TARO_APP_API || 'http://localhost:3000'),
+  },
   copy: {
     patterns: [],
     options: {},

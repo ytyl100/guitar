@@ -18,9 +18,9 @@ model Score {
   artist        String?
   bpm           Int?
   timeSignature String   @default("4/4")
-  originalAudio String   // 原曲 OSS/静态 URL
+  originalAudio String // 原曲 OSS/静态 URL
   coverUrl      String?
-  status        String   @default("draft")  // draft | published
+  status        String   @default("draft") // draft | published
   /// 调性，例如 "Bm" / "A minor"（PracticePackage.score.key）
   songKey       String?
   /// 变调夹品位，0 = 无（PracticePackage.score.capo）
@@ -40,8 +40,10 @@ model Score {
   measures Measure[]
 
   /// 反向关系（虚拟字段，不产生数据库列）：由转录流水线 (Project) 自动生成 / 关联的曲目
-  projects       Project[]
+  projects        Project[]
   practicePackage PracticePackage[]
+  /// 反向关系：曲库里指向本乐谱的条目（guitar-ai-audio 曲库 / 后续小程序曲库共用）
+  libraryItems    LibraryItem[]
 
   @@index([status])
 }
@@ -53,9 +55,9 @@ model Track {
   id         String   @id @default(cuid())
   scoreId    String
   score      Score    @relation(fields: [scoreId], references: [id], onDelete: Cascade)
-  instrument String   // guitar_lead | guitar_rhythm | guitar | bass | piano | other
+  instrument String // guitar_lead | guitar_rhythm | guitar | bass | piano | other
   audioUrl   String
-  jsonUrl    String?  // SoloTrace JSON 地址
+  jsonUrl    String? // SoloTrace JSON 地址
   createdAt  DateTime @default(now())
 
   measureTracks MeasureTrack[]
@@ -71,7 +73,7 @@ model Measure {
   scoreId       String
   score         Score    @relation(fields: [scoreId], references: [id], onDelete: Cascade)
   index         Int
-  label         String   // 例如: "前奏 第1-4小节"
+  label         String // 例如: "前奏 第1-4小节"
   startTime     Float
   endTime       Float
   duration      Float
@@ -82,9 +84,9 @@ model Measure {
   position      Int?
   createdAt     DateTime @default(now())
 
-  trackData     MeasureTrack[]
-  barres        Barre[]
-  chords        ChordMarker[]
+  trackData MeasureTrack[]
+  barres    Barre[]
+  chords    ChordMarker[]
 
   @@index([scoreId])
 }
@@ -94,23 +96,23 @@ model Measure {
 // 注意：SQLite 不支持 Json 类型，用 String 存序列化后的 JSON
 // ─────────────────────────────────────────
 model MeasureTrack {
-  id          String   @id @default(cuid())
-  measureId   String
-  measure     Measure  @relation(fields: [measureId], references: [id], onDelete: Cascade)
-  trackId     String
-  track       Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  id               String  @id @default(cuid())
+  measureId        String
+  measure          Measure @relation(fields: [measureId], references: [id], onDelete: Cascade)
+  trackId          String
+  track            Track   @relation(fields: [trackId], references: [id], onDelete: Cascade)
   /// 本小节「练习声道」的切片音频 —— C 端 Simplified 模式播放
-  audioUrl    String
+  audioUrl         String
   /// 练习声道标识 (guitar | guitar_lead | guitar_rhythm | bass | piano | other)
   /// 管理员在发布时可选择，默认 guitar
-  channel     String   @default("guitar")
+  channel          String  @default("guitar")
   /// 原声（含鼓 / 贝斯 / 电琴等全轨混音）同区间切片音频
   /// —— C 端 Original 模式播放；为空时前端回退到 audioUrl
   originalAudioUrl String?
-  tabImageUrl String
-  imageWidth  Int      @default(1200)
-  imageHeight Int      @default(300)
-  notes       String   // JSON.stringify(Note[])
+  tabImageUrl      String
+  imageWidth       Int     @default(1200)
+  imageHeight      Int     @default(300)
+  notes            String // JSON.stringify(Note[])
 
   @@index([measureId])
   @@index([trackId])
@@ -185,21 +187,21 @@ model Project {
   status String @default("pending")
 
   /// 音频来源：upload（本地上传）| url（yt-dlp 下载）
-  sourceType String @default("upload")
+  sourceType     String  @default("upload")
   /// 上传时为原始文件名；url 时为原始 URL
-  sourceRef  String?
+  sourceRef      String?
   /// URL 项目的下载执行方：server（服务器 yt-dlp）| client（本机下载代理回传）
   downloadDriver String?
   /// 归一化后的本地音频绝对路径（下载完成 / 上传落盘后回填）
-  audioPath  String?
+  audioPath      String?
   /// 原始文件名或 yt-dlp 视频标题
-  originalName String?
+  originalName   String?
   /// 音频元信息（ffprobe / yt-dlp 回填）
-  durationSec Float?
-  sampleRate  Int?
-  channels    Int?
+  durationSec    Float?
+  sampleRate     Int?
+  channels       Int?
   /// 归一化采样率（Demucs/Basic Pitch 都要求 44.1kHz）
-  format      String?
+  format         String?
 
   /// 进度 0-100 + 当前阶段说明（CMS 轮询展示）
   progress  Int     @default(0)
@@ -239,19 +241,19 @@ model TranscribeJob {
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   /// separate | transcribe | convert | slice | publish | download
-  stage    String
+  stage     String
   /// queued | active | completed | failed | skipped
-  status   String  @default("queued")
+  status    String  @default("queued")
   /// BullMQ 队列名 / job id（Redis 不可用时的进程内队列会写成 in-process）
-  queueName String @default("transcription")
+  queueName String  @default("transcription")
   jobId     String?
-  attempts  Int    @default(0)
-  progress  Int    @default(0)
+  attempts  Int     @default(0)
+  progress  Int     @default(0)
 
   /// 入参 / 出参摘要（JSON 字符串，便于排查失败原因）
-  input    String?
-  output   String?
-  error    String?
+  input      String?
+  output     String?
+  error      String?
   /// 执行耗时（毫秒）
   durationMs Int?
 
@@ -280,14 +282,14 @@ model TranscribeTrack {
   /// Tayuya 转换出的 TabProject JSON 绝对路径
   tabPath    String?
 
-  status        String @default("pending") // pending | separated | transcribed | converted | failed
-  noteCount     Int    @default(0)
-  confidenceAvg Float  @default(1)
+  status             String  @default("pending") // pending | separated | transcribed | converted | failed
+  noteCount          Int     @default(0)
+  confidenceAvg      Float   @default(1)
   /// 低置信度（< 0.6）音符数量，ReviewPage 用它做「标红」统计
-  lowConfidenceCount Int @default(0)
+  lowConfidenceCount Int     @default(0)
   /// 调弦 / 变调夹 / 技巧分布等附加信息的 JSON 字符串
-  meta String?
-  error String?
+  meta               String?
+  error              String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -309,18 +311,18 @@ model PracticePackage {
   /// 契约版本白名单，当前恒为 "1.0"
   schemaVersion String @default("1.0")
   /// 同一项目的发布版本号（每次发布 +1）
-  revision Int @default(1)
+  revision      Int    @default(1)
 
   /// 完整 PracticePackage JSON
   payload String
 
-  measureCount Int @default(0)
-  noteCount    Int @default(0)
-  trackCount   Int @default(0)
+  measureCount       Int @default(0)
+  noteCount          Int @default(0)
+  trackCount         Int @default(0)
   /// 低置信度音符总数（发布前提醒管理员复核）
   lowConfidenceCount Int @default(0)
   /// 音频切片 / 原声切片成功数量与降级数量
-  slicedAudioCount  Int @default(0)
+  slicedAudioCount   Int @default(0)
   degradedAudioCount Int @default(0)
 
   /// 发布者标识（CMS 用户 / api）
@@ -349,4 +351,423 @@ model CurriculumDoc {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 以下为「guitar-ai-audio」(SongScript Guitar) 原型前端的数据落地
+// ===========================================================================
+//
+// 背景：该前端原先把**所有**业务数据放在浏览器 localStorage 里
+// （`src/utils/backendService.ts`，1420 行 / 46 个方法），换浏览器/清缓存就全丢，
+// 且小程序等其它端根本读不到。现在统一落到本库，前端只通过 REST 读写。
+//
+// 两条命名约定（避免与上面的既有模型混淆）：
+// 1. **课纲是「独立资源」**（决策 A）：`Course` / `TeachingVideo` / `ChordDrill`
+//    是 guitar-ai-audio 那一套形状（courses→chapters→items），
+//    与 `CurriculumDoc` 里的 `stages→courses→chapters→lessons` **并存、互不干扰**。
+//    将来若要合并，只需写一个字段映射，不必先改动任何一端的行为。
+// 2. **乐谱复用既有 `Score` 链路**（决策 A）：`LibraryItem` 只存「展示/运营字段」
+//    （标题/封面/标签/收藏…），乐谱本体（小节/音符/切片）仍然在 Score/Track/Measure 里，
+//    靠 `scoreId` 关联 —— 这样小程序、CMS、新前端读的是**同一份已发布曲库**。
+//
+// ⚠️ SQLite 限制：没有 Json / enum 类型 →
+//   - 对象/数组字段一律 `String` 存 JSON 字符串（字段注释里标明结构）；
+//   - 枚举一律 `String`（取值写在注释里，服务层负责校验）。
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────
+// 1. 用户组 / 权限 / 用户资料  （需求 (1)）
+// ─────────────────────────────────────────
+
+/// 用户组 = 角色 + 权限清单 + 可见范围 + **权益额度**。
+///
+/// 为什么把「权限 / 可见范围 / 额度」都做成组上的字段，而不是单独的权限表：
+/// 前端与规划文档（`docs/USER_ROLES_PERMISSIONS_ROADMAP.md` §六 功能矩阵）里的权限
+/// 全部是**组级**的 —— 「哪些角色能转录多长、能导出什么格式、能否改课纲、能看谁」，
+/// 没有任何一处是「某用户额外拥有某条权限」。拆成 User↔Permission 多对多
+/// 只会带来一张永远只有组级记录的连接表。真需要单用户例外时，
+/// `User.permissionOverrides` 已经预留。
+model UserGroup {
+  /// 业务 code，与 `User.role` 取值一致：super_admin | institution | teacher | student | plus | trial_guest | registered | anonymous
+  code              String  @id
+  name              String
+  /// 层级：数字越小权限越高（1 = 超级管理员）。「不同组别看到不同用户信息」按它比较
+  level             Int     @default(99)
+  description       String?
+  /// 该组可见的**下级组 code** 列表（JSON 字符串数组）。空数组 = 按 level 自动放宽
+  visibleGroupCodes String  @default("[]")
+  /// 权限清单（JSON 字符串数组）：["course:publish","user:manage","credit:approve",...]
+  permissions       String  @default("[]")
+
+  // ── 权益额度（对应规划文档 §六「功能矩阵」的每一列） ──────────────────
+  /// 单次转录时长上限（秒）：30 = 匿名/注册试听 | 900 = 15 分钟 | 0 = 无限
+  maxTranscriptionSeconds Int     @default(900)
+  /// 未付费时锁定的小节数：8 = 锁前 8 小节 | 0 = 全部可见
+  lockedMeasures          Int     @default(0)
+  /// 云端乐谱库条数上限（匿名 10 / 注册 50 / 付费 0 = 无限）
+  cloudLibraryLimit       Int     @default(0)
+  /// 可导出的格式（JSON 字符串数组）：["midi","musicxml","pdf","gpx"]；空数组 = 不能导出
+  exportFormats           String  @default("[]")
+  /// 课纲操作权：none（只看公开目录）| readonly（机构只读审阅）| own（教师 1:1 编改）| all（超管全局）
+  curriculumRights        String  @default("none")
+  /// 发布一次课纲消耗的积分（教师 15 / 超管 0）
+  curriculumPublishCost   Int     @default(15)
+  /// 首次发放的积分（0 表示不发）
+  defaultCredits          Int     @default(0)
+  /// 积分重置周期：none | once（14 天试用，到期清零）| monthly_1st（每月 1 号）| renewal（续费）| unlimited
+  creditsResetCycle       String  @default("none")
+  /// 是否为「无限积分」组（超管）
+  isUnlimitedCredits      Boolean @default(false)
+  /// 积分用尽后可向超管申请恢复的额度（0 = 不可申请）
+  creditRecoveryAmount    Int     @default(0)
+
+  /// 系统内置组：不允许删除（前端 DEMO 用户的角色都对应内置组）
+  isSystem   Boolean  @default(false)
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  users User[]
+
+  @@index([level])
+}
+
+/// 用户资料（对应前端 `UserProfile`）。
+///
+/// ⚠️ `id` **允许由客户端指定**（迁移时传前端原有的 `UserProfile.id`，如 `super_admin`）。
+/// 这一点很关键：前端的积分流水、任务进度、学员绑定全都以它为外键，
+/// 如果迁移时换成新生成的 cuid，那些关联会全部接不上 —— 所以宁可让主键是个字符串。
+/// 不传时由 `cuid()` 生成（将来后台新建用户的情况）。
+model User {
+  id                    String  @id @default(cuid())
+  name                  String
+  email                 String  @unique
+  /// 用户组 code（= UserGroup.code）
+  role                  String
+  plan                  String  @default("free") // free | trial | plus | pro | enterprise
+  status                String  @default("active") // active | pending
+  /// ⚠️ 这是**客户端会话标记**（前端 UserProfile 里的字段），服务端只负责存，
+  /// 不代表后端有鉴权 —— 本期不做登录校验（决策 A）。
+  isLoggedIn            Boolean @default(false)
+  memberSince           String  @default("")
+  trialActive           Boolean @default(false)
+  trialExpiresAt        String?
+  language              String  @default("zh-CN")
+  /// 积分余额（转录计费）
+  credits               Int     @default(0)
+  isUnlimitedCredits    Boolean @default(false)
+  monthlyCreditQuota    Int?
+  creditsCycleResetDate String?
+  optOutAiTraining      Boolean @default(false)
+  institutionId         String?
+  institutionName       String?
+  teacherId             String?
+  teacherName           String?
+  completedLessonsCount Int     @default(0)
+  phone                 String?
+  wechat                String?
+  address               String?
+  bio                   String?
+  /// 单用户级别的权限例外（JSON 字符串数组）；一般不用，留着避免将来再改表
+  permissionOverrides   String  @default("[]")
+
+  groupCode String?
+  group     UserGroup? @relation(fields: [groupCode], references: [code], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creditTransactions CreditTransaction[]
+  creditRequests     CreditRecoveryRequest[]
+  taskProgress       UserTaskProgress[]
+  ownedLibraryItems  LibraryItem[]
+
+  @@index([role])
+  @@index([email])
+  @@index([status])
+}
+
+/// 学员任务完成状态（对应前端 `getUserTaskProgress` 的 `Record<itemId, boolean>`）。
+///
+/// 之所以不塞成 User 上的一个 JSON 字段：前端会**逐条**读写（`setUserTaskCompleted`），
+/// 且将来要按课时统计完成率 —— 单行一条才是可查询的。
+model UserTaskProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 课时/小节 item id（前端 `ChapterContentItem.id`）
+  itemId    String
+  completed Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, itemId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────
+// 2. 积分经济 / 积分恢复工单 / 企业线索  （需求 (4)）
+// ─────────────────────────────────────────
+
+/// 积分流水（前端 `CreditTransaction`；原来只保留最近 100 条，落库后不再截断）
+model CreditTransaction {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// 负数 = 扣减
+  amount       Int
+  /// transcription | curriculum_publish | monthly_reset | admin_grant | trial_grant | recovery_approved
+  type         String
+  description  String
+  balanceAfter Int
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+/// 积分恢复申请（教师/机构积分用尽后申请补发；管理员审批后自动 `grantCredits`）
+model CreditRecoveryRequest {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userName        String
+  userEmail       String
+  userRole        String // teacher | institution
+  currentCredits  Int      @default(0)
+  requestedAmount Int      @default(5000)
+  reason          String
+  status          String   @default("pending") // pending | approved | rejected
+  approvedAt      String?
+  approvedBy      String?
+  /// 前端展示用的**原文**（`new Date().toLocaleString()` 或播种时的 '2026-10-04 10:20:00'）。
+  /// ⚠️ 必须原样存：只存 DateTime 再格式化回去，会把 '2026/10/5 14:30:00'
+  /// 变成 '2026-10-05 14:30:00'，界面上就变了样子。
+  createdLabel    String   @default("")
+  createdAt       DateTime @default(now())
+
+  @@index([status])
+  @@index([userId])
+}
+
+/// 企业版线索（定价页「联系我们」提交）
+model EnterpriseLead {
+  id             String   @id @default(cuid())
+  fullName       String
+  workEmail      String
+  companyName    String
+  monthlyMinutes String   @default("")
+  /// JSON 字符串数组：["ai_transcription","team_curriculum",...]
+  useCases       String   @default("[]")
+  notes          String?
+  status         String   @default("new") // new | contacted | negotiating | closed
+  /// 前端展示用的**原文**（ISO 字符串），理由同 `CreditRecoveryRequest.createdLabel`
+  createdLabel   String   @default("")
+  createdAt      DateTime @default(now())
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────
+// 3. 通知中心  （需求 (4)）
+// ─────────────────────────────────────────
+
+/// 站内通知（前端 `AppNotification`，原先存在 localStorage `guitarmate_notifications_list_v1`）
+model Notification {
+  id        String   @id @default(cuid())
+  /// feedback | score_update | drill_award | system
+  type      String
+  title     String
+  summary   String
+  content   String   @default("")
+  tag       String?
+  author    String?
+  scoreId   String?
+  courseId  String?
+  isRead    Boolean  @default(false)
+  /// 展示用的相对时间（"2 小时前"）——前端直接显示，服务端不反推
+  timeAgo   String   @default("")
+  /// 绝对时间（ISO 字符串，前端原样用于排序/展示）
+  timestamp String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────
+// 4. 课纲 / 教学视频 / 和弦组合  （需求 (2)）
+// ─────────────────────────────────────────
+
+/// 课程（guitar-ai-audio 的形状：课程 → 章节 → 内容项）。
+///
+/// ⚠️ `chapters` 存**整棵章节树的 JSON**（`CourseChapter[]`，每个 chapter 内含
+/// `items: ChapterContentItem[]`），而不是拆成 Chapter/Item 两张表。
+/// 理由与 `CurriculumDoc` 完全一致（见该模型顶部注释）：前端 CMS 的增删改
+/// （`CurriculumStudioCMS.tsx`，3600+ 行）全部按**整门课程**在内存里算完再整体覆盖，
+/// 拆分就要把这套逻辑在服务端重写一遍 —— 风险远大于收益，且必然两边算法漂移。
+/// 需要按章节查询时再在这份 JSON 上加投影接口即可。
+model Course {
+  /// 业务 id（前端 `CourseCurriculum.id`，如 `course_001`）——迁移后 id 必须不变
+  id              String   @id
+  title           String
+  subtitle        String   @default("")
+  description     String   @default("")
+  coverImage      String   @default("")
+  level           String   @default("")
+  totalLessons    Int      @default(0)
+  totalHours      String   @default("")
+  category        String   @default("")
+  teacherId       String   @default("")
+  teacherName     String   @default("")
+  institutionId   String   @default("")
+  institutionName String   @default("")
+  isSystemBasic   Boolean  @default(false)
+  isFree          Boolean  @default(false)
+  status          String   @default("draft") // published | draft | archived
+  version         String   @default("v1.0")
+  /// JSON 字符串数组：CourseVersionHistory[]
+  versionHistory  String   @default("[]")
+  orderIndex      Int      @default(0)
+  /// JSON 字符串：CourseChapter[]（含 items）
+  chapters        String   @default("[]")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([orderIndex])
+}
+
+/// 教学视频 + 关键打点（前端 `TeachingVideo`）
+model TeachingVideo {
+  id                    String   @id
+  title                 String
+  description           String   @default("")
+  category              String   @default("")
+  videoUrl              String   @default("")
+  durationFormatted     String   @default("")
+  associatedCourseId    String?
+  associatedCourseTitle String?
+  /// JSON 字符串数组：VideoCuePoint[]（{id,timeSeconds,timeFormatted,label,description}）
+  cuePoints             String   @default("[]")
+  status                String   @default("published") // published | draft
+  videoSourceType       String   @default("link") // link | upload
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([status])
+}
+
+/// 和弦组合练习 + BPM 阶梯（前端 `ChordDrillCombination`）
+model ChordDrill {
+  id          String   @id
+  title       String
+  /// JSON 字符串数组：["C","G","Am","F"]
+  chords      String   @default("[]")
+  bpmStart    Int      @default(60)
+  bpmTarget   Int      @default(120)
+  /// JSON 字符串数组（数字）：BPM 阶梯，如 [60,80,100,120]
+  steps       String   @default("[]")
+  description String?
+  status      String   @default("draft") // published | draft
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────
+// 5. 音频乐谱库（复用 Score 链路）  （需求 (3)）
+// ─────────────────────────────────────────
+
+/// 曲库条目：前端 `TranscriptionItem` 里**除乐谱本体之外**的展示/运营字段。
+///
+/// 乐谱本体（小节/音符/把位/切片）仍在 `Score`（+Track/Measure/PracticePackage）里，
+/// 靠 `scoreId` 关联 —— 于是「新前端的曲库」「小程序曲库」「CMS 已发布列表」
+/// 读的是同一份数据，不会再出现「前后端曲库不同步」。
+model LibraryItem {
+  /// 业务 id（前端 `TranscriptionItem.id`，如 `macaroon-5`）
+  id              String   @id
+  title           String
+  subtitle        String   @default("")
+  artist          String   @default("")
+  coverUrl        String   @default("")
+  /// Acoustic Guitar | Electric Guitar | Classical Guitar | Bass
+  instrument      String   @default("Acoustic Guitar")
+  /// system = 平台曲库 | user = 用户上传
+  category        String   @default("system")
+  /// unlocked = 正式解锁 | trial = 试听
+  accessType      String   @default("unlocked")
+  /// JSON 字符串数组：["官方","新手友好",...]
+  badges          String   @default("[]")
+  tempo           Int      @default(0)
+  keySignature    String   @default("")
+  capo            Int      @default(0)
+  durationSeconds Float    @default(0)
+  isFavorite      Boolean  @default(false)
+  /// 前端 `TranscriptionItem.createdAt` 是**日期字符串**（'2026-09-28'），
+  /// 且列表按它排序（`new Date(a.createdAt)`）。库里存 DateTime，
+  /// 序列化时统一转回 `YYYY-MM-DD` —— 这样前端拿到的字面量与迁移前完全一致。
+  createdLabel    String   @default("")
+  ownerUserId     String?
+  owner           User?    @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  /// 关联的已发布乐谱（迁移时按曲名匹配；匹配不到留空）
+  ///
+  /// ⚠️ **这只是「交叉引用」，不是数据来源。**
+  /// 实测发现：本仓库里存的 `Macaroon 5` 是 86 小节 / 1371 音符的转录，
+  /// 而 `guitar-ai-audio` 里的 `MACAROON_5_SCORE` 是 30 小节 / 86 音符的另一份转录
+  /// （还有 `Laid Back Guitars`、`A 小调练习曲`、`Canon in D` 同样对不上）。
+  /// 同名 ≠ 同内容。若让前端改读这里的乐谱，用户点开练习的谱子会**当场变样**
+  /// —— 那是「改变现有功能」，用户明确不允许。
+  /// 所以前端读的是下面的 `scoreJson`（内容一字不改地搬进库），
+  /// `scoreId` 仅用于「这条曲库条目对应哪份已发布乐谱」的跨端引用
+  /// （小程序读 `/api/published/library`，前端读 `/api/library`）。
+  scoreId         String?
+  score           Score?   @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  /// 曲库条目的**权威乐谱内容**（前端 `ScoreData` 的整份 JSON）。
+  ///
+  /// 为什么不拆成小节/音符表：理由是「一次迁移必须零功能变化」——
+  /// 前端的乐谱编辑器（`App.tsx` 的 `score` 状态、打点、AB 循环、把位映射）
+  /// 全部按**整份 ScoreData** 在内存里读写，拆表等于把这些逻辑重写一遍。
+  /// 需要按小节查询时，再用 `Score`/`Measure` 那套链路（`scoreId` 已经指好了）。
+  scoreJson       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([scoreId])
+}
+
+// ─────────────────────────────────────────
+// 6. 定价方案（原先硬编码在前端 `PRICING_PLANS`）  （需求 (4)）
+// ─────────────────────────────────────────
+
+/// 定价方案：运营内容，理应可后台改，不该写死在前端常量里
+model PricingPlan {
+  /// free | plus | pro | enterprise
+  id                             String   @id
+  planTier                       String   @default("") // Plan 1..4
+  title                          String
+  subtitle                       String   @default("")
+  badge                          String?
+  isPopular                      Boolean  @default(false)
+  priceMonthly                   String   @default("")
+  priceYearly                    String   @default("")
+  /// ⚠️ 必须是 Float：前端是 9.99 / 8.49 这种小数（写 Int 会校验失败或静默截断）
+  priceMonthlyNum                Float    @default(0)
+  priceYearlyNum                 Float    @default(0)
+  periodMonthly                  String   @default("")
+  periodYearly                   String   @default("")
+  savingsBadge                   String?
+  maxSingleTranscriptionDuration String   @default("")
+  monthlyCredits                 String   @default("")
+  equivalentAudioMinutes         String   @default("")
+  exportFormats                  String   @default("")
+  curriculumAccess               String   @default("")
+  aiModelTrainingPrivacy         String   @default("")
+  supportLevel                   String   @default("")
+  ctaText                        String   @default("")
+  ctaVariant                     String   @default("secondary")
+  orderIndex                     Int      @default(0)
+  updatedAt                      DateTime @updatedAt
 }
