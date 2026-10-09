@@ -2,56 +2,79 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  fetchCurriculumLearn,
-  getPublishedLibrary,
-  type LearnChapter,
-  type LearnCourse,
-  type LearnLesson,
-  type LearnStage,
+  CURRENT_USER_ID,
+  fetchChordDrills,
+  fetchCourses,
+  fetchTeachingVideos,
+  fetchUser,
+  fetchUserGroups,
+  type ChordDrill,
+  type Course,
+  type CourseChapter,
+  type CourseItem,
+  type TeachingVideo,
 } from '../../services/api';
 import BottomNav from '../../components/BottomNav';
-import { findPublishedSongByName, songEvalUrl, songPageUrl } from '../../utils/boundSong';
+import { findPublishedSongForCourseItem, songEvalUrl, songPageUrl } from '../../utils/boundSong';
 import { pageClass } from '../../utils/settings';
 
 /**
  * 课程（Learn tab）
  * ================
  *
- * ## 与 Web 版的关系
+ * ## 数据来源（本页已换源）
  *
- * **视觉与信息层级**照 Web 版 `CourseTab.tsx`：课程列表 → 点进课程 → 「章节 + 课时行」两段式。
- * 但**数据来源是后端 API**（这是用户明确要求的）：
+ * 读 **`GET /api/courses`** —— 也就是 `guitar-ai-audio` **学员端那套课纲**：
+ * 教师在教研侧发布 → 落到 `guitarmate-audio-backend` 的 `Course` 表 → 这里读。
  *
- * - Web 版用的是自己硬编码的 `INITIAL_COURSES`（假课程、假进度）；
- * - 这里读 `GET /api/curriculum/learn` —— 就是 CMS「课程大纲」工作台里维护的那棵真树
- *   （阶段 → 课程 → 章节 → 课时），所以**CMS 一调整，这里刷新就能看到**。
+ * ⚠️ 与 `GET /api/curriculum/learn`（CMS 课纲工作台那棵「阶段 → 课程 → 章节 → 课时」树）
+ * **不是同一套数据**，不要混用：
  *
- * ## 两处必须说明的差异（不是漏做）
+ * ```
+ * /api/curriculum/learn  阶段 → 课程 → 章节 → 课时（黄金 20 分钟五步：调音/视频/微测/转换/跟弹）
+ * /api/courses           课程 → 章节 → 内容项（三种：video / chord_drill / transcription_score）
+ * ```
  *
- * 1. **没有进度条 / 「已完成 1/13」**：Web 版那份进度是写死的假数据。小程序还没有账号体系，
- *    后端也没有「某学员学到哪」的表 → 与其画一根假进度条，不如换成**课程概览**
- *    （章节数 / 课时数 / 每课时 20 分钟），这些是从课程树里真算出来的。
- * 2. **课时行的第二行是真实内容**：课时类型徽标（调音/视频/微测/转换/跟弹）+ 黄金 20 分钟配比
- *    + 关联视频（讲师 / 时长）+ 关联曲目，全部来自 CMS 的字段。
+ * 需求是「学员在微信小程序上查看教师在 guitar-ai-audio 发布的课纲」，所以用后者。
+ * CMS 那套仍然保留（教研侧排课用），只是不再出现在这个页面。
  *
- * ## 课时类型 → 中文
- * CMS 的 `LessonStep.type` 就是「黄金 20 分钟」五步闭环，所以徽标直接用这五个名字。
+ * ## 顶部课程切换（需求：普通注册用户只见基础课，学员可切换）
+ *
+ * `Course.isSystemBasic` 把课分成两组：
+ *
+ * - `true`  = **系统基础课**（平台内置，人人可见）
+ * - `false` = **教师/机构发布的课**（学员及以上可见）
+ *
+ * 「谁是学员」**不看角色名，看用户组等级**（`/api/user-groups` 的 `level`）。
+ * 等级是**倒序**的 —— 数字越小权限越高：
+ *
+ * ```
+ * 1 super_admin  2 institution  3 teacher  4 student     ← 学员及以上：可切换
+ * 5 plus         6 trial_guest  7 registered  8 anonymous ← 普通注册/试用/游客：只看基础课
+ * ```
+ *
+ * 为什么用 `level` 而不是 `role === 'student'`：角色表是**可配置的**（教研侧能加组），
+ * 写死角色名以后加一个「高级学员」组就漏了。等级读不到时按**最小权限**处理。
+ *
+ * ## 内容项类型 → 中文
+ * `CourseItem.type` 只有三种，各自对应一个真页面（见内容项弹层里的按钮）。
  */
-const LESSON_TYPE_LABEL: Record<string, { label: string; color: string }> = {
-  tuning: { label: '调音热身', color: '#38bdf8' },
-  video: { label: '视频新授', color: '#a78bfa' },
-  chord_quiz: { label: '和弦微测', color: '#f59e0b' },
-  pair_drill: { label: '转换冲刺', color: '#f472b6' },
-  song_sync: { label: '曲目跟弹', color: '#10b981' },
+const ITEM_TYPE_META: Record<string, { label: string; color: string }> = {
+  video: { label: '视频教程', color: '#a78bfa' },
+  chord_drill: { label: '和弦微测', color: '#f59e0b' },
+  transcription_score: { label: '乐谱练习', color: '#10b981' },
 };
 
+/** 学员等级门槛：`level <= 4`（student）即「学员及以上」，可切换教师发布的课 */
+const STUDENT_LEVEL = 4;
+
 /**
- * CMS 的 `coverColor` 存的是 **Tailwind 渐变 token**（`'from-amber-600 to-orange-700'`），
- * **不是颜色值**。
- * ⚠️ 实测踩过：直接写 `background-color:${coverColor}` 会得到
- * `background-color:from-amber-600 to-orange-700` —— 非法 CSS，**静默不生效**（色块透明）。
- * 小程序里没有 Tailwind，所以这里把 token 翻成 hex，再拼成 `linear-gradient`
- * （与 Web 版的 `bg-gradient-to-br` 同向，视觉一致）。
+ * 课程封面兜底渐变。
+ *
+ * ⚠️ CMS 那套课的 `coverColor` 存的是 **Tailwind 渐变 token**（`'from-amber-600 to-orange-700'`），
+ * **不是颜色值** —— 直接写 `background-color:${coverColor}` 会得到非法 CSS，**静默不生效**（透明色块）。
+ * 这套课（`/api/courses`）只给 `coverImage`，没有 token，所以这里只用默认渐变兜底：
+ * 没封面图时给一块**真渐变**，而不是塞一张占位照片（那是编造内容）。
  */
 const TW_GRADIENT_HEX: Record<string, string> = {
   'amber-600': '#d97706',
@@ -77,25 +100,9 @@ function gradientFromTokens(tokens?: string): string {
   return `linear-gradient(135deg, ${first}, ${last})`;
 }
 
-/** 单课时的总分钟数（时间配比求和；用于校验 20 分钟闭环） */
-function lessonMinutes(lesson: LearnLesson): number {
-  const t = lesson.timeAllocation;
-  if (!t) return 0;
-  return (
-    (t.tuningMin || 0) + (t.videoMin || 0) + (t.quizMin || 0) + (t.drillMin || 0) + (t.songMin || 0)
-  );
-}
-
-function formatDuration(sec: number): string {
-  if (!sec) return '—';
-  const m = Math.floor(sec / 60);
-  const s = Math.round(sec % 60);
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
 /**
  * 章节标题。
- * ⚠️ CMS 里章节标题**自己就带「第1章：」前缀**（教研录入习惯），
+ * ⚠️ 章节标题**自己可能就带「第1章：」前缀**（教研录入习惯），
  * 再无条件加一次就成了「第 1 章：第1章：琴弦发声机理…」（实测踩到）。
  * 已经带序号就不再加，只补个「章」字的排版空格。
  */
@@ -105,17 +112,29 @@ function chapterTitle(index: number, title: string): string {
 }
 
 export default function Learn() {
-  const [stages, setStages] = useState<LearnStage[]>([]);
+  /** 已发布课程（`/api/courses?status=published`） */
+  const [courses, setCourses] = useState<Course[]>([]);
+  /** 教学视频索引：`item.videoId` → 记录（讲师 / 时长 / 打点只在视频表里） */
+  const [videos, setVideos] = useState<Record<string, TeachingVideo>>({});
+  /** 和弦微测索引：`item.chordDrillId` → 组合（和弦与 BPM 阶梯只在微测表里） */
+  const [drills, setDrills] = useState<Record<string, ChordDrill>>({});
+  /** 当前身份（小程序还没有登录，用 `CURRENT_USER_ID` 占位） */
+  const [who, setWho] = useState<{ id: string; name: string; role: string } | null>(null);
+  /** 用户组等级（`level` **越小权限越高**：1 超管 … 4 学员 … 8 匿名）；null = 没读到 */
+  const [groupLevel, setGroupLevel] = useState<number | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState('');
-  const [revision, setRevision] = useState<number | null>(null);
-  /** 阶段筛选（'' = 全部） */
-  const [stageFilter, setStageFilter] = useState('');
+  /**
+   * 顶部课程分组：
+   * `system` = 系统基础课（人人可见）；`teacher` = 教师/机构发布的课（学员及以上可见）。
+   * 默认落在 `system` —— 权限不足的人看到的就是这一组。
+   */
+  const [tab, setTab] = useState<'system' | 'teacher'>('system');
   /** 当前打开的课程（null = 课程列表） */
-  const [course, setCourse] = useState<LearnCourse | null>(null);
-  /** 当前打开的课时（null = 不看详情） */
-  const [lesson, setLesson] = useState<LearnLesson | null>(null);
-  /** 正在按歌名去已发布曲库里找曲目（点击反馈用） */
+  const [course, setCourse] = useState<Course | null>(null);
+  /** 当前打开的内容项（null = 不看详情） */
+  const [item, setItem] = useState<CourseItem | null>(null);
+  /** 正在按曲名去曲库找谱（点击反馈用） */
   const [openingSong, setOpeningSong] = useState(false);
 
   useLoad(() => {
@@ -126,9 +145,25 @@ export default function Learn() {
     setStatus('loading');
     setError('');
     try {
-      const data = await fetchCurriculumLearn();
-      setStages(data.stages || []);
-      setRevision(data.revision);
+      /**
+       * 五个请求并行。
+       *
+       * ⚠️ 故意用 `Promise.all` 而不是 `allSettled`：后端挂了就要**明确报错**，
+       * 退化成「空课程列表」会被误读成「课程被删了」（/profile 页同样踩过这个坑）。
+       */
+      const [courseList, videoList, drillList, me, groups] = await Promise.all([
+        fetchCourses({ status: 'published' }),
+        fetchTeachingVideos(),
+        fetchChordDrills(),
+        fetchUser(CURRENT_USER_ID),
+        fetchUserGroups(),
+      ]);
+      setCourses(courseList);
+      setVideos(Object.fromEntries(videoList.map((v) => [v.id, v])));
+      setDrills(Object.fromEntries(drillList.map((d) => [d.id, d])));
+      setWho(me ? { id: me.id, name: me.name, role: me.role } : null);
+      /** 角色 → 用户组等级（两者用同一个 `code`） */
+      setGroupLevel(groups.find((g) => g.code === (me?.role || ''))?.level ?? null);
       setStatus('ready');
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -140,41 +175,57 @@ export default function Learn() {
     void load();
   }, [load]);
 
-  const visibleStages = useMemo(
-    () => (stageFilter ? stages.filter((s) => s.stageCode === stageFilter) : stages),
-    [stages, stageFilter],
+  /**
+   * 能不能切到「教师发布的课」？
+   * 等级读不到（后端旧版 / 用户组被删）时按**最小权限**处理 —— 只看基础课。
+   */
+  const canSwitch = groupLevel !== null && groupLevel <= STUDENT_LEVEL;
+
+  const systemCourses = useMemo(() => courses.filter((c) => c.isSystemBasic === true), [courses]);
+  const teacherCourses = useMemo(() => courses.filter((c) => c.isSystemBasic !== true), [courses]);
+
+  /**
+   * 当前要展示的课。
+   * ⚠️ 无权限时**强制**基础课 —— 不能只靠"不渲染切换条"来挡（`tab` 是 state，不该是权限的唯一闸口）。
+   */
+  const visibleCourses = canSwitch && tab === 'teacher' ? teacherCourses : systemCourses;
+
+  /** 一门课的内容项总数 */
+  const itemCount = useCallback(
+    (c: Course) => (c.chapters || []).reduce((n, ch) => n + (ch.items?.length || 0), 0),
+    [],
   );
 
-  const totalCourses = useMemo(
-    () => stages.reduce((sum, s) => sum + (s.courses?.length || 0), 0),
-    [stages],
+  /** 一门课里某一类内容项的数量 */
+  const countByType = useCallback(
+    (c: Course, type: CourseItem['type']) =>
+      (c.chapters || []).reduce(
+        (n, ch) => n + (ch.items || []).filter((i) => i.type === type).length,
+        0,
+      ),
+    [],
   );
 
   const backToList = () => {
     setCourse(null);
-    setLesson(null);
+    setItem(null);
   };
 
   /**
-   * 曲目跟弹：按课时绑定的**歌名**去已发布曲库里找那首曲目，找到就跳到它的分段练习页。
+   * 乐谱练习：把课程内容项解析成一首**已发布曲目**，然后跳它的练习页。
    *
-   * ⚠️ 为什么用歌名匹配而不是 id：CMS 的 `songBinding.songId` 指的是 CMS **本地音乐库**的条目
-   * （localStorage），跟后端 `Score/Project` 的 id 不是一回事 → 拿它来查后端必然查不到。
-   * 歌名对不上时**明确告知**（并在提示里说清下一步去哪发布），不静默失败。
+   * ⚠️ **不能拿 `item.title` 去曲库找**：那是教研自拟的练习名
+   * （如「基础扫弦练习曲 · 72 BPM」），曲库里根本没有这个名字。
+   * 真关联是 `item.scoreId`（→ 曲库条目 → 已发布乐谱），解析链路写在
+   * `utils/boundSong.ts` 的 `findPublishedSongForCourseItem()` 里。
    */
-  const openBoundSong = async (target: LearnLesson, mode: 'practice' | 'eval' = 'practice') => {
-    const name = (target.song?.songName || '').trim();
-    if (!name) {
-      Taro.showToast({ title: '该课时还没有绑定曲目', icon: 'none' });
-      return;
-    }
+  const openBoundSong = async (target: CourseItem, mode: 'practice' | 'eval' = 'practice') => {
     setOpeningSong(true);
     try {
-      /** 歌名匹配与 URL 拼接都在 `utils/boundSong.ts`（课时弹窗与课时视频页共用同一套） */
-      const song = await findPublishedSongByName(name);
+      const song = await findPublishedSongForCourseItem(target);
       if (!song) {
         Taro.showToast({
-          title: `曲库里还没有《${name}》，请先在 CMS 发布这首曲目`,
+          title: `曲库里还没有《${target.scoreTitle || target.title}》，请先发布这首曲目`,
           icon: 'none',
           duration: 3000,
         });
@@ -192,6 +243,13 @@ export default function Learn() {
     }
   };
 
+  /** 当前内容项的徽标（type → 中文 + 配色） */
+  const itemMeta = item ? ITEM_TYPE_META[item.type] || { label: item.type, color: '#a1a1aa' } : null;
+  /** 内容项对应的视频记录（`/api/videos`） */
+  const itemVideo = item?.videoId ? videos[item.videoId] : undefined;
+  /** 内容项对应的和弦微测组合（`/api/drills`） */
+  const itemDrill = item?.chordDrillId ? drills[item.chordDrillId] : undefined;
+
   return (
     <View className={pageClass('gm-learn-page')}>
       {/** ── 课程列表 ───────────────────────────────────────────── */}
@@ -201,27 +259,46 @@ export default function Learn() {
             <View style="min-width:0;flex:1">
               <Text className="gm-learn-title">课程体系</Text>
               <Text className="gm-meta" style="display:block;margin-top:4px">
-                由教研后台维护 · 共 {stages.length} 个阶段 / {totalCourses} 门课程
+                {who ? `${who.name} · ${who.role}` : '读取身份…'} · 本组 {visibleCourses.length} 门课
               </Text>
             </View>
-            <View
-              className="gm-learn-refresh"
-              onClick={() => void load()}
-            >
+            <View className="gm-learn-refresh" onClick={() => void load()}>
               <Text>↻</Text>
             </View>
           </View>
 
-          {revision !== null && (
-            /** 让"后端唯一数据源"这件事可见：CMS 改完课程后刷新，这里的版本号会变 */
-            <Text className="gm-meta" style="display:block;padding:0 32px 16px">
-              课程数据同步自后端（revision {revision}）
+          {/**
+            * 顶部课程切换。
+            * 只在**有权限**时给出两个分组 —— 普通注册/试用用户看不到切换条，
+            * 下面那行说明会告诉他们为什么、以及怎么才看得到教师课纲。
+            */}
+          {status === 'ready' && canSwitch && (
+            <View className="gm-learn-filter">
+              <Text
+                className={`gm-learn-chip${tab === 'system' ? ' gm-learn-chip--on' : ''}`}
+                onClick={() => setTab('system')}
+              >
+                系统基础课
+              </Text>
+              <Text
+                className={`gm-learn-chip${tab === 'teacher' ? ' gm-learn-chip--on' : ''}`}
+                onClick={() => setTab('teacher')}
+              >
+                教师发布的课
+              </Text>
+            </View>
+          )}
+
+          {status === 'ready' && !canSwitch && (
+            <Text className="gm-meta" style="display:block;padding:0 32px 16px;line-height:1.7">
+              当前身份（{who?.role || '未知'}）只能查看系统基础课。加入教师课程（学员及以上）后，
+              这里会出现「系统基础课 / 教师发布的课」切换。
             </Text>
           )}
 
           {status === 'loading' && (
             <View className="gm-learn-state">
-              <Text className="gm-meta">正在读取课程大纲…</Text>
+              <Text className="gm-meta">正在读取课程…</Text>
             </View>
           )}
 
@@ -234,106 +311,81 @@ export default function Learn() {
             </View>
           )}
 
-          {status === 'ready' && stages.length === 0 && (
+          {status === 'ready' && visibleCourses.length === 0 && (
             <View className="gm-learn-state">
-              <Text className="gm-meta">后端课程大纲为空</Text>
+              <Text className="gm-meta">
+                {canSwitch && tab === 'teacher' ? '还没有教师发布的课程' : '后端还没有已发布的系统基础课'}
+              </Text>
               <Text className="gm-meta" style="display:block;opacity:0.7">
-                请在 guitarmate-studio-cms 的「课程大纲」工作台里维护阶段与课程。
+                课程由教师在 guitar-ai-audio / 教研后台发布，发布后会出现在这里。
               </Text>
             </View>
           )}
 
-          {/** 阶段筛选（对齐 Web 课程列表顶部的分组筛选） */}
-          {status === 'ready' && stages.length > 0 && (
-            <View className="gm-learn-filter">
-              <Text
-                className={`gm-learn-chip${!stageFilter ? ' gm-learn-chip--on' : ''}`}
-                onClick={() => setStageFilter('')}
-              >
-                全部
-              </Text>
-              {stages.map((s) => (
-                <Text
-                  key={s.id}
-                  className={`gm-learn-chip${stageFilter === s.stageCode ? ' gm-learn-chip--on' : ''}`}
-                  onClick={() => setStageFilter(s.stageCode)}
-                >
-                  {s.stageCode}
-                </Text>
-              ))}
-            </View>
-          )}
-
-          {visibleStages.map((stage) => (
-            <View key={stage.id} className="gm-learn-stage">
+          {/** 一组课程：沿用原来的「分组头 + 课程卡」两段式（原来按阶段分组，现在按来源分组） */}
+          {status === 'ready' && visibleCourses.length > 0 && (
+            <View className="gm-learn-stage">
               <View className="gm-learn-stage-head">
-                <Text className="gm-learn-stage-code">{stage.stageCode}</Text>
+                <Text className="gm-learn-stage-code">
+                  {canSwitch && tab === 'teacher' ? 'TEACHER' : 'BASIC'}
+                </Text>
                 <View style="min-width:0;flex:1">
-                  <Text className="gm-learn-stage-name">{stage.name}</Text>
-                  {!!stage.focus && (
-                    <Text className="gm-meta" style="display:block;margin-top:4px">
-                      {stage.focus}
-                    </Text>
-                  )}
+                  <Text className="gm-learn-stage-name">
+                    {canSwitch && tab === 'teacher' ? '教师发布的课程' : '系统基础课程'}
+                  </Text>
+                  <Text className="gm-meta" style="display:block;margin-top:4px">
+                    {canSwitch && tab === 'teacher'
+                      ? '由你的教师/机构发布，跟随教师课纲安排'
+                      : '平台内置、人人可学的入门主线'}
+                  </Text>
                 </View>
               </View>
 
-              {(stage.courses || []).length === 0 && (
-                <Text className="gm-meta" style="display:block;padding:0 32px 24px">
-                  该阶段下还没有课程（可在 CMS 里「新增专栏课程」）
-                </Text>
-              )}
-
-              {(stage.courses || []).map((c) => {
-                const lessonCount = (c.chapters || []).reduce(
-                  (n, ch) => n + (ch.lessons?.length || 0),
-                  0,
-                );
-                return (
-                  <View
-                    key={c.id}
-                    className="gm-learn-course"
-                    onClick={() => {
-                      setCourse(c);
-                      setLesson(null);
-                    }}
-                  >
-                    {/**
-                     * 课程卡 = Web 的「封面 Banner」：h-44 图 + 自下而上的黑眯 + 右上难度徽标 + 左下标题。
-                     * ⚠️ 没封面图时用 CMS 的 `coverColor` 渐变兜底 —— 不塞占位照片（那是编造内容）。
-                     */}
-                    <View className="gm-learn-cover">
-                      {c.coverImage ? (
-                        <Image className="gm-learn-cover-img" src={c.coverImage} mode="aspectFill" />
-                      ) : (
-                        <View
-                          className="gm-learn-cover-img"
-                          style={`background-image:${gradientFromTokens(c.coverColor)}`}
-                        />
-                      )}
-                      <View className="gm-learn-cover-scrim" />
-                      <Text className="gm-learn-cover-level">{c.targetLevel || '未标注难度'}</Text>
-                      <View className="gm-learn-cover-text">
-                        <Text className="gm-learn-cover-title">{c.title}</Text>
-                        <Text className="gm-learn-cover-sub">{c.subtitle || '（无副标题）'}</Text>
-                      </View>
-                    </View>
-
-                    <View className="gm-learn-course-foot">
-                      <Text className="gm-meta">
-                        {(c.chapters || []).length} 章 · {lessonCount} 课时
-                      </Text>
-                      <Text className="gm-learn-arrow">›</Text>
+              {visibleCourses.map((c) => (
+                <View
+                  key={c.id}
+                  className="gm-learn-course"
+                  onClick={() => {
+                    setCourse(c);
+                    setItem(null);
+                  }}
+                >
+                  {/**
+                   * 课程卡 = Web 的「封面 Banner」：图 + 自下而上的黑眯 + 右上难度徽标 + 左下标题。
+                   * ⚠️ 没封面图时用**渐变**兜底 —— 不塞占位照片（那是编造内容）。
+                   */}
+                  <View className="gm-learn-cover">
+                    {c.coverImage ? (
+                      <Image className="gm-learn-cover-img" src={c.coverImage} mode="aspectFill" />
+                    ) : (
+                      <View
+                        className="gm-learn-cover-img"
+                        style={`background-image:${gradientFromTokens()}`}
+                      />
+                    )}
+                    <View className="gm-learn-cover-scrim" />
+                    <Text className="gm-learn-cover-level">{c.level || '未标注难度'}</Text>
+                    <View className="gm-learn-cover-text">
+                      <Text className="gm-learn-cover-title">{c.title}</Text>
+                      <Text className="gm-learn-cover-sub">{c.subtitle || '（无副标题）'}</Text>
                     </View>
                   </View>
-                );
-              })}
+
+                  <View className="gm-learn-course-foot">
+                    <Text className="gm-meta">
+                      {c.teacherName || '平台'} · {(c.chapters || []).length} 章 · {itemCount(c)} 项
+                      {c.isFree ? ' · 免费' : ''}
+                    </Text>
+                    <Text className="gm-learn-arrow">›</Text>
+                  </View>
+                </View>
+              ))}
             </View>
-          ))}
+          )}
         </View>
       )}
 
-      {/** ── 课程详情：章节 + 课时 ────────────────────────────────── */}
+      {/** ── 课程详情：章节 + 内容项 ──────────────────────────────── */}
       {course && (
         <View>
           <View className="gm-learn-back" onClick={backToList}>
@@ -344,32 +396,19 @@ export default function Learn() {
             <View style="min-width:0;flex:1">
               <Text className="gm-learn-title">{course.title}</Text>
               <Text className="gm-meta" style="display:block;margin-top:4px">
-                {course.subtitle || '（无副标题）'} · {course.targetLevel || '未标注难度'}
+                {course.subtitle || '（无副标题）'} · {course.level || '未标注难度'}
               </Text>
             </View>
           </View>
 
-          {/**
-            * 课程概览（**代替 Web 版的假进度条**）：
-            * 小程序没有账号体系、后端也没有「学员学到哪」的表 → 画进度条就是假的。
-            * 这里只给能真算出来的数字。
-            */}
+          {/** 课程概览：只给能真算出来的数字（小程序没有「学员学到哪」的表，不画假进度条） */}
           <View className="gm-card">
             <Text className="gm-section-title">课程概览</Text>
             <View style="display:flex;margin-top:20px">
               {[
                 { v: (course.chapters || []).length, l: '章节' },
-                {
-                  v: (course.chapters || []).reduce((n, ch) => n + (ch.lessons?.length || 0), 0),
-                  l: '课时',
-                },
-                {
-                  v: (course.chapters || []).reduce(
-                    (n, ch) => n + ch.lessons.reduce((m, l) => m + lessonMinutes(l), 0),
-                    0,
-                  ),
-                  l: '总分钟',
-                },
+                { v: itemCount(course), l: '内容项' },
+                { v: countByType(course, 'video'), l: '视频' },
               ].map((m) => (
                 <View key={m.l} style="flex:1;display:flex;flex-direction:column;align-items:center">
                   <Text className="gm-metric-value" style="color:#10b981">
@@ -379,25 +418,45 @@ export default function Learn() {
                 </View>
               ))}
             </View>
-            <Text className="gm-meta" style="display:block;margin-top:20px;opacity:0.7">
-              每个课时按「黄金 20 分钟」闭环编排：调音热身 → 视频新授 → 和弦微测 → 转换冲刺 → 曲目跟弹。
-            </Text>
+
+            <View className="gm-modal-row" style="margin-top:20px">
+              <Text className="gm-meta">讲师 / 机构</Text>
+              <Text className="gm-modal-value">
+                {course.teacherName || '未标注'}
+                {course.institutionName ? ` · ${course.institutionName}` : ''}
+              </Text>
+            </View>
+            <View className="gm-modal-row">
+              <Text className="gm-meta">课程归属</Text>
+              <Text className="gm-modal-value">
+                {course.isSystemBasic ? '系统基础课' : '教师发布'} · {course.version || '—'}
+              </Text>
+            </View>
+            <View className="gm-modal-row">
+              <Text className="gm-meta">内容构成</Text>
+              <Text className="gm-modal-value">
+                {countByType(course, 'video')} 视频 · {countByType(course, 'chord_drill')} 微测 ·{' '}
+                {countByType(course, 'transcription_score')} 乐谱
+              </Text>
+            </View>
+
+            {!!course.description && (
+              <Text className="gm-meta" style="display:block;margin-top:20px;line-height:1.8">
+                {course.description}
+              </Text>
+            )}
           </View>
 
-          {/** 课程还没有章节（CMS 里刚建的课程常见）→ 明确说明，不要留空白区 */}
+          {/** 还没有章节（教师刚建的课程常见）→ 明确说明，不留空白区 */}
           {(course.chapters || []).length === 0 && (
             <View className="gm-learn-chapter">
-              <Text className="gm-meta">
-                该课程还没有章节（可在 CMS「课程大纲」里选中它 →「新增章节」→「新增课时」）。
-              </Text>
+              <Text className="gm-meta">该课程还没有章节（教师在课纲工作台里补充后会出现在这里）。</Text>
             </View>
           )}
 
-          {(course.chapters || []).map((chapter: LearnChapter, chIdx) => (
+          {(course.chapters || []).map((chapter: CourseChapter, chIdx) => (
             <View key={chapter.id} className="gm-learn-chapter">
-              <Text className="gm-learn-chapter-title">
-                {chapterTitle(chIdx, chapter.title)}
-              </Text>
+              <Text className="gm-learn-chapter-title">{chapterTitle(chIdx, chapter.title)}</Text>
               {!!chapter.description && (
                 <Text className="gm-meta" style="display:block;margin-top:4px">
                   {chapter.description}
@@ -405,20 +464,14 @@ export default function Learn() {
               )}
 
               <View style="margin-top:16px">
-                {chapter.lessons.map((item: LearnLesson) => {
-                  const type = LESSON_TYPE_LABEL[item.type] || {
-                    label: item.type,
-                    color: '#a1a1aa',
-                  };
-                  const mins = lessonMinutes(item);
+                {(chapter.items || []).map((it: CourseItem) => {
+                  const type = ITEM_TYPE_META[it.type] || { label: it.type, color: '#a1a1aa' };
+                  const v = it.videoId ? videos[it.videoId] : undefined;
+                  const drill = it.chordDrillId ? drills[it.chordDrillId] : undefined;
                   return (
-                    <View
-                      key={item.id}
-                      className="gm-learn-lesson"
-                      onClick={() => setLesson(item)}
-                    >
+                    <View key={it.id} className="gm-learn-lesson" onClick={() => setItem(it)}>
                       <View style="min-width:0;flex:1">
-                        <Text className="gm-learn-lesson-title">{item.title}</Text>
+                        <Text className="gm-learn-lesson-title">{it.title}</Text>
                         <View className="gm-learn-lesson-meta">
                           <Text
                             className="gm-learn-type"
@@ -427,18 +480,26 @@ export default function Learn() {
                             {type.label}
                           </Text>
                           <Text className="gm-meta" style="margin-left:12px">
-                            {mins > 0 ? `${mins} 分钟` : '未配置时长'}
-                            {item.video
-                              ? ` · 视频 ${formatDuration(item.video.durationSec)}${
-                                  item.video.playable ? ' · ▶ 可播放' : ' · 暂无视频源'
+                            {it.type === 'video'
+                              ? `${v?.durationFormatted || '未标注时长'}${
+                                  v?.videoUrl ? ' · ▶ 可播放' : ' · 暂无视频源'
                                 }`
-                              : ''}
+                              : it.type === 'chord_drill'
+                                ? `${(drill?.chords || it.chords || []).length} 个和弦 · 目标 ${
+                                    drill?.bpmTarget || it.bpmTarget || '—'
+                                  } BPM`
+                                : `${it.scoreTempo || '—'} BPM`}
                           </Text>
                         </View>
-                        {!!item.song?.songName && (
+                        {it.type === 'chord_drill' && (drill?.chords || it.chords || []).length > 0 && (
                           <Text className="gm-learn-song">
-                            ♪ 跟弹：{item.song.songName}
-                            {item.song.originalArtist ? ` — ${item.song.originalArtist}` : ''}
+                            ♬ {(drill?.chords || it.chords || []).join(' → ')}
+                          </Text>
+                        )}
+                        {it.type === 'transcription_score' && !!it.scoreTitle && (
+                          <Text className="gm-learn-song">
+                            ♪ {it.scoreTitle}
+                            {it.scoreArtist ? ` — ${it.scoreArtist}` : ''}
                           </Text>
                         )}
                       </View>
@@ -446,8 +507,8 @@ export default function Learn() {
                     </View>
                   );
                 })}
-                {chapter.lessons.length === 0 && (
-                  <Text className="gm-meta">本章还没有课时（可在 CMS 里「新增课时」）</Text>
+                {(chapter.items || []).length === 0 && (
+                  <Text className="gm-meta">本章还没有内容项</Text>
                 )}
               </View>
             </View>
@@ -455,164 +516,191 @@ export default function Learn() {
         </View>
       )}
 
-      {/** ── 课时详情（点课时行打开） ─────────────────────────────── */}
-      {lesson && (
-        <View className="gm-modal-mask" onClick={() => setLesson(null)}>
+      {/** ── 内容项详情（点内容项行打开） ─────────────────────────── */}
+      {item && itemMeta && (
+        <View className="gm-modal-mask" onClick={() => setItem(null)}>
           <View className="gm-modal-card" onClick={(e) => e.stopPropagation()}>
             <View className="gm-modal-head">
-              <Text className="gm-modal-title">{lesson.title}</Text>
-              <Text className="gm-modal-close" onClick={() => setLesson(null)}>
+              <Text className="gm-modal-title">{item.title}</Text>
+              <Text className="gm-modal-close" onClick={() => setItem(null)}>
                 ✕
               </Text>
             </View>
 
             <View style="margin-top:24px">
-              <Text className="gm-section-title">课时类型</Text>
-              <Text className="gm-meta" style="display:block;margin-top:8px">
-                {(LESSON_TYPE_LABEL[lesson.type] || { label: lesson.type }).label}
-              </Text>
-
-              <Text className="gm-section-title" style="display:block;margin-top:24px">
-                黄金 20 分钟配比
-              </Text>
+              <Text className="gm-section-title">内容类型</Text>
               <View style="margin-top:8px">
-                {[
-                  ['调音热身', lesson.timeAllocation?.tuningMin],
-                  ['视频新授', lesson.timeAllocation?.videoMin],
-                  ['和弦微测', lesson.timeAllocation?.quizMin],
-                  ['转换冲刺', lesson.timeAllocation?.drillMin],
-                  ['曲目跟弹', lesson.timeAllocation?.songMin],
-                ].map(([label, v]) => (
-                  <View key={String(label)} className="gm-modal-row">
-                    <Text className="gm-meta">{label}</Text>
-                    <Text className="gm-modal-value">{Number(v) || 0} 分钟</Text>
-                  </View>
-                ))}
-                <View className="gm-modal-row">
-                  <Text className="gm-meta">合计</Text>
-                  <Text className="gm-modal-value" style="color:#10b981">
-                    {lessonMinutes(lesson)} 分钟
-                  </Text>
-                </View>
+                <Text
+                  className="gm-learn-type"
+                  style={`color:${itemMeta.color};border-color:${itemMeta.color}55`}
+                >
+                  {itemMeta.label}
+                </Text>
               </View>
+              {!!item.description && (
+                <Text className="gm-meta" style="display:block;margin-top:16px;line-height:1.8">
+                  {item.description}
+                </Text>
+              )}
 
-              {lesson.video && (
+              {/** ── 视频教程 ── */}
+              {item.type === 'video' && (
                 <View>
                   <Text className="gm-section-title" style="display:block;margin-top:24px">
-                    关联视频
+                    视频信息
                   </Text>
-                  <Text className="gm-meta" style="display:block;margin-top:8px">
-                    {lesson.video.title} · {lesson.video.instructor} ·{' '}
-                    {formatDuration(lesson.video.durationSec)} · {lesson.video.resolution}
-                  </Text>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">讲师</Text>
+                    <Text className="gm-modal-value">{course?.teacherName || '未标注'}</Text>
+                  </View>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">时长</Text>
+                    <Text className="gm-modal-value">{itemVideo?.durationFormatted || '未标注'}</Text>
+                  </View>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">关键打点</Text>
+                    <Text className="gm-modal-value">{itemVideo?.cuePoints?.length || 0} 个</Text>
+                  </View>
                   {/**
                     * 视频源状态：弹窗里就写清「能不能播」，不用等点进去才发现没有源。
-                    * ⚠️ 只信后端投影的 `playable`（= 真的有 videoUrl），不信 CMS 里那个写死的状态枚举。
+                    * ⚠️ 只信 `videoUrl` 是否为空，不信任何状态枚举（CMS 里那个状态是写死的）。
                     */}
                   <Text
                     className="gm-meta"
-                    style={`display:block;margin-top:6px;color:${
-                      lesson.video.playable ? '#10b981' : '#f59e0b'
+                    style={`display:block;margin-top:8px;color:${
+                      itemVideo?.videoUrl ? '#10b981' : '#f59e0b'
                     }`}
                   >
-                    {lesson.video.playable
-                      ? `▶ 视频源已就绪（${lesson.video.keyPoints.length} 个打点，可跳转）`
-                      : '⚠ 还没有可播放的视频源（后台视频库的 videoUrl 为空）'}
+                    {itemVideo?.videoUrl
+                      ? `▶ 视频源已就绪（${itemVideo.cuePoints?.length || 0} 个打点，可跳转）`
+                      : '⚠ 还没有可播放的视频源'}
                   </Text>
-                  {lesson.video.keyPoints.length > 0 && (
-                    <View style="margin-top:8px">
-                      {lesson.video.keyPoints.map((kp) => (
-                        <Text key={`${kp.timeSec}-${kp.title}`} className="gm-meta" style="display:block">
-                          ▸ {formatDuration(kp.timeSec)} {kp.title}
-                        </Text>
-                      ))}
-                    </View>
+                  {!itemVideo?.videoUrl && (
+                    <Text className="gm-meta" style="display:block;margin-top:8px;line-height:1.8">
+                      教师还没有给这个课时填视频地址，所以不给播放按钮（不摆一个点了没反应的播放器）。
+                    </Text>
                   )}
                 </View>
               )}
 
+              {/** ── 和弦微测 ── */}
+              {item.type === 'chord_drill' && (
+                <View>
+                  <Text className="gm-section-title" style="display:block;margin-top:24px">
+                    微测设定
+                  </Text>
+                  <Text className="gm-meta" style="display:block;margin-top:8px;line-height:1.9">
+                    {(itemDrill?.chords || item.chords || []).join('  →  ') || '未配置和弦'}
+                  </Text>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">起始速度</Text>
+                    <Text className="gm-modal-value">{itemDrill?.bpmStart ?? '—'} BPM</Text>
+                  </View>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">目标速度</Text>
+                    <Text className="gm-modal-value" style="color:#10b981">
+                      {itemDrill?.bpmTarget ?? item.bpmTarget ?? '—'} BPM
+                    </Text>
+                  </View>
+                  {!!itemDrill?.steps?.length && (
+                    <Text className="gm-meta" style="display:block;margin-top:8px">
+                      速度阶梯：{itemDrill.steps.join(' → ')} BPM
+                    </Text>
+                  )}
+                  {!!itemDrill?.description && (
+                    <Text className="gm-meta" style="display:block;margin-top:12px;line-height:1.8">
+                      {itemDrill.description}
+                    </Text>
+                  )}
+                </View>
+              )}
+
+              {/** ── 乐谱练习 ── */}
+              {item.type === 'transcription_score' && (
+                <View>
+                  <Text className="gm-section-title" style="display:block;margin-top:24px">
+                    曲谱信息
+                  </Text>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">曲名</Text>
+                    <Text className="gm-modal-value">{item.scoreTitle || item.title}</Text>
+                  </View>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">原唱 / 艺人</Text>
+                    <Text className="gm-modal-value">{item.scoreArtist || '—'}</Text>
+                  </View>
+                  <View className="gm-modal-row">
+                    <Text className="gm-meta">速度</Text>
+                    <Text className="gm-modal-value">
+                      {item.scoreTempo ? `${item.scoreTempo} BPM` : '—'}
+                    </Text>
+                  </View>
+                </View>
+              )}
+
               {/**
-                * 课时动作：按类型跳到**已有的真页面**（都是能用的功能，不是占位按钮）。
+                * 内容项动作：按类型跳到**已有的真页面**（都是能用的功能，不是占位按钮）。
                 * ```
-                * tuning      → Tune 调音器（麦克风听弦）
-                * chord_quiz  → Tools 和弦库（指法 / 试听）
-                * pair_drill  → Tools 和弦库（换和弦 = 指法切换）
-                * song_sync   → 曲目分段练习（按歌名去已发布曲库里找）
-                * video       → 课时视频播放页（**现在有真产物了**：后端直传/转码 + `/learn` 投影）
+                * video               → 课时视频页（完整页面：标题 + 播放器 + 打点 + 开练入口）
+                * chord_drill         → 和弦库（指法 / 拨弦试听）
+                * transcription_score → 乐谱练习页 / AI 跟弹评测（按曲名去曲库找）
                 * ```
-                * 视频入口**不再按 type 卡**，见下面那段注释。
                 */}
               <Text className="gm-section-title" style="display:block;margin-top:24px">
                 开始练习
               </Text>
               <View className="gm-learn-actions">
-                {lesson.type === 'tuning' && (
+                {item.type === 'video' && !!itemVideo?.videoUrl && (
                   <View
                     className="gm-learn-jump"
                     onClick={() =>
-                      Taro.navigateTo({ url: '/pages/tune/index' })
+                      Taro.navigateTo({
+                        url: `/pages/video/index?itemId=${encodeURIComponent(item.id)}`,
+                      })
                     }
                   >
-                    <Text>🎤 去调音（标准调弦 · 麦克风听弦）</Text>
+                    <Text>▶ 播放视频教程（{itemVideo.cuePoints?.length || 0} 个打点）</Text>
                   </View>
                 )}
 
-                {(lesson.type === 'chord_quiz' || lesson.type === 'pair_drill') && (
+                {item.type === 'chord_drill' && (
+                  <View
+                    className="gm-learn-jump"
+                    onClick={() =>
+                      Taro.navigateTo({
+                        url: `/pages/chord-drill/index?itemId=${encodeURIComponent(item.id)}`,
+                      })
+                    }
+                  >
+                    <Text>🎹 进入和弦微测（目标 {itemDrill?.bpmTarget ?? item.bpmTarget ?? '—'} BPM）</Text>
+                  </View>
+                )}
+
+                {/** 指法不熟时先去和弦库看一眼：这是同一节课的“预习”入口 */}
+                {item.type === 'chord_drill' && (
                   <View
                     className="gm-learn-jump"
                     onClick={() => Taro.navigateTo({ url: '/pages/tools/index' })}
                   >
+                    <Text>🧰 去和弦库（和弦指法 / 拨弦试听）</Text>
+                  </View>
+                )}
+
+                {item.type === 'transcription_score' && (
+                  <View className="gm-learn-jump" onClick={() => void openBoundSong(item, 'practice')}>
                     <Text>
-                      {lesson.type === 'pair_drill'
-                        ? '🧰 去和弦库（换和弦 = 指法切换）'
-                        : '🧰 去和弦库（和弦指法 / 拨弦试听）'}
+                      🎸 打开乐谱练习《{item.scoreTitle || item.title}》
+                      {openingSong ? ' · 正在找…' : ''}
                     </Text>
                   </View>
                 )}
 
-                {lesson.type === 'song_sync' && (
-                  <View className="gm-learn-jump" onClick={() => void openBoundSong(lesson)}>
-                    <Text>
-                      🎸 跟弹《{lesson.song?.songName || '（未绑定曲目）'}》
-                      {openingSong ? ' · 正在找…' : '（打开分段练习）'}
-                    </Text>
-                  </View>
-                )}
-
-                {/** 跟弹的第二种入口：直接进 AI 听音评测（同一首歌，选段后开始） */}
-                {lesson.type === 'song_sync' && (
-                  <View
-                    className="gm-learn-jump"
-                    onClick={() => void openBoundSong(lesson, 'eval')}
-                  >
+                {item.type === 'transcription_score' && (
+                  <View className="gm-learn-jump" onClick={() => void openBoundSong(item, 'eval')}>
                     <Text>🎤 AI 跟弹评测（听你弹的音对不对）</Text>
                   </View>
                 )}
               </View>
-
-              {/**
-                * 播放课时视频。
-                *
-                * ⚠️ 门槛从「`type === 'video'`」改成「**后端投影说 `playable`**」：
-                * 视频是挂在**课时**上的（`videoIds`），而课时 `type` 描述的是「课堂上练什么」——
-                * 第01课「名师精讲」的 type 是 `chord_quiz`，按 type 卡就会出现
-                * 「明明在 CMS 里绑好了视频、也有打点，C 端却进不去」。
-                */}
-              {lesson.video?.playable && (
-                <View
-                  className="gm-learn-jump"
-                  onClick={() =>
-                    Taro.navigateTo({ url: `/pages/video/index?id=${encodeURIComponent(lesson.id)}` })
-                  }
-                >
-                  <Text>▶ 播放课程视频（{lesson.video.keyPoints.length} 个打点）</Text>
-                </View>
-              )}
-              {lesson.type === 'video' && !lesson.video?.playable && (
-                <Text className="gm-meta" style="display:block;margin-top:16px;opacity:0.7;line-height:1.7">
-                  这个课时还没有可播放的视频源（后台视频库的 videoUrl 为空），所以不给播放按钮。
-                </Text>
-              )}
             </View>
           </View>
         </View>

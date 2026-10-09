@@ -16,6 +16,8 @@ export default defineAppConfig({
     'pages/architecture/index',
     /** 课时视频播放（含打点跳转） */
     'pages/video/index',
+    /** 和弦微测（对齐 Web 版 InteractiveChordDrillModal，见 practice_chor 的版式） */
+    'pages/chord-drill/index',
   ],
   window: {
     backgroundTextStyle: 'dark',

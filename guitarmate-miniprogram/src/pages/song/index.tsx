@@ -1,8 +1,9 @@
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { useLoad } from '@tarojs/taro';
 import { useCallback, useMemo, useState } from 'react';
-import { fetchPracticePackage } from '../../services/api';
+import { fetchPracticePackage, fetchScoreLibraryItem, type ScoreLibraryItem } from '../../services/api';
 import PracticeSegments from '../../components/PracticeSegments';
+import ScorePractice from '../../components/ScorePractice';
 import BottomNav from '../../components/BottomNav';
 import { pageClass } from '../../utils/settings';
 import {
@@ -31,6 +32,11 @@ import {
 export default function Song() {
   const [id, setId] = useState('');
   const [pkg, setPkg] = useState<PracticePackage | null>(null);
+  /**
+   * 曲库条目（`/api/library/:id`）。非 null 就走**客户端渲染**的单行谱面。
+   * 为什么不能用同一套：曲库条目在“已发布”管线里**没有 `tab.png`**（详见 `ScorePractice` 注释）。
+   */
+  const [libItem, setLibItem] = useState<ScoreLibraryItem | null>(null);
   const [useOriginal, setUseOriginal] = useState(false);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState('');
@@ -44,6 +50,27 @@ export default function Song() {
     setStatus('loading');
     setError('');
     try {
+      /**
+       * ⚠️ 两套 id 体系，这里做**确定性判定**：先问曲库。
+       *
+       * | id 形态 | 例子 | 走哪条 |
+       * |---|---|---|
+       * | 曲库条目（`/api/library`） | `macaroon-5` | **客户端渲染**（单行谱面，见 `ScorePractice`） |
+       * | 已发布条目（cuid） | `cmujjfmh1000tt8ng1jtd0d6n` | 老链路（服务端 `tab.png` + 分段音频） |
+       *
+       * 两个 id 空间不重叠（曲库 id 是短横线命名的 slug），所以"先试曲库、拿不到再走已发布"
+       * 是确定的，不靠猜。曲库请求失败（404）是**预期路径**，不能当错误报出来。
+       */
+      const lib = await fetchScoreLibraryItem(itemId).catch(() => null);
+      if (lib?.score?.measures?.length) {
+        setLibItem(lib);
+        setPkg(null);
+        setStatus('ready');
+        Taro.setNavigationBarTitle({ title: lib.title || lib.score.title || '乐谱练习' });
+        return;
+      }
+
+      setLibItem(null);
       const data = await fetchPracticePackage(itemId);
       setPkg(data);
       setStatus('ready');
@@ -92,6 +119,13 @@ export default function Song() {
   const refresh = useCallback(async () => {
     if (!id) return;
     try {
+      /** 曲库模式没有音频上下文，刷新可以直接重拉；已发布模式才需要避开 `load()` */
+      const lib = await fetchScoreLibraryItem(id).catch(() => null);
+      if (lib?.score?.measures?.length) {
+        setLibItem(lib);
+        setError('');
+        return;
+      }
       setPkg(await fetchPracticePackage(id));
       setError('');
     } catch (err) {
@@ -102,8 +136,38 @@ export default function Song() {
   const measures = useMemo(() => dedupeMeasuresByIndex(pkg?.measures || []), [pkg]);
   const duration = useMemo(() => totalDurationSec(measures), [measures]);
   /** 标题/艺人：优先用列表带过来的（立即可见），否则用 package 里的 */
-  const title = hero.title || pkg?.score?.title || '';
-  const artist = hero.artist || pkg?.score?.artist || '未标注';
+  const title = hero.title || pkg?.score?.title || libItem?.title || '';
+  const artist = hero.artist || pkg?.score?.artist || libItem?.artist || '未标注';
+
+  /**
+   * 封面 Hero：**两种模式共用**，所以抽成变量而不是拷一份。
+   *
+   * ⚠️ 尺寸一律用 `[Nrpx]` 类名而**不是行内 px**：行内 px 不会被 Taro 换成设计单位，
+   * 在手机上会双倍大。标题加 `truncate`：歌名很长时截断比挤成一团好看。
+   */
+  const heroBlock = (
+    <View className="relative overflow-hidden rounded-2xl border border-zinc-800 mb-4">
+      <View className="relative w-full h-[320rpx]">
+        {hero.cover ? (
+          <Image className="w-full h-[320rpx]" mode="aspectFill" src={hero.cover} />
+        ) : (
+          <View className="w-full h-[320rpx] flex items-center justify-center bg-emerald-900">
+            <Text className="text-4xl font-extrabold text-emerald-200">
+              {title.trim().slice(0, 1) || '♪'}
+            </Text>
+          </View>
+        )}
+        <View
+          className="absolute inset-0"
+          style="background:linear-gradient(to top,#101217,rgba(16,18,23,0.45),rgba(0,0,0,0.3))"
+        />
+        <View className="absolute left-[32rpx] right-[32rpx] bottom-[24rpx]">
+          <Text className="block text-2xl font-extrabold text-white truncate">{title}</Text>
+          <Text className="block text-xs text-zinc-200 mt-[4rpx] truncate">{artist}</Text>
+        </View>
+      </View>
+    </View>
+  );
 
   if (status === 'loading') {
     return (
@@ -131,40 +195,47 @@ export default function Song() {
     );
   }
 
+  /**
+   * ── 曲库条目：客户端渲染的单行谱面 ──────────────────────────────
+   *
+   * 与下面"已发布条目"那条路的区别就是**谱面怎么来**：
+   * 这里用曲库条目自带的 `score`（音符 JSON）在端上画；那条用后端渲染好的 `tab.png`。
+   */
+  if (libItem) {
+    const s = libItem.score;
+    return (
+      <View className={pageClass()} style="padding-bottom:260px">
+        {heroBlock}
+
+        <View className="gm-card">
+          <Text className="gm-meta" style="display:block">
+            {s.measures.length} 小节 ·{' '}
+            {formatSec(s.totalDurationSeconds || libItem.durationSeconds || 0)} ·{' '}
+            {s.timeSignature || '4/4'} · BPM {s.tempo ?? '—'}
+          </Text>
+          <Text className="gm-meta" style="display:block">
+            调性 {s.keySignature || '—'} · Capo {s.capo ?? 0} · {libItem.instrument || '—'}
+            {libItem.category === 'user' ? ' · 我的上传' : ''}
+          </Text>
+          <Text className="gm-meta" style="display:block">
+            调弦：{s.tuningName || '标准调弦'}（{(s.tuning || []).join(' ')}）
+          </Text>
+          <Text className="gm-meta block mt-[16rpx] opacity-70">
+            本谱由 {s.transcribedBy || '未标注'} 转录 · 谱面由小程序端渲染（单行行进）
+          </Text>
+        </View>
+
+        <ScorePractice score={s} />
+
+        <BottomNav active="songs" />
+      </View>
+    );
+  }
+
   return (
     /** 底部留白：底下有固定控制条（两行）**加**底部主导航，不留白会挡住最后一段的谱面 */
     <View className={pageClass()} style="padding-bottom:320px">
-      {/**
-        * 封面 Hero（对齐 Web 版 `MusicTab` 详情页：h-40 封面 + 底部渐变 + 标题/艺人压在左下）。
-        * 没有封面（转录链路常没有）→ 首字母色块（与曲库列表的兜底同构）。
-        * 文字用**渐变遮罩**压住，不用 `filter: brightness()`（WXSS 对 filter 支持不一致）。
-        *
-        * ⚠️ 尺寸一律用 `[Nrpx]` 类名而**不是行内 px**：行内 `px` 不会被 Taro 换成设计单位，
-        * 在手机上会双倍大（这也正是 Hero 标题曾经 30px 的原因）。
-        * 标题加 `truncate`：歌名很长时（如「Macaroon 5 | YouTube Audio Library」）
-        * 固定 160px 高的 Hero 会把多余的行截掉，截断比削字好看。
-        */}
-      <View className="relative overflow-hidden rounded-2xl border border-zinc-800 mb-4">
-        <View className="relative w-full h-[320rpx]">
-          {hero.cover ? (
-            <Image className="w-full h-[320rpx]" mode="aspectFill" src={hero.cover} />
-          ) : (
-            <View className="w-full h-[320rpx] flex items-center justify-center bg-emerald-900">
-              <Text className="text-4xl font-extrabold text-emerald-200">
-                {title.trim().slice(0, 1) || '♪'}
-              </Text>
-            </View>
-          )}
-          <View
-            className="absolute inset-0"
-            style="background:linear-gradient(to top,#101217,rgba(16,18,23,0.45),rgba(0,0,0,0.3))"
-          />
-          <View className="absolute left-[32rpx] right-[32rpx] bottom-[24rpx]">
-            <Text className="block text-2xl font-extrabold text-white truncate">{title}</Text>
-            <Text className="block text-xs text-zinc-200 mt-[4rpx] truncate">{artist}</Text>
-          </View>
-        </View>
-      </View>
+      {heroBlock}
 
       {/** 曲目信息 + Capo + Simplified｜Original（对齐 Web 版：这两项在**详情页头部**） */}
       <View className="gm-card">

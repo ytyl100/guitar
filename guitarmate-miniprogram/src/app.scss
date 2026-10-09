@@ -6,6 +6,19 @@
  *   背景 #0b1220（= 谱面 PNG 的底色，必须一致，否则「挖空弦线」处会出现色块）
  *   卡片 zinc-900 / 描边 zinc-800 / 主色 emerald-500 / 强调 amber-500
  */
+
+/* 彻底隐藏所有平台原生滚动条（防止 H5/桌面/WebView 出现遮挡乐谱的丑陋白色横条） */
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
 page {
   background-color: #0b1220;
   color: #e2e8f0;
